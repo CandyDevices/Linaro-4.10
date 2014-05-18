@@ -4836,6 +4836,12 @@ specified for the particular test in an earlier 'dg-options' or
 7.2.3.8 PowerPC-specific attributes
 ...................................
 
+'dfp_hw'
+     PowerPC target supports executing hardware DFP instructions.
+
+'p8vector_hw'
+     PowerPC target supports executing VSX instructions (ISA 2.07).
+
 'powerpc64'
      Test system supports executing 64-bit instructions.
 
@@ -4845,11 +4851,23 @@ specified for the particular test in an earlier 'dg-options' or
 'powerpc_altivec_ok'
      PowerPC target supports '-maltivec'.
 
+'powerpc_eabi_ok'
+     PowerPC target supports '-meabi'.
+
+'powerpc_elfv2'
+     PowerPC target supports '-mabi=elfv2'.
+
 'powerpc_fprs'
      PowerPC target supports floating-point registers.
 
 'powerpc_hard_double'
      PowerPC target supports hardware double-precision floating-point.
+
+'powerpc_htm_ok'
+     PowerPC target supports '-mhtm'
+
+'powerpc_p8vector_ok'
+     PowerPC target supports '-mpower8-vector'
 
 'powerpc_ppu_ok'
      PowerPC target supports '-mcpu=cell'.
@@ -4864,10 +4882,6 @@ specified for the particular test in an earlier 'dg-options' or
 'powerpc_spu'
      PowerPC target supports PowerPC SPU.
 
-'spu_auto_overlay'
-     SPU target has toolchain that supports automatic overlay
-     generation.
-
 'powerpc_vsx_ok'
      PowerPC target supports '-mvsx'.
 
@@ -4875,8 +4889,18 @@ specified for the particular test in an earlier 'dg-options' or
      Including the options used to compile this particular test, the
      PowerPC target supports PowerPC 405.
 
+'ppc_recip_hw'
+     PowerPC target supports executing reciprocal estimate instructions.
+
+'spu_auto_overlay'
+     SPU target has toolchain that supports automatic overlay
+     generation.
+
 'vmx_hw'
      PowerPC target supports executing AltiVec instructions.
+
+'vsx_hw'
+     PowerPC target supports executing VSX instructions (ISA 2.06).
 
 7.2.3.9 Other hardware attributes
 .................................
@@ -6799,11 +6823,7 @@ run after gimplification and what source files they are located in.
      Loop unswitching.  This pass moves the conditional jumps that are
      invariant out of the loops.  To achieve this, a duplicate of the
      loop is created for each possible outcome of conditional jump(s).
-     The pass is implemented in 'tree-ssa-loop-unswitch.c'.  This pass
-     should eventually replace the RTL level loop unswitching in
-     'loop-unswitch.c', but currently the RTL level pass is not
-     completely redundant yet due to deficiencies in tree level alias
-     analysis.
+     The pass is implemented in 'tree-ssa-loop-unswitch.c'.
 
      The optimizations also use various utility functions contained in
      'tree-ssa-loop-manip.c', 'cfgloop.c', 'cfgloopanal.c' and
@@ -7105,10 +7125,10 @@ passes that are run after the Tree optimization passes.
      analysis and manipulation code.  Initialization and finalization of
      loop structures is handled by 'loop-init.c'.  A loop invariant
      motion pass is implemented in 'loop-invariant.c'.  Basic block
-     level optimizations--unrolling, peeling and unswitching loops-- are
-     implemented in 'loop-unswitch.c' and 'loop-unroll.c'.  Replacing of
-     the exit condition of loops by special machine-dependent
-     instructions is handled by 'loop-doloop.c'.
+     level optimizations--unrolling, and peeling loops-- are implemented
+     in 'loop-unroll.c'.  Replacing of the exit condition of loops by
+     special machine-dependent instructions is handled by
+     'loop-doloop.c'.
 
    * Jump bypassing
 
@@ -8367,33 +8387,17 @@ kinds of expressions:
      these constants is obtained with 'TREE_TYPE'; they are not always
      of type 'int'.  In particular, 'char' constants are represented
      with 'INTEGER_CST' nodes.  The value of the integer constant 'e' is
-     given by
-          ((TREE_INT_CST_HIGH (e) << HOST_BITS_PER_WIDE_INT)
-          + TREE_INST_CST_LOW (e))
-     HOST_BITS_PER_WIDE_INT is at least thirty-two on all platforms.
-     Both 'TREE_INT_CST_HIGH' and 'TREE_INT_CST_LOW' return a
-     'HOST_WIDE_INT'.  The value of an 'INTEGER_CST' is interpreted as a
-     signed or unsigned quantity depending on the type of the constant.
-     In general, the expression given above will overflow, so it should
-     not be used to calculate the value of the constant.
+     represented in an array of HOST_WIDE_INT. There are enough elements
+     in the array to represent the value without taking extra elements
+     for redundant 0s or -1.  The number of elements used to represent
+     'e' is available via 'TREE_INT_CST_NUNITS'.  Element 'i' can be
+     extracted by using 'TREE_INT_CST_ELT (e, i)'.  'TREE_INT_CST_LOW'
+     is a shorthand for 'TREE_INT_CST_ELT (e, 0)'.
 
-     The variable 'integer_zero_node' is an integer constant with value
-     zero.  Similarly, 'integer_one_node' is an integer constant with
-     value one.  The 'size_zero_node' and 'size_one_node' variables are
-     analogous, but have type 'size_t' rather than 'int'.
-
-     The function 'tree_int_cst_lt' is a predicate which holds if its
-     first argument is less than its second.  Both constants are assumed
-     to have the same signedness (i.e., either both should be signed or
-     both should be unsigned.)  The full width of the constant is used
-     when doing the comparison; the usual rules about promotions and
-     conversions are ignored.  Similarly, 'tree_int_cst_equal' holds if
-     the two constants are equal.  The 'tree_int_cst_sgn' function
-     returns the sign of a constant.  The value is '1', '0', or '-1'
-     according on whether the constant is greater than, equal to, or
-     less than zero.  Again, the signedness of the constant's type is
-     taken into account; an unsigned constant is never less than zero,
-     no matter what its bit-pattern.
+     The functions 'tree_fits_shwi_p' and 'tree_fits_uhwi_p' can be used
+     to tell if the value is small enough to fit in a signed
+     HOST_WIDE_INT or an unsigned HOST_WIDE_INT respectively.  The value
+     can then be extracted using 'tree_to_shwi' and 'tree_to_uhwi'.
 
 'REAL_CST'
 
@@ -10496,6 +10500,7 @@ the flag '-fdump-tree-gimple'.
 * Menu:
 
 * Tuple representation::
+* Class hierarchy of GIMPLE statements::
 * GIMPLE instruction set::
 * GIMPLE Exception Handling::
 * Temporaries::
@@ -10508,7 +10513,7 @@ the flag '-fdump-tree-gimple'.
 * Statement and operand traversals::
 
 
-File: gccint.info,  Node: Tuple representation,  Next: GIMPLE instruction set,  Up: GIMPLE
+File: gccint.info,  Node: Tuple representation,  Next: Class hierarchy of GIMPLE statements,  Up: GIMPLE
 
 11.1 Tuple representation
 =========================
@@ -10678,38 +10683,140 @@ Total size   80 + 8 * 'num_ops' bytes
      reduce memory utilization further by removing these sets).
 
  All the other tuples are defined in terms of these three basic ones.
-Each tuple will add some fields.  The main gimple type is defined to be
-the union of all these structures ('GTY' markers elided for clarity):
-
-     union gimple_statement_d
-     {
-       struct gimple_statement_base gsbase;
-       struct gimple_statement_with_ops gsops;
-       struct gimple_statement_with_memory_ops gsmem;
-       struct gimple_statement_omp omp;
-       struct gimple_statement_bind gimple_bind;
-       struct gimple_statement_catch gimple_catch;
-       struct gimple_statement_eh_filter gimple_eh_filter;
-       struct gimple_statement_phi gimple_phi;
-       struct gimple_statement_resx gimple_resx;
-       struct gimple_statement_try gimple_try;
-       struct gimple_statement_wce gimple_wce;
-       struct gimple_statement_asm gimple_asm;
-       struct gimple_statement_omp_critical gimple_omp_critical;
-       struct gimple_statement_omp_for gimple_omp_for;
-       struct gimple_statement_omp_parallel gimple_omp_parallel;
-       struct gimple_statement_omp_task gimple_omp_task;
-       struct gimple_statement_omp_sections gimple_omp_sections;
-       struct gimple_statement_omp_single gimple_omp_single;
-       struct gimple_statement_omp_continue gimple_omp_continue;
-       struct gimple_statement_omp_atomic_load gimple_omp_atomic_load;
-       struct gimple_statement_omp_atomic_store gimple_omp_atomic_store;
-     };
+Each tuple will add some fields.
 
 
-File: gccint.info,  Node: GIMPLE instruction set,  Next: GIMPLE Exception Handling,  Prev: Tuple representation,  Up: GIMPLE
+File: gccint.info,  Node: Class hierarchy of GIMPLE statements,  Next: GIMPLE instruction set,  Prev: Tuple representation,  Up: GIMPLE
 
-11.2 GIMPLE instruction set
+11.2 Class hierarchy of GIMPLE statements
+=========================================
+
+The following diagram shows the C++ inheritance hierarchy of statement
+kinds, along with their relationships to 'GSS_' values (layouts) and
+'GIMPLE_' values (codes):
+
+        gimple_statement_base
+          |    layout: GSS_BASE
+          |    used for 4 codes: GIMPLE_ERROR_MARK
+          |                      GIMPLE_NOP
+          |                      GIMPLE_OMP_SECTIONS_SWITCH
+          |                      GIMPLE_PREDICT
+          |
+          + gimple_statement_with_ops_base
+          |   |    (no GSS layout)
+          |   |
+          |   + gimple_statement_with_ops
+          |   |        layout: GSS_WITH_OPS
+          |   |        Used for 5 codes: GIMPLE_COND
+          |   |                          GIMPLE_DEBUG
+          |   |                          GIMPLE_GOTO
+          |   |                          GIMPLE_LABEL
+          |   |                          GIMPLE_SWITCH
+          |   |
+          |   + gimple_statement_with_memory_ops_base
+          |       |    layout: GSS_WITH_MEM_OPS_BASE
+          |       |
+          |       + gimple_statement_with_memory_ops
+          |       |        layout: GSS_WITH_MEM_OPS.
+          |       |        used for codes GIMPLE_ASSIGN and GIMPLE_RETURN.
+          |       |
+          |       + gimple_statement_call
+          |       |        layout: GSS_CALL, code: GIMPLE_CALL
+          |       |
+          |       + gimple_statement_asm
+          |       |        layout: GSS_ASM, code: GIMPLE_ASM
+          |       |
+          |       + gimple_statement_transaction
+          |                layout: GSS_TRANSACTION, code: GIMPLE_TRANSACTION
+          |
+          + gimple_statement_omp
+          |   |    layout: GSS_OMP.  Used for code GIMPLE_OMP_SECTION
+          |   |
+          |   + gimple_statement_omp_critical
+          |   |        layout: GSS_OMP_CRITICAL, code: GIMPLE_OMP_CRITICAL
+          |   |
+          |   + gimple_statement_omp_for
+          |   |        layout: GSS_OMP_FOR, code: GIMPLE_OMP_FOR
+          |   |
+          |   + gimple_statement_omp_parallel_layout
+          |   |   |    layout: GSS_OMP_PARALLEL_LAYOUT
+          |   |   |
+          |   |   + gimple_statement_omp_taskreg
+          |   |   |   |
+          |   |   |   + gimple_statement_omp_parallel
+          |   |   |   |        code: GIMPLE_OMP_PARALLEL
+          |   |   |   |
+          |   |   |   + gimple_statement_omp_task
+          |   |   |            code: GIMPLE_OMP_TASK
+          |   |   |
+          |   |   + gimple_statement_omp_target
+          |   |            code: GIMPLE_OMP_TARGET
+          |   |
+          |   + gimple_statement_omp_sections
+          |   |        layout: GSS_OMP_SECTIONS, code: GIMPLE_OMP_SECTIONS
+          |   |
+          |   + gimple_statement_omp_single_layout
+          |       |    layout: GSS_OMP_SINGLE_LAYOUT
+          |       |
+          |       + gimple_statement_omp_single
+          |       |        code: GIMPLE_OMP_SINGLE
+          |       |
+          |       + gimple_statement_omp_teams
+          |                code: GIMPLE_OMP_TEAMS
+          |
+          + gimple_statement_bind
+          |        layout: GSS_BIND, code: GIMPLE_BIND
+          |
+          + gimple_statement_catch
+          |        layout: GSS_CATCH, code: GIMPLE_CATCH
+          |
+          + gimple_statement_eh_filter
+          |        layout: GSS_EH_FILTER, code: GIMPLE_EH_FILTER
+          |
+          + gimple_statement_eh_else
+          |        layout: GSS_EH_ELSE, code: GIMPLE_EH_ELSE
+          |
+          + gimple_statement_eh_mnt
+          |        layout: GSS_EH_MNT, code: GIMPLE_EH_MUST_NOT_THROW
+          |
+          + gimple_statement_phi
+          |        layout: GSS_PHI, code: GIMPLE_PHI
+          |
+          + gimple_statement_eh_ctrl
+          |   |    layout: GSS_EH_CTRL
+          |   |
+          |   + gimple_statement_resx
+          |   |        code: GIMPLE_RESX
+          |   |
+          |   + gimple_statement_eh_dispatch
+          |            code: GIMPLE_EH_DISPATCH
+          |
+          + gimple_statement_try
+          |        layout: GSS_TRY, code: GIMPLE_TRY
+          |
+          + gimple_statement_wce
+          |        layout: GSS_WCE, code: GIMPLE_WITH_CLEANUP_EXPR
+          |
+          + gimple_statement_omp_continue
+          |        layout: GSS_OMP_CONTINUE, code: GIMPLE_OMP_CONTINUE
+          |
+          + gimple_statement_omp_atomic_load
+          |        layout: GSS_OMP_ATOMIC_LOAD, code: GIMPLE_OMP_ATOMIC_LOAD
+          |
+          + gimple_statement_omp_atomic_store_layout
+              |    layout: GSS_OMP_ATOMIC_STORE_LAYOUT,
+              |    code: GIMPLE_OMP_ATOMIC_STORE
+              |
+              + gimple_statement_omp_atomic_store
+              |        code: GIMPLE_OMP_ATOMIC_STORE
+              |
+              + gimple_statement_omp_return
+                       code: GIMPLE_OMP_RETURN
+
+
+File: gccint.info,  Node: GIMPLE instruction set,  Next: GIMPLE Exception Handling,  Prev: Class hierarchy of GIMPLE statements,  Up: GIMPLE
+
+11.3 GIMPLE instruction set
 ===========================
 
 The following table briefly describes the GIMPLE instruction set.
@@ -10748,7 +10855,7 @@ Instruction                    High GIMPLE   Low GIMPLE
 
 File: gccint.info,  Node: GIMPLE Exception Handling,  Next: Temporaries,  Prev: GIMPLE instruction set,  Up: GIMPLE
 
-11.3 Exception Handling
+11.4 Exception Handling
 =======================
 
 Other exception handling constructs are represented using
@@ -10788,7 +10895,7 @@ Continuing to unwind at the end of a cleanup is represented with a
 
 File: gccint.info,  Node: Temporaries,  Next: Operands,  Prev: GIMPLE Exception Handling,  Up: GIMPLE
 
-11.4 Temporaries
+11.5 Temporaries
 ================
 
 When gimplification encounters a subexpression that is too complex, it
@@ -10821,7 +10928,7 @@ temporary.
 
 File: gccint.info,  Node: Operands,  Next: Manipulating GIMPLE statements,  Prev: Temporaries,  Up: GIMPLE
 
-11.5 Operands
+11.6 Operands
 =============
 
 In general, expressions in GIMPLE consist of an operation and the
@@ -10848,7 +10955,7 @@ More complex operands are factored out into temporaries, so that
 
 File: gccint.info,  Node: Compound Expressions,  Next: Compound Lvalues,  Up: Operands
 
-11.5.1 Compound Expressions
+11.6.1 Compound Expressions
 ---------------------------
 
 The left-hand side of a C comma expression is simply moved into a
@@ -10857,7 +10964,7 @@ separate statement.
 
 File: gccint.info,  Node: Compound Lvalues,  Next: Conditional Expressions,  Prev: Compound Expressions,  Up: Operands
 
-11.5.2 Compound Lvalues
+11.6.2 Compound Lvalues
 -----------------------
 
 Currently compound lvalues involving array and structure field
@@ -10877,7 +10984,7 @@ improvements may make this limitation unnecessary.
 
 File: gccint.info,  Node: Conditional Expressions,  Next: Logical Operators,  Prev: Compound Lvalues,  Up: Operands
 
-11.5.3 Conditional Expressions
+11.6.3 Conditional Expressions
 ------------------------------
 
 A C '?:' expression is converted into an 'if' statement with each branch
@@ -10901,7 +11008,7 @@ conditional operations.
 
 File: gccint.info,  Node: Logical Operators,  Prev: Conditional Expressions,  Up: Operands
 
-11.5.4 Logical Operators
+11.6.4 Logical Operators
 ------------------------
 
 Except when they appear in the condition operand of a 'GIMPLE_COND',
@@ -10916,7 +11023,7 @@ becomes
  Note that 'T1' in this example cannot be an expression temporary,
 because it has two different assignments.
 
-11.5.5 Manipulating operands
+11.6.5 Manipulating operands
 ----------------------------
 
 All gimple operands are of type 'tree'.  But only certain types of trees
@@ -10966,7 +11073,7 @@ tuple as follows:
 
      GIMPLE_ASSIGN <PLUS_EXPR, VAR_DECL <a>, VAR_DECL <b>, VAR_DECL <c>>
 
-11.5.6 Operand vector allocation
+11.6.6 Operand vector allocation
 --------------------------------
 
 The operand vector is stored at the bottom of the three tuple structures
@@ -10996,7 +11103,7 @@ of the structure.  To access tuple operands use the following accessors
      choose to memoize the result from 'gimple_ops'() and use that to
      access the operands.
 
-11.5.7 Operand validation
+11.6.7 Operand validation
 -------------------------
 
 When adding a new operand to a gimple statement, the operand will be
@@ -11044,7 +11151,7 @@ exhaustive):
      Return true if t is an 'ADDR_EXPR' that does not change once the
      program is running (and which is valid in all functions).
 
-11.5.8 Statement validation
+11.6.8 Statement validation
 ---------------------------
 
  -- GIMPLE function: bool is_gimple_assign (gimple g)
@@ -11070,13 +11177,13 @@ exhaustive):
 
 File: gccint.info,  Node: Manipulating GIMPLE statements,  Next: Tuple specific accessors,  Prev: Operands,  Up: GIMPLE
 
-11.6 Manipulating GIMPLE statements
+11.7 Manipulating GIMPLE statements
 ===================================
 
 This section documents all the functions available to handle each of the
 GIMPLE instructions.
 
-11.6.1 Common accessors
+11.7.1 Common accessors
 -----------------------
 
 The following are common accessors for gimple statements.
@@ -11219,7 +11326,7 @@ The following are common accessors for gimple statements.
 
 File: gccint.info,  Node: Tuple specific accessors,  Next: GIMPLE sequences,  Prev: Manipulating GIMPLE statements,  Up: GIMPLE
 
-11.7 Tuple specific accessors
+11.8 Tuple specific accessors
 =============================
 
 * Menu:
@@ -11256,7 +11363,7 @@ File: gccint.info,  Node: Tuple specific accessors,  Next: GIMPLE sequences,  Pr
 
 File: gccint.info,  Node: 'GIMPLE_ASM',  Next: 'GIMPLE_ASSIGN',  Up: Tuple specific accessors
 
-11.7.1 'GIMPLE_ASM'
+11.8.1 'GIMPLE_ASM'
 -------------------
 
  -- GIMPLE function: gimple gimple_build_asm (const char *string,
@@ -11318,7 +11425,7 @@ File: gccint.info,  Node: 'GIMPLE_ASM',  Next: 'GIMPLE_ASSIGN',  Up: Tuple speci
 
 File: gccint.info,  Node: 'GIMPLE_ASSIGN',  Next: 'GIMPLE_BIND',  Prev: 'GIMPLE_ASM',  Up: Tuple specific accessors
 
-11.7.2 'GIMPLE_ASSIGN'
+11.8.2 'GIMPLE_ASSIGN'
 ----------------------
 
  -- GIMPLE function: gimple gimple_build_assign (tree lhs, tree rhs)
@@ -11413,7 +11520,7 @@ converted to a gimple operand if necessary.
 
 File: gccint.info,  Node: 'GIMPLE_BIND',  Next: 'GIMPLE_CALL',  Prev: 'GIMPLE_ASSIGN',  Up: Tuple specific accessors
 
-11.7.3 'GIMPLE_BIND'
+11.8.3 'GIMPLE_BIND'
 --------------------
 
  -- GIMPLE function: gimple gimple_build_bind (tree vars, gimple_seq
@@ -11461,7 +11568,7 @@ File: gccint.info,  Node: 'GIMPLE_BIND',  Next: 'GIMPLE_CALL',  Prev: 'GIMPLE_AS
 
 File: gccint.info,  Node: 'GIMPLE_CALL',  Next: 'GIMPLE_CATCH',  Prev: 'GIMPLE_BIND',  Up: Tuple specific accessors
 
-11.7.4 'GIMPLE_CALL'
+11.8.4 'GIMPLE_CALL'
 --------------------
 
  -- GIMPLE function: gimple gimple_build_call (tree fn, unsigned nargs,
@@ -11562,7 +11669,7 @@ File: gccint.info,  Node: 'GIMPLE_CALL',  Next: 'GIMPLE_CATCH',  Prev: 'GIMPLE_B
 
 File: gccint.info,  Node: 'GIMPLE_CATCH',  Next: 'GIMPLE_COND',  Prev: 'GIMPLE_CALL',  Up: Tuple specific accessors
 
-11.7.5 'GIMPLE_CATCH'
+11.8.5 'GIMPLE_CATCH'
 ---------------------
 
  -- GIMPLE function: gimple gimple_build_catch (tree types, gimple_seq
@@ -11592,7 +11699,7 @@ File: gccint.info,  Node: 'GIMPLE_CATCH',  Next: 'GIMPLE_COND',  Prev: 'GIMPLE_C
 
 File: gccint.info,  Node: 'GIMPLE_COND',  Next: 'GIMPLE_DEBUG',  Prev: 'GIMPLE_CATCH',  Up: Tuple specific accessors
 
-11.7.6 'GIMPLE_COND'
+11.8.6 'GIMPLE_COND'
 --------------------
 
  -- GIMPLE function: gimple gimple_build_cond (enum tree_code pred_code,
@@ -11661,7 +11768,7 @@ File: gccint.info,  Node: 'GIMPLE_COND',  Next: 'GIMPLE_DEBUG',  Prev: 'GIMPLE_C
 
 File: gccint.info,  Node: 'GIMPLE_DEBUG',  Next: 'GIMPLE_EH_FILTER',  Prev: 'GIMPLE_COND',  Up: Tuple specific accessors
 
-11.7.7 'GIMPLE_DEBUG'
+11.8.7 'GIMPLE_DEBUG'
 ---------------------
 
  -- GIMPLE function: gimple gimple_build_debug_bind (tree var, tree
@@ -11733,7 +11840,7 @@ File: gccint.info,  Node: 'GIMPLE_DEBUG',  Next: 'GIMPLE_EH_FILTER',  Prev: 'GIM
 
 File: gccint.info,  Node: 'GIMPLE_EH_FILTER',  Next: 'GIMPLE_LABEL',  Prev: 'GIMPLE_DEBUG',  Up: Tuple specific accessors
 
-11.7.8 'GIMPLE_EH_FILTER'
+11.8.8 'GIMPLE_EH_FILTER'
 -------------------------
 
  -- GIMPLE function: gimple gimple_build_eh_filter (tree types,
@@ -11772,7 +11879,7 @@ File: gccint.info,  Node: 'GIMPLE_EH_FILTER',  Next: 'GIMPLE_LABEL',  Prev: 'GIM
 
 File: gccint.info,  Node: 'GIMPLE_LABEL',  Next: 'GIMPLE_NOP',  Prev: 'GIMPLE_EH_FILTER',  Up: Tuple specific accessors
 
-11.7.9 'GIMPLE_LABEL'
+11.8.9 'GIMPLE_LABEL'
 ---------------------
 
  -- GIMPLE function: gimple gimple_build_label (tree label)
@@ -11798,7 +11905,7 @@ File: gccint.info,  Node: 'GIMPLE_LABEL',  Next: 'GIMPLE_NOP',  Prev: 'GIMPLE_EH
 
 File: gccint.info,  Node: 'GIMPLE_NOP',  Next: 'GIMPLE_OMP_ATOMIC_LOAD',  Prev: 'GIMPLE_LABEL',  Up: Tuple specific accessors
 
-11.7.10 'GIMPLE_NOP'
+11.8.10 'GIMPLE_NOP'
 --------------------
 
  -- GIMPLE function: gimple gimple_build_nop (void)
@@ -11810,7 +11917,7 @@ File: gccint.info,  Node: 'GIMPLE_NOP',  Next: 'GIMPLE_OMP_ATOMIC_LOAD',  Prev: 
 
 File: gccint.info,  Node: 'GIMPLE_OMP_ATOMIC_LOAD',  Next: 'GIMPLE_OMP_ATOMIC_STORE',  Prev: 'GIMPLE_NOP',  Up: Tuple specific accessors
 
-11.7.11 'GIMPLE_OMP_ATOMIC_LOAD'
+11.8.11 'GIMPLE_OMP_ATOMIC_LOAD'
 --------------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_atomic_load (tree lhs, tree
@@ -11836,7 +11943,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_ATOMIC_LOAD',  Next: 'GIMPLE_OMP_ATOMIC_ST
 
 File: gccint.info,  Node: 'GIMPLE_OMP_ATOMIC_STORE',  Next: 'GIMPLE_OMP_CONTINUE',  Prev: 'GIMPLE_OMP_ATOMIC_LOAD',  Up: Tuple specific accessors
 
-11.7.12 'GIMPLE_OMP_ATOMIC_STORE'
+11.8.12 'GIMPLE_OMP_ATOMIC_STORE'
 ---------------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_atomic_store (tree val)
@@ -11853,7 +11960,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_ATOMIC_STORE',  Next: 'GIMPLE_OMP_CONTINUE
 
 File: gccint.info,  Node: 'GIMPLE_OMP_CONTINUE',  Next: 'GIMPLE_OMP_CRITICAL',  Prev: 'GIMPLE_OMP_ATOMIC_STORE',  Up: Tuple specific accessors
 
-11.7.13 'GIMPLE_OMP_CONTINUE'
+11.8.13 'GIMPLE_OMP_CONTINUE'
 -----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_continue (tree control_def,
@@ -11887,7 +11994,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_CONTINUE',  Next: 'GIMPLE_OMP_CRITICAL',  
 
 File: gccint.info,  Node: 'GIMPLE_OMP_CRITICAL',  Next: 'GIMPLE_OMP_FOR',  Prev: 'GIMPLE_OMP_CONTINUE',  Up: Tuple specific accessors
 
-11.7.14 'GIMPLE_OMP_CRITICAL'
+11.8.14 'GIMPLE_OMP_CRITICAL'
 -----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_critical (gimple_seq body,
@@ -11911,7 +12018,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_CRITICAL',  Next: 'GIMPLE_OMP_FOR',  Prev:
 
 File: gccint.info,  Node: 'GIMPLE_OMP_FOR',  Next: 'GIMPLE_OMP_MASTER',  Prev: 'GIMPLE_OMP_CRITICAL',  Up: Tuple specific accessors
 
-11.7.15 'GIMPLE_OMP_FOR'
+11.8.15 'GIMPLE_OMP_FOR'
 ------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_for (gimple_seq body, tree
@@ -11996,7 +12103,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_FOR',  Next: 'GIMPLE_OMP_MASTER',  Prev: '
 
 File: gccint.info,  Node: 'GIMPLE_OMP_MASTER',  Next: 'GIMPLE_OMP_ORDERED',  Prev: 'GIMPLE_OMP_FOR',  Up: Tuple specific accessors
 
-11.7.16 'GIMPLE_OMP_MASTER'
+11.8.16 'GIMPLE_OMP_MASTER'
 ---------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_master (gimple_seq body)
@@ -12006,7 +12113,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_MASTER',  Next: 'GIMPLE_OMP_ORDERED',  Pre
 
 File: gccint.info,  Node: 'GIMPLE_OMP_ORDERED',  Next: 'GIMPLE_OMP_PARALLEL',  Prev: 'GIMPLE_OMP_MASTER',  Up: Tuple specific accessors
 
-11.7.17 'GIMPLE_OMP_ORDERED'
+11.8.17 'GIMPLE_OMP_ORDERED'
 ----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_ordered (gimple_seq body)
@@ -12018,7 +12125,7 @@ in sequence.
 
 File: gccint.info,  Node: 'GIMPLE_OMP_PARALLEL',  Next: 'GIMPLE_OMP_RETURN',  Prev: 'GIMPLE_OMP_ORDERED',  Up: Tuple specific accessors
 
-11.7.18 'GIMPLE_OMP_PARALLEL'
+11.8.18 'GIMPLE_OMP_PARALLEL'
 -----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_parallel (gimple_seq body,
@@ -12082,7 +12189,7 @@ are the shared data argument(s).
 
 File: gccint.info,  Node: 'GIMPLE_OMP_RETURN',  Next: 'GIMPLE_OMP_SECTION',  Prev: 'GIMPLE_OMP_PARALLEL',  Up: Tuple specific accessors
 
-11.7.19 'GIMPLE_OMP_RETURN'
+11.8.19 'GIMPLE_OMP_RETURN'
 ---------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_return (bool wait_p)
@@ -12099,7 +12206,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_RETURN',  Next: 'GIMPLE_OMP_SECTION',  Pre
 
 File: gccint.info,  Node: 'GIMPLE_OMP_SECTION',  Next: 'GIMPLE_OMP_SECTIONS',  Prev: 'GIMPLE_OMP_RETURN',  Up: Tuple specific accessors
 
-11.7.20 'GIMPLE_OMP_SECTION'
+11.8.20 'GIMPLE_OMP_SECTION'
 ----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_section (gimple_seq body)
@@ -12117,7 +12224,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_SECTION',  Next: 'GIMPLE_OMP_SECTIONS',  P
 
 File: gccint.info,  Node: 'GIMPLE_OMP_SECTIONS',  Next: 'GIMPLE_OMP_SINGLE',  Prev: 'GIMPLE_OMP_SECTION',  Up: Tuple specific accessors
 
-11.7.21 'GIMPLE_OMP_SECTIONS'
+11.8.21 'GIMPLE_OMP_SECTIONS'
 -----------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_sections (gimple_seq body,
@@ -12157,7 +12264,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_SECTIONS',  Next: 'GIMPLE_OMP_SINGLE',  Pr
 
 File: gccint.info,  Node: 'GIMPLE_OMP_SINGLE',  Next: 'GIMPLE_PHI',  Prev: 'GIMPLE_OMP_SECTIONS',  Up: Tuple specific accessors
 
-11.7.22 'GIMPLE_OMP_SINGLE'
+11.8.22 'GIMPLE_OMP_SINGLE'
 ---------------------------
 
  -- GIMPLE function: gimple gimple_build_omp_single (gimple_seq body,
@@ -12180,7 +12287,7 @@ File: gccint.info,  Node: 'GIMPLE_OMP_SINGLE',  Next: 'GIMPLE_PHI',  Prev: 'GIMP
 
 File: gccint.info,  Node: 'GIMPLE_PHI',  Next: 'GIMPLE_RESX',  Prev: 'GIMPLE_OMP_SINGLE',  Up: Tuple specific accessors
 
-11.7.23 'GIMPLE_PHI'
+11.8.23 'GIMPLE_PHI'
 --------------------
 
  -- GIMPLE function: unsigned gimple_phi_capacity (gimple g)
@@ -12213,7 +12320,7 @@ File: gccint.info,  Node: 'GIMPLE_PHI',  Next: 'GIMPLE_RESX',  Prev: 'GIMPLE_OMP
 
 File: gccint.info,  Node: 'GIMPLE_RESX',  Next: 'GIMPLE_RETURN',  Prev: 'GIMPLE_PHI',  Up: Tuple specific accessors
 
-11.7.24 'GIMPLE_RESX'
+11.8.24 'GIMPLE_RESX'
 ---------------------
 
  -- GIMPLE function: gimple gimple_build_resx (int region)
@@ -12231,7 +12338,7 @@ File: gccint.info,  Node: 'GIMPLE_RESX',  Next: 'GIMPLE_RETURN',  Prev: 'GIMPLE_
 
 File: gccint.info,  Node: 'GIMPLE_RETURN',  Next: 'GIMPLE_SWITCH',  Prev: 'GIMPLE_RESX',  Up: Tuple specific accessors
 
-11.7.25 'GIMPLE_RETURN'
+11.8.25 'GIMPLE_RETURN'
 -----------------------
 
  -- GIMPLE function: gimple gimple_build_return (tree retval)
@@ -12247,7 +12354,7 @@ File: gccint.info,  Node: 'GIMPLE_RETURN',  Next: 'GIMPLE_SWITCH',  Prev: 'GIMPL
 
 File: gccint.info,  Node: 'GIMPLE_SWITCH',  Next: 'GIMPLE_TRY',  Prev: 'GIMPLE_RETURN',  Up: Tuple specific accessors
 
-11.7.26 'GIMPLE_SWITCH'
+11.8.26 'GIMPLE_SWITCH'
 -----------------------
 
  -- GIMPLE function: gimple gimple_build_switch (tree index, tree
@@ -12292,7 +12399,7 @@ File: gccint.info,  Node: 'GIMPLE_SWITCH',  Next: 'GIMPLE_TRY',  Prev: 'GIMPLE_R
 
 File: gccint.info,  Node: 'GIMPLE_TRY',  Next: 'GIMPLE_WITH_CLEANUP_EXPR',  Prev: 'GIMPLE_SWITCH',  Up: Tuple specific accessors
 
-11.7.27 'GIMPLE_TRY'
+11.8.27 'GIMPLE_TRY'
 --------------------
 
  -- GIMPLE function: gimple gimple_build_try (gimple_seq eval,
@@ -12336,7 +12443,7 @@ File: gccint.info,  Node: 'GIMPLE_TRY',  Next: 'GIMPLE_WITH_CLEANUP_EXPR',  Prev
 
 File: gccint.info,  Node: 'GIMPLE_WITH_CLEANUP_EXPR',  Prev: 'GIMPLE_TRY',  Up: Tuple specific accessors
 
-11.7.28 'GIMPLE_WITH_CLEANUP_EXPR'
+11.8.28 'GIMPLE_WITH_CLEANUP_EXPR'
 ----------------------------------
 
  -- GIMPLE function: gimple gimple_build_wce (gimple_seq cleanup)
@@ -12360,7 +12467,7 @@ File: gccint.info,  Node: 'GIMPLE_WITH_CLEANUP_EXPR',  Prev: 'GIMPLE_TRY',  Up: 
 
 File: gccint.info,  Node: GIMPLE sequences,  Next: Sequence iterators,  Prev: Tuple specific accessors,  Up: GIMPLE
 
-11.8 GIMPLE sequences
+11.9 GIMPLE sequences
 =====================
 
 GIMPLE sequences are the tuple equivalent of 'STATEMENT_LIST''s used in
@@ -12441,8 +12548,8 @@ section entitled Sequence Iterators.
 
 File: gccint.info,  Node: Sequence iterators,  Next: Adding a new GIMPLE statement code,  Prev: GIMPLE sequences,  Up: GIMPLE
 
-11.9 Sequence iterators
-=======================
+11.10 Sequence iterators
+========================
 
 Sequence iterators are convenience constructs for iterating through
 statements in a sequence.  Given a sequence 'SEQ', here is a typical use
@@ -12638,7 +12745,7 @@ iterators.
 
 File: gccint.info,  Node: Adding a new GIMPLE statement code,  Next: Statement and operand traversals,  Prev: Sequence iterators,  Up: GIMPLE
 
-11.10 Adding a new GIMPLE statement code
+11.11 Adding a new GIMPLE statement code
 ========================================
 
 The first step in adding a new GIMPLE statement code, is modifying the
@@ -12665,7 +12772,7 @@ accessors in 'gimple.c' with a corresponding prototype in 'gimple.h'.
 
 File: gccint.info,  Node: Statement and operand traversals,  Prev: Adding a new GIMPLE statement code,  Up: GIMPLE
 
-11.11 Statement and operand traversals
+11.12 Statement and operand traversals
 ======================================
 
 There are two functions available for walking statements and sequences:
@@ -14719,16 +14826,21 @@ The simplest RTL expressions are those that represent constant values.
      'const_true_rtx' and 'constm1_rtx' will point to the same object.
 
 '(const_double:M I0 I1 ...)'
-     Represents either a floating-point constant of mode M or an integer
-     constant too large to fit into 'HOST_BITS_PER_WIDE_INT' bits but
-     small enough to fit within twice that number of bits (GCC does not
-     provide a mechanism to represent even larger constants).  In the
-     latter case, M will be 'VOIDmode'.  For integral values constants
-     for modes with more bits than twice the number in 'HOST_WIDE_INT'
-     the implied high order bits of that constant are copies of the top
-     bit of 'CONST_DOUBLE_HIGH'.  Note however that integral values are
-     neither inherently signed nor inherently unsigned; where necessary,
-     signedness is determined by the rtl operation instead.
+     This represents either a floating-point constant of mode M or (on
+     older ports that do not define 'TARGET_SUPPORTS_WIDE_INT') an
+     integer constant too large to fit into 'HOST_BITS_PER_WIDE_INT'
+     bits but small enough to fit within twice that number of bits.  In
+     the latter case, M will be 'VOIDmode'.  For integral values
+     constants for modes with more bits than twice the number in
+     'HOST_WIDE_INT' the implied high order bits of that constant are
+     copies of the top bit of 'CONST_DOUBLE_HIGH'.  Note however that
+     integral values are neither inherently signed nor inherently
+     unsigned; where necessary, signedness is determined by the rtl
+     operation instead.
+
+     On more modern ports, 'CONST_DOUBLE' only represents floating point
+     values.  New ports define 'TARGET_SUPPORTS_WIDE_INT' to make this
+     designation.
 
      If M is 'VOIDmode', the bits of the value are stored in I0 and I1.
      I0 is customarily accessed with the macro 'CONST_DOUBLE_LOW' and I1
@@ -14742,6 +14854,32 @@ The simplest RTL expressions are those that represent constant values.
      to the precise bit pattern used by the target machine, use the
      macro 'REAL_VALUE_TO_TARGET_DOUBLE' and friends (*note Data
      Output::).
+
+'(const_wide_int:M NUNITS ELT0 ...)'
+     This contains an array of 'HOST_WIDE_INT's that is large enough to
+     hold any constant that can be represented on the target.  This form
+     of rtl is only used on targets that define
+     'TARGET_SUPPORTS_WIDE_INT' to be nonzero and then 'CONST_DOUBLE's
+     are only used to hold floating-point values.  If the target leaves
+     'TARGET_SUPPORTS_WIDE_INT' defined as 0, 'CONST_WIDE_INT's are not
+     used and 'CONST_DOUBLE's are as they were before.
+
+     The values are stored in a compressed format.  The higher-order 0s
+     or -1s are not represented if they are just the logical sign
+     extension of the number that is represented.
+
+'CONST_WIDE_INT_VEC (CODE)'
+     Returns the entire array of 'HOST_WIDE_INT's that are used to store
+     the value.  This macro should be rarely used.
+
+'CONST_WIDE_INT_NUNITS (CODE)'
+     The number of 'HOST_WIDE_INT's used to represent the number.  Note
+     that this generally is smaller than the number of 'HOST_WIDE_INT's
+     implied by the mode size.
+
+'CONST_WIDE_INT_NUNITS (CODE,I)'
+     Returns the 'i'th element of the array.  Element 0 is contains the
+     low order bits of the constant.
 
 '(const_fixed:M ...)'
      Represents a fixed-point constant of mode M.  The operand is a data
@@ -28893,7 +29031,7 @@ Registers are allocated in order.
      from using call-saved registers.  If a machine wants to ensure that
      IRA allocates registers in the order given by REG_ALLOC_ORDER even
      if some call-saved registers appear earlier than call-used ones,
-     this macro should be defined.
+     then define this macro as a C expression to nonzero.  Default is 0.
 
  -- Macro: IRA_HARD_REGNO_ADD_COST_MULTIPLIER (REGNO)
      In some case register allocation order is not enough for the
@@ -29913,6 +30051,7 @@ This describes the stack layout and calling conventions.
 * Profiling::
 * Tail Calls::
 * Stack Smashing Protection::
+* Miscellaneous Register Hooks::
 
 
 File: gccint.info,  Node: Frame Layout,  Next: Exception Handling,  Up: Stack and Calling
@@ -31665,6 +31804,13 @@ These macros will help you generate code for profiling.
      before the function prologue.  Normally, the profiling code comes
      after.
 
+ -- Target Hook: bool TARGET_KEEP_LEAF_WHEN_PROFILED (void)
+     This target hook returns true if the target wants the leaf flag for
+     the current function to stay true even if it calls mcount.  This
+     might make sense for targets using the leaf flag only to determine
+     whether a stack frame needs to be generated or not and for which
+     the call to mcount is generated before the function prologue.
+
 
 File: gccint.info,  Node: Tail Calls,  Next: Stack Smashing Protection,  Prev: Profiling,  Up: Stack and Calling
 
@@ -31707,7 +31853,7 @@ File: gccint.info,  Node: Tail Calls,  Next: Stack Smashing Protection,  Prev: P
      such check should be made.
 
 
-File: gccint.info,  Node: Stack Smashing Protection,  Prev: Tail Calls,  Up: Stack and Calling
+File: gccint.info,  Node: Stack Smashing Protection,  Next: Miscellaneous Register Hooks,  Prev: Tail Calls,  Up: Stack and Calling
 
 17.10.14 Stack smashing protection
 ----------------------------------
@@ -31739,6 +31885,24 @@ File: gccint.info,  Node: Stack Smashing Protection,  Prev: Tail Calls,  Up: Sta
      some configurations.  The default version of this hook returns
      false.  If REPORT is true, this function may issue a warning or
      error; if REPORT is false, it must simply return a value
+
+
+File: gccint.info,  Node: Miscellaneous Register Hooks,  Prev: Stack Smashing Protection,  Up: Stack and Calling
+
+17.10.15 Miscellaneous register hooks
+-------------------------------------
+
+ -- Target Hook: bool TARGET_CALL_FUSAGE_CONTAINS_NON_CALLEE_CLOBBERS
+     set to true if all the calls in the current function contain
+     clobbers in CALL_INSN_FUNCTION_USAGE for the registers that are
+     clobbered by the call rather than by the callee, and are not
+     already set or clobbered in the call pattern.  Examples of such
+     registers are registers used in PLTs and stubs, and temporary
+     registers used in the call instruction but not present in the rtl
+     pattern.  Another way to formulate it is the registers not present
+     in the rtl pattern that are clobbered by the call assuming the
+     callee does not clobber any register.  The default version of this
+     hook is set to false.
 
 
 File: gccint.info,  Node: Varargs,  Next: Trampolines,  Prev: Stack and Calling,  Up: Target Macros
@@ -36175,18 +36339,6 @@ more than once, so operands must not have side effects.
  -- Macro: REAL_VALUE_TYPE REAL_VALUE_ABS (REAL_VALUE_TYPE X)
      Returns the absolute value of X.
 
- -- Macro: void REAL_VALUE_TO_INT (HOST_WIDE_INT LOW, HOST_WIDE_INT
-          HIGH, REAL_VALUE_TYPE X)
-     Converts a floating point value X into a double-precision integer
-     which is then stored into LOW and HIGH.  If the value is not
-     integral, it is truncated.
-
- -- Macro: void REAL_VALUE_FROM_INT (REAL_VALUE_TYPE X, HOST_WIDE_INT
-          LOW, HOST_WIDE_INT HIGH, enum machine_mode MODE)
-     Converts a double-precision integer found in LOW and HIGH, into a
-     floating point value which is then stored into X.  The value is
-     truncated to fit in mode MODE.
-
 
 File: gccint.info,  Node: Mode Switching,  Next: Target Attributes,  Prev: Floating Point,  Up: Target Macros
 
@@ -36212,9 +36364,10 @@ The following macros control mode switching optimizations:
      at run time which entities actually need it.
      'OPTIMIZE_MODE_SWITCHING' should return nonzero for any ENTITY that
      needs mode-switching.  If you define this macro, you also have to
-     define 'NUM_MODES_FOR_MODE_SWITCHING', 'MODE_NEEDED',
-     'MODE_PRIORITY_TO_MODE' and 'EMIT_MODE_SET'.  'MODE_AFTER',
-     'MODE_ENTRY', and 'MODE_EXIT' are optional.
+     define 'NUM_MODES_FOR_MODE_SWITCHING', 'TARGET_MODE_NEEDED',
+     'TARGET_MODE_PRIORITY' and 'TARGET_MODE_EMIT'.
+     'TARGET_MODE_AFTER', 'TARGET_MODE_ENTRY', and 'TARGET_MODE_EXIT'
+     are optional.
 
  -- Macro: NUM_MODES_FOR_MODE_SWITCHING
      If you define 'OPTIMIZE_MODE_SWITCHING', you have to define this as
@@ -36228,45 +36381,48 @@ The following macros control mode switching optimizations:
      represented as numbers 0 ... N - 1.  N is used to specify that no
      mode switch is needed / supplied.
 
- -- Macro: MODE_NEEDED (ENTITY, INSN)
+ -- Target Hook: void TARGET_MODE_EMIT (int ENTITY, int MODE,
+          HARD_REG_SET REGS_LIVE)
+     Generate one or more insns to set ENTITY to MODE.  HARD_REG_LIVE is
+     the set of hard registers live at the point where the insn(s) are
+     to be inserted.  Sets of a lower numbered entity will be emitted
+     before sets of a higher numbered entity to a mode of the same or
+     lower priority.
+
+ -- Target Hook: int TARGET_MODE_NEEDED (int ENTITY, rtx INSN)
      ENTITY is an integer specifying a mode-switched entity.  If
      'OPTIMIZE_MODE_SWITCHING' is defined, you must define this macro to
      return an integer value not larger than the corresponding element
      in 'NUM_MODES_FOR_MODE_SWITCHING', to denote the mode that ENTITY
      must be switched into prior to the execution of INSN.
 
- -- Macro: MODE_AFTER (ENTITY, MODE, INSN)
+ -- Target Hook: int TARGET_MODE_AFTER (int ENTITY, int MODE, rtx INSN)
      ENTITY is an integer specifying a mode-switched entity.  If this
      macro is defined, it is evaluated for every INSN during mode
      switching.  It determines the mode that an insn results in (if
      different from the incoming mode).
 
- -- Macro: MODE_ENTRY (ENTITY)
+ -- Target Hook: int TARGET_MODE_ENTRY (int ENTITY)
      If this macro is defined, it is evaluated for every ENTITY that
      needs mode switching.  It should evaluate to an integer, which is a
      mode that ENTITY is assumed to be switched to at function entry.
-     If 'MODE_ENTRY' is defined then 'MODE_EXIT' must be defined.
+     If 'TARGET_MODE_ENTRY' is defined then 'TARGET_MODE_EXIT' must be
+     defined.
 
- -- Macro: MODE_EXIT (ENTITY)
+ -- Target Hook: int TARGET_MODE_EXIT (int ENTITY)
      If this macro is defined, it is evaluated for every ENTITY that
      needs mode switching.  It should evaluate to an integer, which is a
      mode that ENTITY is assumed to be switched to at function exit.  If
-     'MODE_EXIT' is defined then 'MODE_ENTRY' must be defined.
+     'TARGET_MODE_EXIT' is defined then 'TARGET_MODE_ENTRY' must be
+     defined.
 
- -- Macro: MODE_PRIORITY_TO_MODE (ENTITY, N)
+ -- Target Hook: int TARGET_MODE_PRIORITY (int ENTITY, int N)
      This macro specifies the order in which modes for ENTITY are
      processed.  0 is the highest priority,
      'NUM_MODES_FOR_MODE_SWITCHING[ENTITY] - 1' the lowest.  The value
      of the macro should be an integer designating a mode for ENTITY.
-     For any fixed ENTITY, 'mode_priority_to_mode' (ENTITY, N) shall be
-     a bijection in 0 ... 'num_modes_for_mode_switching[ENTITY] - 1'.
-
- -- Macro: EMIT_MODE_SET (ENTITY, MODE, HARD_REGS_LIVE)
-     Generate one or more insns to set ENTITY to MODE.  HARD_REG_LIVE is
-     the set of hard registers live at the point where the insn(s) are
-     to be inserted.  Sets of a lower numbered entity will be emitted
-     before sets of a higher numbered entity to a mode of the same or
-     lower priority.
+     For any fixed ENTITY, 'mode_priority' (ENTITY, N) shall be a
+     bijection in 0 ... 'num_modes_for_mode_switching[ENTITY] - 1'.
 
 
 File: gccint.info,  Node: Target Attributes,  Next: Emulated TLS,  Prev: Mode Switching,  Up: Target Macros
@@ -36532,9 +36688,6 @@ again later in the function.
  Another note: according to the MIPS spec, coprocessor 1 (if present) is
 the FPU.  One accesses COP1 registers through standard mips
 floating-point support; they are not included in this mechanism.
-
- There is one macro used in defining the MIPS coprocessor interface
-which you may want to override in subtargets; it is described below.
 
 
 File: gccint.info,  Node: PCH Target,  Next: C++ ABI,  Prev: MIPS Coprocessors,  Up: Target Macros
@@ -37441,9 +37594,9 @@ Here are several miscellaneous parameters.
      versions.  ARG points to the callgraph node of the dispatcher
      function whose body must be generated.
 
- -- Target Hook: bool TARGET_CAN_USE_DOLOOP_P (double_int ITERATIONS,
-          double_int ITERATIONS_MAX, unsigned int LOOP_DEPTH, bool
-          ENTERED_AT_TOP)
+ -- Target Hook: bool TARGET_CAN_USE_DOLOOP_P (const widest_int
+          &ITERATIONS, const widest_int &ITERATIONS_MAX, unsigned int
+          LOOP_DEPTH, bool ENTERED_AT_TOP)
      Return true if it is possible to use low-overhead loops
      ('doloop_end' and 'doloop_begin') for a particular loop.
      ITERATIONS gives the exact number of iterations, or 0 if not known.
@@ -37849,6 +38002,47 @@ Here are several miscellaneous parameters.
      implementation leaves all three expressions as 'NULL_TREE'.  The
      '__atomic_feraiseexcept' function from 'libatomic' may be of use as
      part of the code generated in '*UPDATE'.
+
+ -- Macro: TARGET_SUPPORTS_WIDE_INT
+
+     On older ports, large integers are stored in 'CONST_DOUBLE' rtl
+     objects.  Newer ports define 'TARGET_SUPPORTS_WIDE_INT' to be
+     nonzero to indicate that large integers are stored in
+     'CONST_WIDE_INT' rtl objects.  The 'CONST_WIDE_INT' allows very
+     large integer constants to be represented.  'CONST_DOUBLE' is
+     limited to twice the size of the host's 'HOST_WIDE_INT'
+     representation.
+
+     Converting a port mostly requires looking for the places where
+     'CONST_DOUBLE's are used with 'VOIDmode' and replacing that code
+     with code that accesses 'CONST_WIDE_INT's.  '"grep -i
+     const_double"' at the port level gets you to 95% of the changes
+     that need to be made.  There are a few places that require a deeper
+     look.
+
+        * There is no equivalent to 'hval' and 'lval' for
+          'CONST_WIDE_INT's.  This would be difficult to express in the
+          md language since there are a variable number of elements.
+
+          Most ports only check that 'hval' is either 0 or -1 to see if
+          the value is small.  As mentioned above, this will no longer
+          be necessary since small constants are always 'CONST_INT'.  Of
+          course there are still a few exceptions, the alpha's
+          constraint used by the zap instruction certainly requires
+          careful examination by C code.  However, all the current code
+          does is pass the hval and lval to C code, so evolving the c
+          code to look at the 'CONST_WIDE_INT' is not really a large
+          change.
+
+        * Because there is no standard template that ports use to
+          materialize constants, there is likely to be some futzing that
+          is unique to each port in this code.
+
+        * The rtx costs may have to be adjusted to properly account for
+          larger constants that are represented as 'CONST_WIDE_INT'.
+
+     All and all it does not take long to convert ports that the
+     maintainer is familiar with.
 
 
 File: gccint.info,  Node: Host Config,  Next: Fragments,  Prev: Target Macros,  Up: Top
@@ -38750,31 +38944,6 @@ helpful when you have a complicated expression.
      values of pointers.  'reorder' functions can be expensive.  When
      possible, it is better to depend on properties of the data, like an
      ID number or the hash of a string instead.
-
-'variable_size'
-
-     The type machinery expects the types to be of constant size.  When
-     this is not true, for example, with structs that have array fields
-     or unions, the type machinery cannot tell how many bytes need to be
-     allocated at each allocation.  The 'variable_size' is used to mark
-     such types.  The type machinery then provides allocators that take
-     a parameter indicating an exact size of object being allocated.
-     Note that the size must be provided in bytes whereas the 'length'
-     option works with array lengths in number of elements.
-
-     For example,
-          struct GTY((variable_size)) sorted_fields_type {
-            int len;
-            tree GTY((length ("%h.len"))) elts[1];
-          };
-
-     Then the objects of 'struct sorted_fields_type' are allocated in GC
-     memory as follows:
-            field_vec = ggc_alloc_sorted_fields_type (size);
-
-     If FIELD_VEC->ELTS stores N elements, then SIZE could be calculated
-     as follows:
-            size_t size = sizeof (struct sorted_fields_type) + n * sizeof (tree);
 
 'atomic'
 
@@ -46134,7 +46303,7 @@ Concept Index
 * asterisk in template:                  Output Statement.   (line   29)
 * AS_NEEDS_DASH_FOR_PIPED_INPUT:         Driver.             (line   88)
 * 'atan2M3' instruction pattern:         Standard Names.     (line  624)
-* atomic:                                GTY Options.        (line  270)
+* atomic:                                GTY Options.        (line  245)
 * 'atomic_addMODE' instruction pattern:  Standard Names.     (line 1788)
 * 'atomic_add_fetchMODE' instruction pattern: Standard Names.
                                                              (line 1819)
@@ -46454,13 +46623,13 @@ Concept Index
 * configure terms:                       Configure Terms.    (line    6)
 * CONJ_EXPR:                             Unary and Binary Expressions.
                                                              (line    6)
-* const:                                 Constants.          (line  109)
+* const:                                 Constants.          (line  140)
 * const0_rtx:                            Constants.          (line   21)
-* CONST0_RTX:                            Constants.          (line  129)
+* CONST0_RTX:                            Constants.          (line  160)
 * const1_rtx:                            Constants.          (line   21)
-* CONST1_RTX:                            Constants.          (line  129)
+* CONST1_RTX:                            Constants.          (line  160)
 * const2_rtx:                            Constants.          (line   21)
-* CONST2_RTX:                            Constants.          (line  129)
+* CONST2_RTX:                            Constants.          (line  160)
 * constant attributes:                   Constant Attributes.
                                                              (line    6)
 * constant definitions:                  Constant Definitions.
@@ -46493,12 +46662,12 @@ Concept Index
 * CONST_DECL:                            Declarations.       (line    6)
 * const_double:                          Constants.          (line   37)
 * 'const_double', RTL sharing:           Sharing.            (line   29)
-* CONST_DOUBLE_LOW:                      Constants.          (line   49)
+* CONST_DOUBLE_LOW:                      Constants.          (line   54)
 * CONST_DOUBLE_OK_FOR_CONSTRAINT_P:      Old Constraints.    (line   66)
 * CONST_DOUBLE_OK_FOR_LETTER_P:          Old Constraints.    (line   51)
 * const_double_operand:                  Machine-Independent Predicates.
                                                              (line   20)
-* const_fixed:                           Constants.          (line   62)
+* const_fixed:                           Constants.          (line   93)
 * const_int:                             Constants.          (line    8)
 * 'const_int' and attribute tests:       Expressions.        (line   47)
 * 'const_int' and attributes:            Expressions.        (line   10)
@@ -46507,11 +46676,15 @@ Concept Index
                                                              (line   15)
 * CONST_OK_FOR_CONSTRAINT_P:             Old Constraints.    (line   46)
 * CONST_OK_FOR_LETTER_P:                 Old Constraints.    (line   38)
-* const_string:                          Constants.          (line   81)
+* const_string:                          Constants.          (line  112)
 * 'const_string' and attributes:         Expressions.        (line   20)
 * const_true_rtx:                        Constants.          (line   31)
-* const_vector:                          Constants.          (line   69)
+* const_vector:                          Constants.          (line  100)
 * 'const_vector', RTL sharing:           Sharing.            (line   32)
+* CONST_WIDE_INT:                        Constants.          (line   67)
+* CONST_WIDE_INT_ELT:                    Constants.          (line   89)
+* CONST_WIDE_INT_NUNITS:                 Constants.          (line   84)
+* CONST_WIDE_INT_VEC:                    Constants.          (line   80)
 * container:                             Containers.         (line    6)
 * CONTINUE_STMT:                         Statements for C++. (line    6)
 * contributors:                          Contributors.       (line    6)
@@ -46852,7 +47025,6 @@ Concept Index
 * ELSE_CLAUSE:                           Statements for C++. (line    6)
 * Embedded C:                            Fixed-point fractional library routines.
                                                              (line    6)
-* EMIT_MODE_SET:                         Mode Switching.     (line   74)
 * Empty Statements:                      Empty Statements.   (line    6)
 * EMPTY_CLASS_EXPR:                      Statements for C++. (line    6)
 * EMPTY_FIELD_BOUNDARY:                  Storage Layout.     (line  306)
@@ -47106,6 +47278,8 @@ Concept Index
 * GIMPLE <1>:                            Gimplification pass.
                                                              (line    6)
 * GIMPLE <2>:                            GIMPLE.             (line    6)
+* GIMPLE class hierarchy:                Class hierarchy of GIMPLE statements.
+                                                             (line    6)
 * GIMPLE Exception Handling:             GIMPLE Exception Handling.
                                                              (line    6)
 * GIMPLE instruction set:                GIMPLE instruction set.
@@ -47641,7 +47815,7 @@ Concept Index
 * HAVE_PRE_MODIFY_REG:                   Addressing Modes.   (line   22)
 * HCmode:                                Machine Modes.      (line  199)
 * HFmode:                                Machine Modes.      (line   61)
-* high:                                  Constants.          (line  119)
+* high:                                  Constants.          (line  150)
 * HImode:                                Machine Modes.      (line   29)
 * 'HImode', in 'insn':                   Insns.              (line  268)
 * HONOR_REG_ALLOC_ORDER:                 Allocation Order.   (line   36)
@@ -47849,7 +48023,7 @@ Concept Index
 * LABEL_KIND:                            Insns.              (line  146)
 * LABEL_NUSES:                           Insns.              (line  142)
 * LABEL_PRESERVE_P:                      Flags.              (line   59)
-* label_ref:                             Constants.          (line   96)
+* label_ref:                             Constants.          (line  127)
 * 'label_ref' and '/v':                  Flags.              (line   65)
 * 'label_ref', RTL sharing:              Sharing.            (line   35)
 * LABEL_REF_NONLOCAL_P:                  Flags.              (line   65)
@@ -48072,6 +48246,8 @@ Concept Index
                                                              (line    6)
 * MIN_UNITS_PER_WORD:                    Storage Layout.     (line   64)
 * MIPS coprocessor-definition macros:    MIPS Coprocessors.  (line    6)
+* miscellaneous register hooks:          Miscellaneous Register Hooks.
+                                                             (line    6)
 * mnemonic attribute:                    Mnemonic Attribute. (line    6)
 * mod:                                   Arithmetic.         (line  137)
 * 'mod' and attributes:                  Expressions.        (line   83)
@@ -48081,7 +48257,6 @@ Concept Index
 * MODES_TIEABLE_P:                       Values in Registers.
                                                              (line  127)
 * MODE_ACCUM:                            Machine Modes.      (line  251)
-* MODE_AFTER:                            Mode Switching.     (line   48)
 * MODE_BASE_REG_CLASS:                   Register Classes.   (line  116)
 * MODE_BASE_REG_REG_CLASS:               Register Classes.   (line  122)
 * MODE_CC:                               Machine Modes.      (line  270)
@@ -48091,15 +48266,11 @@ Concept Index
 * MODE_COMPLEX_FLOAT:                    Machine Modes.      (line  262)
 * MODE_COMPLEX_INT:                      Machine Modes.      (line  259)
 * MODE_DECIMAL_FLOAT:                    Machine Modes.      (line  239)
-* MODE_ENTRY:                            Mode Switching.     (line   54)
-* MODE_EXIT:                             Mode Switching.     (line   60)
 * MODE_FLOAT:                            Machine Modes.      (line  235)
 * MODE_FRACT:                            Machine Modes.      (line  243)
 * MODE_FUNCTION:                         Machine Modes.      (line  266)
 * MODE_INT:                              Machine Modes.      (line  227)
-* MODE_NEEDED:                           Mode Switching.     (line   41)
 * MODE_PARTIAL_INT:                      Machine Modes.      (line  231)
-* MODE_PRIORITY_TO_MODE:                 Mode Switching.     (line   66)
 * MODE_RANDOM:                           Machine Modes.      (line  275)
 * MODE_UACCUM:                           Machine Modes.      (line  255)
 * MODE_UFRACT:                           Machine Modes.      (line  247)
@@ -48235,7 +48406,7 @@ Concept Index
 * Number of iterations analysis:         Number of iterations.
                                                              (line    6)
 * NUM_MACHINE_MODES:                     Machine Modes.      (line  288)
-* NUM_MODES_FOR_MODE_SWITCHING:          Mode Switching.     (line   29)
+* NUM_MODES_FOR_MODE_SWITCHING:          Mode Switching.     (line   30)
 * N_REG_CLASSES:                         Register Classes.   (line   81)
 * 'o' in constraint:                     Simple Constraints. (line   23)
 * OBJC_GEN_METHOD_LABEL:                 Label Output.       (line  447)
@@ -48494,12 +48665,10 @@ Concept Index
 * REAL_VALUE_ABS:                        Floating Point.     (line   81)
 * REAL_VALUE_ATOF:                       Floating Point.     (line   48)
 * REAL_VALUE_FIX:                        Floating Point.     (line   40)
-* REAL_VALUE_FROM_INT:                   Floating Point.     (line   90)
 * REAL_VALUE_ISINF:                      Floating Point.     (line   58)
 * REAL_VALUE_ISNAN:                      Floating Point.     (line   61)
 * REAL_VALUE_NEGATE:                     Floating Point.     (line   78)
 * REAL_VALUE_NEGATIVE:                   Floating Point.     (line   55)
-* REAL_VALUE_TO_INT:                     Floating Point.     (line   84)
 * REAL_VALUE_TO_TARGET_DECIMAL128:       Data Output.        (line  143)
 * REAL_VALUE_TO_TARGET_DECIMAL32:        Data Output.        (line  141)
 * REAL_VALUE_TO_TARGET_DECIMAL64:        Data Output.        (line  142)
@@ -48815,7 +48984,7 @@ Concept Index
 * 'smulM3_highpart' instruction pattern: Standard Names.     (line  441)
 * soft float library:                    Soft float library routines.
                                                              (line    6)
-* special:                               GTY Options.        (line  311)
+* special:                               GTY Options.        (line  286)
 * special predicates:                    Predicates.         (line   31)
 * SPECS:                                 Target Fragment.    (line  191)
 * speed of instructions:                 Costs.              (line    6)
@@ -48952,7 +49121,7 @@ Concept Index
 * SYMBOL_FLAG_LOCAL:                     Special Accessors.  (line   95)
 * SYMBOL_FLAG_SMALL:                     Special Accessors.  (line  104)
 * SYMBOL_FLAG_TLS_SHIFT:                 Special Accessors.  (line  108)
-* symbol_ref:                            Constants.          (line   86)
+* symbol_ref:                            Constants.          (line  117)
 * 'symbol_ref' and '/f':                 Flags.              (line  165)
 * 'symbol_ref' and '/i':                 Flags.              (line  202)
 * 'symbol_ref' and '/u':                 Flags.              (line   10)
@@ -49123,6 +49292,8 @@ Concept Index
 * TARGET_BUILTIN_RECIPROCAL:             Addressing Modes.   (line  261)
 * TARGET_BUILTIN_SETJMP_FRAME_VALUE:     Frame Layout.       (line  107)
 * TARGET_CALLEE_COPIES:                  Register Arguments. (line  113)
+* TARGET_CALL_FUSAGE_CONTAINS_NON_CALLEE_CLOBBERS: Miscellaneous Register Hooks.
+                                                             (line    6)
 * TARGET_CANNOT_FORCE_CONST_MEM:         Addressing Modes.   (line  234)
 * TARGET_CANNOT_MODIFY_JUMPS_P:          Misc.               (line  811)
 * TARGET_CANONICALIZE_COMPARISON:        MODE_CC Condition Codes.
@@ -49264,6 +49435,7 @@ Concept Index
 * TARGET_INVALID_UNARY_OP:               Misc.               (line  943)
 * TARGET_INVALID_WITHIN_DOLOOP:          Misc.               (line  692)
 * TARGET_IN_SMALL_DATA_P:                Sections.           (line  293)
+* TARGET_KEEP_LEAF_WHEN_PROFILED:        Profiling.          (line   39)
 * TARGET_LEGITIMATE_ADDRESS_P:           Addressing Modes.   (line   48)
 * TARGET_LEGITIMATE_COMBINED_INSN:       Misc.               (line  706)
 * TARGET_LEGITIMATE_CONSTANT_P:          Addressing Modes.   (line  213)
@@ -49292,7 +49464,13 @@ Concept Index
 * TARGET_MERGE_TYPE_ATTRIBUTES:          Target Attributes.  (line   37)
 * TARGET_MIN_ANCHOR_OFFSET:              Anchored Addresses. (line   32)
 * TARGET_MIN_DIVISIONS_FOR_RECIP_MUL:    Misc.               (line   90)
+* TARGET_MODE_AFTER:                     Mode Switching.     (line   57)
 * TARGET_MODE_DEPENDENT_ADDRESS_P:       Addressing Modes.   (line  196)
+* TARGET_MODE_EMIT:                      Mode Switching.     (line   42)
+* TARGET_MODE_ENTRY:                     Mode Switching.     (line   63)
+* TARGET_MODE_EXIT:                      Mode Switching.     (line   70)
+* TARGET_MODE_NEEDED:                    Mode Switching.     (line   50)
+* TARGET_MODE_PRIORITY:                  Mode Switching.     (line   77)
 * TARGET_MODE_REP_EXTENDED:              Misc.               (line  175)
 * TARGET_MS_BITFIELD_LAYOUT_P:           Storage Layout.     (line  493)
 * TARGET_MUST_PASS_IN_STACK:             Register Arguments. (line   58)
@@ -49421,6 +49599,7 @@ Concept Index
 * TARGET_SUPPORTS_SPLIT_STACK:           Stack Smashing Protection.
                                                              (line   25)
 * TARGET_SUPPORTS_WEAK:                  Label Output.       (line  237)
+* TARGET_SUPPORTS_WIDE_INT:              Misc.               (line 1084)
 * TARGET_TERMINATE_DW2_EH_FRAME_INFO:    Exception Region Output.
                                                              (line   98)
 * TARGET_TRAMPOLINE_ADJUST_ADDRESS:      Trampolines.        (line   74)
@@ -49502,13 +49681,19 @@ Concept Index
 * TREE_CHAIN:                            Macros and Functions.
                                                              (line    6)
 * TREE_CODE:                             Tree overview.      (line    6)
-* tree_int_cst_equal:                    Constant expressions.
+* tree_fits_shwi_p:                      Constant expressions.
                                                              (line    6)
-* TREE_INT_CST_HIGH:                     Constant expressions.
+* tree_fits_uhwi_p:                      Constant expressions.
+                                                             (line    6)
+* TREE_INT_CST_ELT:                      Constant expressions.
+                                                             (line    6)
+* tree_int_cst_equal:                    Constant expressions.
                                                              (line    6)
 * TREE_INT_CST_LOW:                      Constant expressions.
                                                              (line    6)
 * tree_int_cst_lt:                       Constant expressions.
+                                                             (line    6)
+* TREE_INT_CST_NUNITS:                   Constant expressions.
                                                              (line    6)
 * TREE_LIST:                             Containers.         (line    6)
 * TREE_OPERAND:                          Expression trees.   (line    6)
@@ -49528,6 +49713,10 @@ Concept Index
                                                              (line    6)
 * TREE_THIS_VOLATILE:                    Function Properties.
                                                              (line   34)
+* tree_to_shwi:                          Constant expressions.
+                                                             (line    6)
+* tree_to_uhwi:                          Constant expressions.
+                                                             (line    6)
 * TREE_TYPE:                             Macros and Functions.
                                                              (line    6)
 * TREE_TYPE <1>:                         Types.              (line    6)
@@ -49735,7 +49924,7 @@ Concept Index
 * use:                                   Side Effects.       (line  168)
 * used:                                  Flags.              (line  314)
 * 'used', in 'symbol_ref':               Flags.              (line  197)
-* user:                                  GTY Options.        (line  318)
+* user:                                  GTY Options.        (line  293)
 * user gc:                               User GC.            (line    6)
 * USER_LABEL_PREFIX:                     Instruction Output. (line  152)
 * USE_C_ALLOCA:                          Host Misc.          (line   19)
@@ -49777,7 +49966,6 @@ Concept Index
 * variable:                              Declarations.       (line    6)
 * Variable Location Debug Information in RTL: Debug Information.
                                                              (line    6)
-* variable_size:                         GTY Options.        (line  245)
 * VAR_DECL:                              Declarations.       (line    6)
 * var_location:                          Debug Information.  (line   14)
 * 'vashlM3' instruction pattern:         Standard Names.     (line  530)
@@ -49985,337 +50173,339 @@ Ref: arm_neon_ok223939
 Ref: arm_neonv2_ok224097
 Ref: arm_neon_fp16_ok224269
 Ref: arm_vfp3_ok224709
-Node: Add Options234208
-Node: Require Support235525
-Node: Final Actions238032
-Node: Ada Tests243197
-Node: C Tests244528
-Node: libgcj Tests248923
-Node: LTO Testing250050
-Node: gcov Testing251698
-Node: profopt Testing254688
-Node: compat Testing256403
-Node: Torture Tests260643
-Node: Options262258
-Node: Option file format262699
-Node: Option properties269688
-Node: Passes282715
-Node: Parsing pass283605
-Node: Cilk Plus Transformation287138
-Node: Gimplification pass290520
-Node: Pass manager292365
-Node: Tree SSA passes294211
-Node: RTL passes315278
-Node: Optimization info327642
-Node: Dump setup328461
-Node: Optimization groups329590
-Node: Dump files and streams330479
-Node: Dump output verbosity331677
-Node: Dump types332733
-Node: Dump examples334223
-Node: GENERIC335569
-Node: Deficiencies337445
-Node: Tree overview337686
-Node: Macros and Functions341810
-Node: Identifiers342635
-Node: Containers344244
-Node: Types345401
-Node: Declarations357475
-Node: Working with declarations357970
-Node: Internal structure363574
-Node: Current structure hierarchy363958
-Node: Adding new DECL node types366051
-Node: Attributes370335
-Node: Expression trees371579
-Node: Constant expressions373333
-Node: Storage References377546
-Node: Unary and Binary Expressions381065
-Node: Vectors401213
-Node: Statements405945
-Node: Basic Statements406465
-Node: Blocks410972
-Node: Statement Sequences412376
-Node: Empty Statements412709
-Node: Jumps413283
-Node: Cleanups413936
-Node: OpenMP415703
-Node: Functions421547
-Node: Function Basics422018
-Node: Function Properties425702
-Node: Language-dependent trees428483
-Node: C and C++ Trees429370
-Node: Types for C++432274
-Node: Namespaces437244
-Node: Classes440350
-Node: Functions for C++445427
-Node: Statements for C++451678
-Node: C++ Expressions460451
-Node: Java Trees461956
-Node: GIMPLE462069
-Node: Tuple representation465693
-Node: GIMPLE instruction set473997
-Node: GIMPLE Exception Handling475613
-Node: Temporaries477525
-Ref: Temporaries-Footnote-1478843
-Node: Operands478908
-Node: Compound Expressions479669
-Node: Compound Lvalues479903
-Node: Conditional Expressions480665
-Node: Logical Operators481324
-Node: Manipulating GIMPLE statements488188
-Node: Tuple specific accessors494124
-Node: 'GIMPLE_ASM'494943
-Node: 'GIMPLE_ASSIGN'497460
-Node: 'GIMPLE_BIND'501572
-Node: 'GIMPLE_CALL'503380
-Node: 'GIMPLE_CATCH'507651
-Node: 'GIMPLE_COND'508795
-Node: 'GIMPLE_DEBUG'511583
-Node: 'GIMPLE_EH_FILTER'514961
-Node: 'GIMPLE_LABEL'516449
-Node: 'GIMPLE_NOP'517424
-Node: 'GIMPLE_OMP_ATOMIC_LOAD'517793
-Node: 'GIMPLE_OMP_ATOMIC_STORE'518703
-Node: 'GIMPLE_OMP_CONTINUE'519343
-Node: 'GIMPLE_OMP_CRITICAL'520693
-Node: 'GIMPLE_OMP_FOR'521631
-Node: 'GIMPLE_OMP_MASTER'525146
-Node: 'GIMPLE_OMP_ORDERED'525530
-Node: 'GIMPLE_OMP_PARALLEL'525930
-Node: 'GIMPLE_OMP_RETURN'528563
-Node: 'GIMPLE_OMP_SECTION'529214
-Node: 'GIMPLE_OMP_SECTIONS'529880
-Node: 'GIMPLE_OMP_SINGLE'531487
-Node: 'GIMPLE_PHI'532425
-Node: 'GIMPLE_RESX'533712
-Node: 'GIMPLE_RETURN'534431
-Node: 'GIMPLE_SWITCH'534999
-Node: 'GIMPLE_TRY'536801
-Node: 'GIMPLE_WITH_CLEANUP_EXPR'538592
-Node: GIMPLE sequences539475
-Node: Sequence iterators542681
-Node: Adding a new GIMPLE statement code551136
-Node: Statement and operand traversals552412
-Node: Tree SSA555004
-Node: Annotations556792
-Node: SSA Operands557197
-Node: SSA571271
-Node: Alias analysis582303
-Node: Memory model586077
-Node: RTL587436
-Node: RTL Objects589624
-Node: RTL Classes593498
-Node: Accessors598495
-Node: Special Accessors600889
-Node: Flags606676
-Node: Machine Modes621440
-Node: Constants634728
-Node: Regs and Memory641456
-Node: Arithmetic659344
-Node: Comparisons669426
-Node: Bit-Fields673718
-Node: Vector Operations675270
-Node: Conversions677151
-Node: RTL Declarations681649
-Node: Side Effects682470
-Node: Incdec699480
-Node: Assembler702816
-Node: Debug Information704361
-Node: Insns705558
-Node: Calls731979
-Node: Sharing734572
-Node: Reading RTL737683
-Node: Control Flow738674
-Node: Basic Blocks740443
-Node: Edges745732
-Node: Profile information754361
-Node: Maintaining the CFG759045
-Node: Liveness information764906
-Node: Loop Analysis and Representation767032
-Node: Loop representation768142
-Node: Loop querying775705
-Node: Loop manipulation778521
-Node: LCSSA780882
-Node: Scalar evolutions782951
-Node: loop-iv786195
-Node: Number of iterations788117
-Node: Dependency analysis790923
-Node: Omega797287
-Node: Machine Desc798863
-Node: Overview801426
-Node: Patterns803466
-Node: Example806904
-Node: RTL Template808338
-Node: Output Template818993
-Node: Output Statement822956
-Node: Predicates827295
-Node: Machine-Independent Predicates830213
-Node: Defining Predicates835157
-Node: Constraints841120
-Node: Simple Constraints842602
-Node: Multi-Alternative855442
-Node: Class Preferences858283
-Node: Modifiers859175
-Node: Machine Constraints863421
-Node: Disable Insn Alternatives921589
-Node: Define Constraints924493
-Node: C Constraint Interface931278
-Node: Standard Names934930
-Ref: shift patterns958078
-Ref: prologue instruction pattern1002835
-Ref: window_save instruction pattern1003328
-Ref: epilogue instruction pattern1003605
-Node: Pattern Ordering1021191
-Node: Dependent Patterns1022427
-Node: Jump Patterns1024047
-Ref: Jump Patterns-Footnote-11026194
-Node: Looping Patterns1026242
-Node: Insn Canonicalizations1030971
-Node: Expander Definitions1035556
-Node: Insn Splitting1043770
-Node: Including Patterns1053373
-Node: Peephole Definitions1055157
-Node: define_peephole1056410
-Node: define_peephole21062740
-Node: Insn Attributes1065806
-Node: Defining Attributes1066988
-Ref: define_enum_attr1070481
-Node: Expressions1071517
-Node: Tagging Insns1078267
-Node: Attr Example1082620
-Node: Insn Lengths1084993
-Node: Constant Attributes1088052
-Node: Mnemonic Attribute1089228
-Node: Delay Slots1090747
-Node: Processor pipeline description1093970
-Ref: Processor pipeline description-Footnote-11112788
-Node: Conditional Execution1113112
-Node: Define Subst1116595
-Node: Define Subst Example1118631
-Node: Define Subst Pattern Matching1121625
-Node: Define Subst Output Template1122851
-Node: Constant Definitions1124921
-Ref: define_enum1128703
-Node: Iterators1129191
-Node: Mode Iterators1129769
-Node: Defining Mode Iterators1130747
-Node: Substitutions1132241
-Node: Examples1134483
-Node: Code Iterators1135931
-Node: Int Iterators1138210
-Node: Subst Iterators1140656
-Node: Target Macros1142348
-Node: Target Structure1145436
-Node: Driver1147552
-Node: Run-time Target1166364
-Node: Per-Function Data1176075
-Node: Storage Layout1178839
-Node: Type Layout1205091
-Node: Registers1220414
-Node: Register Basics1221388
-Node: Allocation Order1226896
-Node: Values in Registers1229342
-Node: Leaf Functions1236820
-Node: Stack Registers1239679
-Node: Register Classes1240951
-Node: Old Constraints1271895
-Node: Stack and Calling1279035
-Node: Frame Layout1279569
-Node: Exception Handling1290445
-Node: Stack Checking1296657
-Node: Frame Registers1301471
-Node: Elimination1309730
-Node: Stack Arguments1313960
-Node: Register Arguments1320823
-Node: Scalar Return1341124
-Node: Aggregate Return1347211
-Node: Caller Saves1351422
-Node: Function Entry1352599
-Node: Profiling1363693
-Node: Tail Calls1365392
-Node: Stack Smashing Protection1367295
-Node: Varargs1368923
-Node: Trampolines1375610
-Node: Library Calls1381653
-Node: Addressing Modes1386337
-Node: Anchored Addresses1407305
-Node: Condition Code1409948
-Node: CC0 Condition Codes1412275
-Node: MODE_CC Condition Codes1415521
-Node: Costs1421973
-Node: Scheduling1438435
-Node: Sections1458393
-Node: PIC1474091
-Node: Assembler Format1476150
-Node: File Framework1477288
-Ref: TARGET_HAVE_SWITCHABLE_BSS_SECTIONS1484220
-Node: Data Output1487490
-Node: Uninitialized Data1495259
-Node: Label Output1500270
-Node: Initialization1523226
-Node: Macros for Initialization1529187
-Node: Instruction Output1535906
-Node: Dispatch Tables1546529
-Node: Exception Region Output1550913
-Node: Alignment Output1557591
-Node: Debugging Info1562170
-Node: All Debuggers1562840
-Node: DBX Options1565695
-Node: DBX Hooks1571133
-Node: File Names and DBX1572442
-Node: SDB and DWARF1574554
-Node: VMS Debug1580626
-Node: Floating Point1581213
-Node: Mode Switching1585689
-Node: Target Attributes1589825
-Node: Emulated TLS1598283
-Node: MIPS Coprocessors1601673
-Node: PCH Target1602970
-Node: C++ ABI1604812
-Node: Named Address Spaces1609606
-Node: Misc1614540
-Ref: TARGET_SHIFT_TRUNCATION_MASK1621282
-Node: Host Config1669784
-Node: Host Common1670852
-Node: Filesystem1673226
-Node: Host Misc1677341
-Node: Fragments1679790
-Node: Target Fragment1680985
-Node: Host Fragment1691613
-Node: Collect21691853
-Node: Header Dirs1694489
-Node: Type Information1695912
-Node: GTY Options1699188
-Node: Inheritance and GTY1713708
-Ref: Inheritance and GTY-Footnote-11715271
-Node: User GC1715541
-Node: GGC Roots1719280
-Node: Files1719993
-Node: Invoking the garbage collector1722700
-Node: Troubleshooting1724205
-Node: Plugins1725280
-Node: Plugins loading1726398
-Node: Plugin API1727268
-Node: Plugins pass1734931
-Node: Plugins GC1736902
-Node: Plugins description1738567
-Node: Plugins attr1739103
-Node: Plugins recording1741377
-Node: Plugins gate1742227
-Node: Plugins tracking1742818
-Node: Plugins building1743406
-Node: LTO1745196
-Node: LTO Overview1746057
-Node: LTO object file layout1751889
-Node: IPA1756519
-Node: WHOPR1765484
-Node: Internal flags1770173
-Node: Funding1771584
-Node: GNU Project1774068
-Node: Copying1774717
-Node: GNU Free Documentation License1812229
-Node: Contributors1837350
-Node: Option Index1875222
-Node: Concept Index1876099
+Node: Add Options234778
+Node: Require Support236095
+Node: Final Actions238602
+Node: Ada Tests243767
+Node: C Tests245098
+Node: libgcj Tests249493
+Node: LTO Testing250620
+Node: gcov Testing252268
+Node: profopt Testing255258
+Node: compat Testing256973
+Node: Torture Tests261213
+Node: Options262828
+Node: Option file format263269
+Node: Option properties270258
+Node: Passes283285
+Node: Parsing pass284175
+Node: Cilk Plus Transformation287708
+Node: Gimplification pass291090
+Node: Pass manager292935
+Node: Tree SSA passes294781
+Node: RTL passes315623
+Node: Optimization info327953
+Node: Dump setup328772
+Node: Optimization groups329901
+Node: Dump files and streams330790
+Node: Dump output verbosity331988
+Node: Dump types333044
+Node: Dump examples334534
+Node: GENERIC335880
+Node: Deficiencies337756
+Node: Tree overview337997
+Node: Macros and Functions342121
+Node: Identifiers342946
+Node: Containers344555
+Node: Types345712
+Node: Declarations357786
+Node: Working with declarations358281
+Node: Internal structure363885
+Node: Current structure hierarchy364269
+Node: Adding new DECL node types366362
+Node: Attributes370646
+Node: Expression trees371890
+Node: Constant expressions373644
+Node: Storage References376940
+Node: Unary and Binary Expressions380459
+Node: Vectors400607
+Node: Statements405339
+Node: Basic Statements405859
+Node: Blocks410366
+Node: Statement Sequences411770
+Node: Empty Statements412103
+Node: Jumps412677
+Node: Cleanups413330
+Node: OpenMP415097
+Node: Functions420941
+Node: Function Basics421412
+Node: Function Properties425096
+Node: Language-dependent trees427877
+Node: C and C++ Trees428764
+Node: Types for C++431668
+Node: Namespaces436638
+Node: Classes439744
+Node: Functions for C++444821
+Node: Statements for C++451072
+Node: C++ Expressions459845
+Node: Java Trees461350
+Node: GIMPLE461463
+Node: Tuple representation465128
+Node: Class hierarchy of GIMPLE statements472133
+Node: GIMPLE instruction set477213
+Node: GIMPLE Exception Handling478845
+Node: Temporaries480757
+Ref: Temporaries-Footnote-1482075
+Node: Operands482140
+Node: Compound Expressions482901
+Node: Compound Lvalues483135
+Node: Conditional Expressions483897
+Node: Logical Operators484556
+Node: Manipulating GIMPLE statements491420
+Node: Tuple specific accessors497356
+Node: 'GIMPLE_ASM'498175
+Node: 'GIMPLE_ASSIGN'500692
+Node: 'GIMPLE_BIND'504804
+Node: 'GIMPLE_CALL'506612
+Node: 'GIMPLE_CATCH'510883
+Node: 'GIMPLE_COND'512027
+Node: 'GIMPLE_DEBUG'514815
+Node: 'GIMPLE_EH_FILTER'518193
+Node: 'GIMPLE_LABEL'519681
+Node: 'GIMPLE_NOP'520656
+Node: 'GIMPLE_OMP_ATOMIC_LOAD'521025
+Node: 'GIMPLE_OMP_ATOMIC_STORE'521935
+Node: 'GIMPLE_OMP_CONTINUE'522575
+Node: 'GIMPLE_OMP_CRITICAL'523925
+Node: 'GIMPLE_OMP_FOR'524863
+Node: 'GIMPLE_OMP_MASTER'528378
+Node: 'GIMPLE_OMP_ORDERED'528762
+Node: 'GIMPLE_OMP_PARALLEL'529162
+Node: 'GIMPLE_OMP_RETURN'531795
+Node: 'GIMPLE_OMP_SECTION'532446
+Node: 'GIMPLE_OMP_SECTIONS'533112
+Node: 'GIMPLE_OMP_SINGLE'534719
+Node: 'GIMPLE_PHI'535657
+Node: 'GIMPLE_RESX'536944
+Node: 'GIMPLE_RETURN'537663
+Node: 'GIMPLE_SWITCH'538231
+Node: 'GIMPLE_TRY'540033
+Node: 'GIMPLE_WITH_CLEANUP_EXPR'541824
+Node: GIMPLE sequences542707
+Node: Sequence iterators545913
+Node: Adding a new GIMPLE statement code554370
+Node: Statement and operand traversals555646
+Node: Tree SSA558238
+Node: Annotations560026
+Node: SSA Operands560431
+Node: SSA574505
+Node: Alias analysis585537
+Node: Memory model589311
+Node: RTL590670
+Node: RTL Objects592858
+Node: RTL Classes596732
+Node: Accessors601729
+Node: Special Accessors604123
+Node: Flags609910
+Node: Machine Modes624674
+Node: Constants637962
+Node: Regs and Memory646049
+Node: Arithmetic663937
+Node: Comparisons674019
+Node: Bit-Fields678311
+Node: Vector Operations679863
+Node: Conversions681744
+Node: RTL Declarations686242
+Node: Side Effects687063
+Node: Incdec704073
+Node: Assembler707409
+Node: Debug Information708954
+Node: Insns710151
+Node: Calls736572
+Node: Sharing739165
+Node: Reading RTL742276
+Node: Control Flow743267
+Node: Basic Blocks745036
+Node: Edges750325
+Node: Profile information758954
+Node: Maintaining the CFG763638
+Node: Liveness information769499
+Node: Loop Analysis and Representation771625
+Node: Loop representation772735
+Node: Loop querying780298
+Node: Loop manipulation783114
+Node: LCSSA785475
+Node: Scalar evolutions787544
+Node: loop-iv790788
+Node: Number of iterations792710
+Node: Dependency analysis795516
+Node: Omega801880
+Node: Machine Desc803456
+Node: Overview806019
+Node: Patterns808059
+Node: Example811497
+Node: RTL Template812931
+Node: Output Template823586
+Node: Output Statement827549
+Node: Predicates831888
+Node: Machine-Independent Predicates834806
+Node: Defining Predicates839750
+Node: Constraints845713
+Node: Simple Constraints847195
+Node: Multi-Alternative860035
+Node: Class Preferences862876
+Node: Modifiers863768
+Node: Machine Constraints868014
+Node: Disable Insn Alternatives926182
+Node: Define Constraints929086
+Node: C Constraint Interface935871
+Node: Standard Names939523
+Ref: shift patterns962671
+Ref: prologue instruction pattern1007428
+Ref: window_save instruction pattern1007921
+Ref: epilogue instruction pattern1008198
+Node: Pattern Ordering1025784
+Node: Dependent Patterns1027020
+Node: Jump Patterns1028640
+Ref: Jump Patterns-Footnote-11030787
+Node: Looping Patterns1030835
+Node: Insn Canonicalizations1035564
+Node: Expander Definitions1040149
+Node: Insn Splitting1048363
+Node: Including Patterns1057966
+Node: Peephole Definitions1059750
+Node: define_peephole1061003
+Node: define_peephole21067333
+Node: Insn Attributes1070399
+Node: Defining Attributes1071581
+Ref: define_enum_attr1075074
+Node: Expressions1076110
+Node: Tagging Insns1082860
+Node: Attr Example1087213
+Node: Insn Lengths1089586
+Node: Constant Attributes1092645
+Node: Mnemonic Attribute1093821
+Node: Delay Slots1095340
+Node: Processor pipeline description1098563
+Ref: Processor pipeline description-Footnote-11117381
+Node: Conditional Execution1117705
+Node: Define Subst1121188
+Node: Define Subst Example1123224
+Node: Define Subst Pattern Matching1126218
+Node: Define Subst Output Template1127444
+Node: Constant Definitions1129514
+Ref: define_enum1133296
+Node: Iterators1133784
+Node: Mode Iterators1134362
+Node: Defining Mode Iterators1135340
+Node: Substitutions1136834
+Node: Examples1139076
+Node: Code Iterators1140524
+Node: Int Iterators1142803
+Node: Subst Iterators1145249
+Node: Target Macros1146941
+Node: Target Structure1150029
+Node: Driver1152145
+Node: Run-time Target1170957
+Node: Per-Function Data1180668
+Node: Storage Layout1183432
+Node: Type Layout1209684
+Node: Registers1225007
+Node: Register Basics1225981
+Node: Allocation Order1231489
+Node: Values in Registers1233973
+Node: Leaf Functions1241451
+Node: Stack Registers1244310
+Node: Register Classes1245582
+Node: Old Constraints1276526
+Node: Stack and Calling1283666
+Node: Frame Layout1284233
+Node: Exception Handling1295109
+Node: Stack Checking1301321
+Node: Frame Registers1306135
+Node: Elimination1314394
+Node: Stack Arguments1318624
+Node: Register Arguments1325487
+Node: Scalar Return1345788
+Node: Aggregate Return1351875
+Node: Caller Saves1356086
+Node: Function Entry1357263
+Node: Profiling1368357
+Node: Tail Calls1370469
+Node: Stack Smashing Protection1372372
+Node: Miscellaneous Register Hooks1374037
+Node: Varargs1374948
+Node: Trampolines1381635
+Node: Library Calls1387678
+Node: Addressing Modes1392362
+Node: Anchored Addresses1413330
+Node: Condition Code1415973
+Node: CC0 Condition Codes1418300
+Node: MODE_CC Condition Codes1421546
+Node: Costs1427998
+Node: Scheduling1444460
+Node: Sections1464418
+Node: PIC1480116
+Node: Assembler Format1482175
+Node: File Framework1483313
+Ref: TARGET_HAVE_SWITCHABLE_BSS_SECTIONS1490245
+Node: Data Output1493515
+Node: Uninitialized Data1501284
+Node: Label Output1506295
+Node: Initialization1529251
+Node: Macros for Initialization1535212
+Node: Instruction Output1541931
+Node: Dispatch Tables1552554
+Node: Exception Region Output1556938
+Node: Alignment Output1563616
+Node: Debugging Info1568195
+Node: All Debuggers1568865
+Node: DBX Options1571720
+Node: DBX Hooks1577158
+Node: File Names and DBX1578467
+Node: SDB and DWARF1580579
+Node: VMS Debug1586651
+Node: Floating Point1587238
+Node: Mode Switching1591135
+Node: Target Attributes1595488
+Node: Emulated TLS1603946
+Node: MIPS Coprocessors1607336
+Node: PCH Target1608495
+Node: C++ ABI1610337
+Node: Named Address Spaces1615131
+Node: Misc1620065
+Ref: TARGET_SHIFT_TRUNCATION_MASK1626807
+Node: Host Config1677331
+Node: Host Common1678399
+Node: Filesystem1680773
+Node: Host Misc1684888
+Node: Fragments1687337
+Node: Target Fragment1688532
+Node: Host Fragment1699160
+Node: Collect21699400
+Node: Header Dirs1702036
+Node: Type Information1703459
+Node: GTY Options1706735
+Node: Inheritance and GTY1720181
+Ref: Inheritance and GTY-Footnote-11721744
+Node: User GC1722014
+Node: GGC Roots1725753
+Node: Files1726466
+Node: Invoking the garbage collector1729173
+Node: Troubleshooting1730678
+Node: Plugins1731753
+Node: Plugins loading1732871
+Node: Plugin API1733741
+Node: Plugins pass1741404
+Node: Plugins GC1743375
+Node: Plugins description1745040
+Node: Plugins attr1745576
+Node: Plugins recording1747850
+Node: Plugins gate1748700
+Node: Plugins tracking1749291
+Node: Plugins building1749879
+Node: LTO1751669
+Node: LTO Overview1752530
+Node: LTO object file layout1758362
+Node: IPA1762992
+Node: WHOPR1771957
+Node: Internal flags1776646
+Node: Funding1778057
+Node: GNU Project1780541
+Node: Copying1781190
+Node: GNU Free Documentation License1818702
+Node: Contributors1843823
+Node: Option Index1881695
+Node: Concept Index1882572
 
 End Tag Table

@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "GCC 1"
-.TH GCC 1 "2014-04-27" "gcc-4.10.0" "GNU"
+.TH GCC 1 "2014-05-18" "gcc-4.10.0" "GNU"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -250,7 +250,9 @@ in the following sections.
 \&\-fobjc\-gc 
 \&\-fobjc\-nilcheck 
 \&\-fobjc\-std=objc1 
-\&\-freplace\-objc\-classes 
+\&\-fno\-local\-ivars 
+\&\-fivar\-visibility=\fR\fIpublic|protected|private|package\fR 
+\&\fB\-freplace\-objc\-classes 
 \&\-fzero\-link 
 \&\-gen\-decls 
 \&\-Wassign\-intercept 
@@ -274,6 +276,7 @@ in the following sections.
 \&\-Wchar\-subscripts \-Wclobbered  \-Wcomment \-Wconditionally\-supported  
 \&\-Wconversion \-Wcoverage\-mismatch \-Wdate\-time \-Wdelete\-incomplete \-Wno\-cpp  
 \&\-Wno\-deprecated \-Wno\-deprecated\-declarations \-Wdisabled\-optimization  
+\&\-Wno\-discarded\-qualifiers 
 \&\-Wno\-div\-by\-zero \-Wdouble\-promotion \-Wempty\-body  \-Wenum\-compare 
 \&\-Wno\-endif\-labels \-Werror  \-Werror=* 
 \&\-Wfatal\-errors  \-Wfloat\-equal  \-Wformat  \-Wformat=2 
@@ -293,7 +296,7 @@ in the following sections.
 \&\-Wparentheses  \-Wpedantic\-ms\-format \-Wno\-pedantic\-ms\-format 
 \&\-Wpointer\-arith  \-Wno\-pointer\-to\-int\-cast 
 \&\-Wredundant\-decls  \-Wno\-return\-local\-addr 
-\&\-Wreturn\-type  \-Wsequence\-point  \-Wshadow 
+\&\-Wreturn\-type  \-Wsequence\-point  \-Wshadow  \-Wno\-shadow\-ivar 
 \&\-Wsign\-compare  \-Wsign\-conversion \-Wfloat\-conversion 
 \&\-Wsizeof\-pointer\-memaccess 
 \&\-Wstack\-protector \-Wstack\-usage=\fR\fIlen\fR \fB\-Wstrict\-aliasing 
@@ -690,6 +693,7 @@ in the following sections.
 \&\-mmmx  \-msse  \-msse2 \-msse3 \-mssse3 \-msse4.1 \-msse4.2 \-msse4 \-mavx 
 \&\-mavx2 \-mavx512f \-mavx512pf \-mavx512er \-mavx512cd \-msha 
 \&\-maes \-mpclmul \-mfsgsbase \-mrdrnd \-mf16c \-mfma \-mprefetchwt1 
+\&\-mclflushopt \-mxsavec \-mxsaves 
 \&\-msse4a \-m3dnow \-mpopcnt \-mabm \-mbmi \-mtbm \-mfma4 \-mxop \-mlzcnt 
 \&\-mbmi2 \-mfxsr \-mxsave \-mxsaveopt \-mrtm \-mlwp \-mthreads 
 \&\-mno\-align\-stringops  \-minline\-all\-stringops 
@@ -1014,6 +1018,7 @@ See \s-1RS/6000\s0 and PowerPC Options.
 \&\-mhard\-quad\-float  \-msoft\-quad\-float 
 \&\-mstack\-bias  \-mno\-stack\-bias 
 \&\-munaligned\-doubles  \-mno\-unaligned\-doubles 
+\&\-muser\-mode  \-mno\-user\-mode 
 \&\-mv8plus  \-mno\-v8plus  \-mvis  \-mno\-vis 
 \&\-mvis2  \-mno\-vis2  \-mvis3  \-mno\-vis3 
 \&\-mcbcond \-mno\-cbcond 
@@ -2853,6 +2858,19 @@ to be retained.  This is useful in Zero-Link debugging mode, since it allows
 for individual class implementations to be modified during program execution.
 The \s-1GNU\s0 runtime currently always retains calls to \f(CW\*(C`objc_get_class("...")\*(C'\fR
 regardless of command-line options.
+.IP "\fB\-fno\-local\-ivars\fR" 4
+.IX Item "-fno-local-ivars"
+By default instance variables in Objective-C can be accessed as if
+they were local variables from within the methods of the class they're
+declared in.  This can lead to shadowing between instance variables
+and other variables declared either locally inside a class method or
+globally with the same name.  Specifying the \fB\-fno\-local\-ivars\fR
+flag disables this behavior thus avoiding variable shadowing issues.
+.IP "\fB\-fivar\-visibility=\fR\fIpublic|protected|private|package\fR" 4
+.IX Item "-fivar-visibility=public|protected|private|package"
+Set the default instance variable visibility to the specified option
+so that instance variables declared outside the scope of any access
+modifier directives default to the specified visibility.
 .IP "\fB\-gen\-decls\fR" 4
 .IX Item "-gen-decls"
 Dump interface declarations for all classes seen in the source file to a
@@ -3886,6 +3904,13 @@ appropriate may not be detected.
 This option is only active when \fB\-ftree\-vrp\fR is active
 (default for \fB\-O2\fR and above). It warns about subscripts to arrays
 that are always out of bounds. This warning is enabled by \fB\-Wall\fR.
+.IP "\fB\-Wno\-discarded\-qualifiers\fR" 4
+.IX Item "-Wno-discarded-qualifiers"
+Do not warn if type qualifiers on pointers are being discarded.
+Typically, the compiler will warn if a \f(CW\*(C`const char *\*(C'\fR variable is
+passed to a function that takes \f(CW\*(C`char *\*(C'\fR parameter.  This option
+can be used to suppress such a warning.  This warning is only supported
+for C.
 .IP "\fB\-Wno\-div\-by\-zero\fR" 4
 .IX Item "-Wno-div-by-zero"
 Do not warn about compile-time integer division by zero.  Floating-point
@@ -4022,10 +4047,15 @@ Warn if an undefined identifier is evaluated in an \fB#if\fR directive.
 Do not warn whenever an \fB#else\fR or an \fB#endif\fR are followed by text.
 .IP "\fB\-Wshadow\fR" 4
 .IX Item "-Wshadow"
-Warn whenever a local variable or type declaration shadows another variable,
-parameter, type, or class member (in \*(C+), or whenever a built-in function
-is shadowed. Note that in \*(C+, the compiler warns if a local variable
-shadows an explicit typedef, but not if it shadows a struct/class/enum.
+Warn whenever a local variable or type declaration shadows another
+variable, parameter, type, class member (in \*(C+), or instance variable
+(in Objective-C) or whenever a built-in function is shadowed. Note
+that in \*(C+, the compiler warns if a local variable shadows an
+explicit typedef, but not if it shadows a struct/class/enum.
+.IP "\fB\-Wno\-shadow\-ivar\fR (Objective-C only)" 4
+.IX Item "-Wno-shadow-ivar (Objective-C only)"
+Do not warn whenever a local variable shadows an instance variable in an
+Objective-C method.
 .IP "\fB\-Wlarger\-than=\fR\fIlen\fR" 4
 .IX Item "-Wlarger-than=len"
 Warn whenever an object of larger than \fIlen\fR bytes is defined.
@@ -4326,7 +4356,7 @@ Warn if a global function is defined without a previous declaration.
 Do so even if the definition itself provides a prototype.
 Use this option to detect global functions that are not declared in
 header files.  In C, no warnings are issued for functions with previous
-non-prototype declarations; use \fB\-Wmissing\-prototype\fR to detect
+non-prototype declarations; use \fB\-Wmissing\-prototypes\fR to detect
 missing prototypes.  In \*(C+, no warnings are issued for function templates,
 or for inline functions, or for functions in anonymous namespaces.
 .IP "\fB\-Wmissing\-field\-initializers\fR" 4
@@ -4866,6 +4896,12 @@ While \fB\-ftrapv\fR causes traps for signed overflows to be emitted,
 \&\fB\-fsanitize=undefined\fR gives a diagnostic message.
 This currently works only for the C family of languages.
 .RE
+.IP "\fB\-fsanitize=float\-divide\-by\-zero\fR" 4
+.IX Item "-fsanitize=float-divide-by-zero"
+Detect floating-point division by zero.  Unlike other similar options,
+\&\fB\-fsanitize=float\-divide\-by\-zero\fR is not enabled by
+\&\fB\-fsanitize=undefined\fR, since floating-point division by zero can
+be a legitimate way of obtaining infinities and NaNs.
 .IP "\fB\-fsanitize\-recover\fR" 4
 .IX Item "-fsanitize-recover"
 By default \fB\-fsanitize=undefined\fR sanitization (and its suboptions
@@ -6767,7 +6803,8 @@ Attempt to remove redundant extension instructions.  This is especially
 helpful for the x86\-64 architecture, which implicitly zero-extends in 64\-bit
 registers after writing to their lower 32\-bit half.
 .Sp
-Enabled for AArch64 and x86 at levels \fB\-O2\fR, \fB\-O3\fR.
+Enabled for Alpha, AArch64 and x86 at levels \fB\-O2\fR,
+\&\fB\-O3\fR, \fB\-Os\fR.
 .IP "\fB\-flive\-range\-shrinkage\fR" 4
 .IX Item "-flive-range-shrinkage"
 Attempt to decrease register pressure through register live range
@@ -14351,6 +14388,10 @@ preferred alignment to \fB\-mpreferred\-stack\-boundary=2\fR.
 .IX Item "-mpclmul"
 .IP "\fB\-mno\-pclmul\fR" 4
 .IX Item "-mno-pclmul"
+.IP "\fB\-mclfushopt\fR" 4
+.IX Item "-mclfushopt"
+.IP "\fB\-mno\-clflsuhopt\fR" 4
+.IX Item "-mno-clflsuhopt"
 .IP "\fB\-mfsgsbase\fR" 4
 .IX Item "-mfsgsbase"
 .IP "\fB\-mno\-fsgsbase\fR" 4
@@ -14423,6 +14464,14 @@ preferred alignment to \fB\-mpreferred\-stack\-boundary=2\fR.
 .IX Item "-mtbm"
 .IP "\fB\-mno\-tbm\fR" 4
 .IX Item "-mno-tbm"
+.IP "\fB\-mxsavec\fR" 4
+.IX Item "-mxsavec"
+.IP "\fB\-mno\-xsavec\fR" 4
+.IX Item "-mno-xsavec"
+.IP "\fB\-mxsaves\fR" 4
+.IX Item "-mxsaves"
+.IP "\fB\-mno\-xsaves\fR" 4
+.IX Item "-mno-xsaves"
 .PD
 These switches enable or disable the use of instructions in the \s-1MMX, SSE,
 SSE2, SSE3, SSSE3, SSE4.1, AVX, AVX2, AVX512F, AVX512PF, AVX512ER, AVX512CD,
@@ -19803,6 +19852,15 @@ absolute address.  Otherwise, it assumes they have 4\-byte alignment.
 Specifying this option avoids some rare compatibility problems with code
 generated by other compilers.  It is not the default because it results
 in a performance loss, especially for floating-point code.
+.IP "\fB\-muser\-mode\fR" 4
+.IX Item "-muser-mode"
+.PD 0
+.IP "\fB\-mno\-user\-mode\fR" 4
+.IX Item "-mno-user-mode"
+.PD
+Do not generate code that can only run in supervisor mode.  This is relevant
+only for the \f(CW\*(C`casa\*(C'\fR instruction emitted for the \s-1LEON3\s0 processor.  The
+default is \fB\-mno\-user\-mode\fR.
 .IP "\fB\-mno\-faster\-structs\fR" 4
 .IX Item "-mno-faster-structs"
 .PD 0

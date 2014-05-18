@@ -107,178 +107,166 @@ gen_rtx_fmt_i_stat (RTX_CODE code, enum machine_mode mode,
         gen_rtx_fmt_i_stat (c, m, p0 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_iuuBeiie_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
+gen_rtx_fmt_uuBeiie_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
 	rtx arg1,
-	rtx arg2,
-	basic_block arg3,
-	rtx arg4,
+	basic_block arg2,
+	rtx arg3,
+	int arg4,
 	int arg5,
-	int arg6,
+	rtx arg6 MEM_STAT_DECL)
+{
+  rtx rt;
+  rt = rtx_alloc_stat (code PASS_MEM_STAT);
+
+  PUT_MODE (rt, mode);
+  XEXP (rt, 0) = arg0;
+  XEXP (rt, 1) = arg1;
+  XBBDEF (rt, 2) = arg2;
+  XEXP (rt, 3) = arg3;
+  XINT (rt, 4) = arg4;
+  XINT (rt, 5) = arg5;
+  XEXP (rt, 6) = arg6;
+
+  return rt;
+}
+
+#define gen_rtx_fmt_uuBeiie(c, m, p0, p1, p2, p3, p4, p5, p6)\
+        gen_rtx_fmt_uuBeiie_stat (c, m, p0, p1, p2, p3, p4, p5, p6 MEM_STAT_INFO)
+
+static inline rtx
+gen_rtx_fmt_uuBeiie0_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
+	rtx arg1,
+	basic_block arg2,
+	rtx arg3,
+	int arg4,
+	int arg5,
+	rtx arg6 MEM_STAT_DECL)
+{
+  rtx rt;
+  rt = rtx_alloc_stat (code PASS_MEM_STAT);
+
+  PUT_MODE (rt, mode);
+  XEXP (rt, 0) = arg0;
+  XEXP (rt, 1) = arg1;
+  XBBDEF (rt, 2) = arg2;
+  XEXP (rt, 3) = arg3;
+  XINT (rt, 4) = arg4;
+  XINT (rt, 5) = arg5;
+  XEXP (rt, 6) = arg6;
+  X0EXP (rt, 7) = NULL_RTX;
+
+  return rt;
+}
+
+#define gen_rtx_fmt_uuBeiie0(c, m, p0, p1, p2, p3, p4, p5, p6)\
+        gen_rtx_fmt_uuBeiie0_stat (c, m, p0, p1, p2, p3, p4, p5, p6 MEM_STAT_INFO)
+
+static inline rtx
+gen_rtx_fmt_uuBeiiee_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
+	rtx arg1,
+	basic_block arg2,
+	rtx arg3,
+	int arg4,
+	int arg5,
+	rtx arg6,
 	rtx arg7 MEM_STAT_DECL)
 {
   rtx rt;
   rt = rtx_alloc_stat (code PASS_MEM_STAT);
 
   PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
+  XEXP (rt, 0) = arg0;
   XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
-  XBBDEF (rt, 3) = arg3;
-  XEXP (rt, 4) = arg4;
+  XBBDEF (rt, 2) = arg2;
+  XEXP (rt, 3) = arg3;
+  XINT (rt, 4) = arg4;
   XINT (rt, 5) = arg5;
-  XINT (rt, 6) = arg6;
+  XEXP (rt, 6) = arg6;
   XEXP (rt, 7) = arg7;
 
   return rt;
 }
 
-#define gen_rtx_fmt_iuuBeiie(c, m, p0, p1, p2, p3, p4, p5, p6, p7)\
-        gen_rtx_fmt_iuuBeiie_stat (c, m, p0, p1, p2, p3, p4, p5, p6, p7 MEM_STAT_INFO)
+#define gen_rtx_fmt_uuBeiiee(c, m, p0, p1, p2, p3, p4, p5, p6, p7)\
+        gen_rtx_fmt_uuBeiiee_stat (c, m, p0, p1, p2, p3, p4, p5, p6, p7 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_iuuBeiie0_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
+gen_rtx_fmt_uuBe0000_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
 	rtx arg1,
-	rtx arg2,
-	basic_block arg3,
-	rtx arg4,
-	int arg5,
-	int arg6,
-	rtx arg7 MEM_STAT_DECL)
+	basic_block arg2,
+	rtx arg3 MEM_STAT_DECL)
 {
   rtx rt;
   rt = rtx_alloc_stat (code PASS_MEM_STAT);
 
   PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
+  XEXP (rt, 0) = arg0;
   XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
-  XBBDEF (rt, 3) = arg3;
-  XEXP (rt, 4) = arg4;
-  XINT (rt, 5) = arg5;
-  XINT (rt, 6) = arg6;
-  XEXP (rt, 7) = arg7;
-  X0EXP (rt, 8) = NULL_RTX;
-
-  return rt;
-}
-
-#define gen_rtx_fmt_iuuBeiie0(c, m, p0, p1, p2, p3, p4, p5, p6, p7)\
-        gen_rtx_fmt_iuuBeiie0_stat (c, m, p0, p1, p2, p3, p4, p5, p6, p7 MEM_STAT_INFO)
-
-static inline rtx
-gen_rtx_fmt_iuuBeiiee_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
-	rtx arg1,
-	rtx arg2,
-	basic_block arg3,
-	rtx arg4,
-	int arg5,
-	int arg6,
-	rtx arg7,
-	rtx arg8 MEM_STAT_DECL)
-{
-  rtx rt;
-  rt = rtx_alloc_stat (code PASS_MEM_STAT);
-
-  PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
-  XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
-  XBBDEF (rt, 3) = arg3;
-  XEXP (rt, 4) = arg4;
-  XINT (rt, 5) = arg5;
-  XINT (rt, 6) = arg6;
-  XEXP (rt, 7) = arg7;
-  XEXP (rt, 8) = arg8;
-
-  return rt;
-}
-
-#define gen_rtx_fmt_iuuBeiiee(c, m, p0, p1, p2, p3, p4, p5, p6, p7, p8)\
-        gen_rtx_fmt_iuuBeiiee_stat (c, m, p0, p1, p2, p3, p4, p5, p6, p7, p8 MEM_STAT_INFO)
-
-static inline rtx
-gen_rtx_fmt_iuuBe0000_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
-	rtx arg1,
-	rtx arg2,
-	basic_block arg3,
-	rtx arg4 MEM_STAT_DECL)
-{
-  rtx rt;
-  rt = rtx_alloc_stat (code PASS_MEM_STAT);
-
-  PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
-  XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
-  XBBDEF (rt, 3) = arg3;
-  XEXP (rt, 4) = arg4;
+  XBBDEF (rt, 2) = arg2;
+  XEXP (rt, 3) = arg3;
+  X0EXP (rt, 4) = NULL_RTX;
   X0EXP (rt, 5) = NULL_RTX;
   X0EXP (rt, 6) = NULL_RTX;
   X0EXP (rt, 7) = NULL_RTX;
-  X0EXP (rt, 8) = NULL_RTX;
 
   return rt;
 }
 
-#define gen_rtx_fmt_iuuBe0000(c, m, p0, p1, p2, p3, p4)\
-        gen_rtx_fmt_iuuBe0000_stat (c, m, p0, p1, p2, p3, p4 MEM_STAT_INFO)
+#define gen_rtx_fmt_uuBe0000(c, m, p0, p1, p2, p3)\
+        gen_rtx_fmt_uuBe0000_stat (c, m, p0, p1, p2, p3 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_iuu00000_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
-	rtx arg1,
-	rtx arg2 MEM_STAT_DECL)
+gen_rtx_fmt_uu00000_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
+	rtx arg1 MEM_STAT_DECL)
 {
   rtx rt;
   rt = rtx_alloc_stat (code PASS_MEM_STAT);
 
   PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
+  XEXP (rt, 0) = arg0;
   XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
+  X0EXP (rt, 2) = NULL_RTX;
   X0EXP (rt, 3) = NULL_RTX;
   X0EXP (rt, 4) = NULL_RTX;
   X0EXP (rt, 5) = NULL_RTX;
   X0EXP (rt, 6) = NULL_RTX;
-  X0EXP (rt, 7) = NULL_RTX;
 
   return rt;
 }
 
-#define gen_rtx_fmt_iuu00000(c, m, p0, p1, p2)\
-        gen_rtx_fmt_iuu00000_stat (c, m, p0, p1, p2 MEM_STAT_INFO)
+#define gen_rtx_fmt_uu00000(c, m, p0, p1)\
+        gen_rtx_fmt_uu00000_stat (c, m, p0, p1 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_iuuB00is_stat (RTX_CODE code, enum machine_mode mode,
-	int arg0,
+gen_rtx_fmt_uuB00is_stat (RTX_CODE code, enum machine_mode mode,
+	rtx arg0,
 	rtx arg1,
-	rtx arg2,
-	basic_block arg3,
-	int arg4,
-	const char *arg5 MEM_STAT_DECL)
+	basic_block arg2,
+	int arg3,
+	const char *arg4 MEM_STAT_DECL)
 {
   rtx rt;
   rt = rtx_alloc_stat (code PASS_MEM_STAT);
 
   PUT_MODE (rt, mode);
-  XINT (rt, 0) = arg0;
+  XEXP (rt, 0) = arg0;
   XEXP (rt, 1) = arg1;
-  XEXP (rt, 2) = arg2;
-  XBBDEF (rt, 3) = arg3;
+  XBBDEF (rt, 2) = arg2;
+  X0EXP (rt, 3) = NULL_RTX;
   X0EXP (rt, 4) = NULL_RTX;
-  X0EXP (rt, 5) = NULL_RTX;
-  XINT (rt, 6) = arg4;
-  XSTR (rt, 7) = arg5;
+  XINT (rt, 5) = arg3;
+  XSTR (rt, 6) = arg4;
 
   return rt;
 }
 
-#define gen_rtx_fmt_iuuB00is(c, m, p0, p1, p2, p3, p4, p5)\
-        gen_rtx_fmt_iuuB00is_stat (c, m, p0, p1, p2, p3, p4, p5 MEM_STAT_INFO)
+#define gen_rtx_fmt_uuB00is(c, m, p0, p1, p2, p3, p4)\
+        gen_rtx_fmt_uuB00is_stat (c, m, p0, p1, p2, p3, p4 MEM_STAT_INFO)
 
 static inline rtx
 gen_rtx_fmt_si_stat (RTX_CODE code, enum machine_mode mode,
@@ -470,7 +458,7 @@ gen_rtx_fmt_s_stat (RTX_CODE code, enum machine_mode mode,
         gen_rtx_fmt_s_stat (c, m, p0 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_i00_stat (RTX_CODE code, enum machine_mode mode,
+gen_rtx_fmt_i0_stat (RTX_CODE code, enum machine_mode mode,
 	int arg0 MEM_STAT_DECL)
 {
   rtx rt;
@@ -479,13 +467,12 @@ gen_rtx_fmt_i00_stat (RTX_CODE code, enum machine_mode mode,
   PUT_MODE (rt, mode);
   XINT (rt, 0) = arg0;
   X0EXP (rt, 1) = NULL_RTX;
-  X0EXP (rt, 2) = NULL_RTX;
 
   return rt;
 }
 
-#define gen_rtx_fmt_i00(c, m, p0)\
-        gen_rtx_fmt_i00_stat (c, m, p0 MEM_STAT_INFO)
+#define gen_rtx_fmt_i0(c, m, p0)\
+        gen_rtx_fmt_i0_stat (c, m, p0 MEM_STAT_INFO)
 
 static inline rtx
 gen_rtx_fmt_ei_stat (RTX_CODE code, enum machine_mode mode,
@@ -539,7 +526,7 @@ gen_rtx_fmt_u_stat (RTX_CODE code, enum machine_mode mode,
         gen_rtx_fmt_u_stat (c, m, p0 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_s00_stat (RTX_CODE code, enum machine_mode mode,
+gen_rtx_fmt_s0_stat (RTX_CODE code, enum machine_mode mode,
 	const char *arg0 MEM_STAT_DECL)
 {
   rtx rt;
@@ -548,19 +535,17 @@ gen_rtx_fmt_s00_stat (RTX_CODE code, enum machine_mode mode,
   PUT_MODE (rt, mode);
   XSTR (rt, 0) = arg0;
   X0EXP (rt, 1) = NULL_RTX;
-  X0EXP (rt, 2) = NULL_RTX;
 
   return rt;
 }
 
-#define gen_rtx_fmt_s00(c, m, p0)\
-        gen_rtx_fmt_s00_stat (c, m, p0 MEM_STAT_INFO)
+#define gen_rtx_fmt_s0(c, m, p0)\
+        gen_rtx_fmt_s0_stat (c, m, p0 MEM_STAT_INFO)
 
 static inline rtx
-gen_rtx_fmt_tei_stat (RTX_CODE code, enum machine_mode mode,
+gen_rtx_fmt_te_stat (RTX_CODE code, enum machine_mode mode,
 	tree arg0,
-	rtx arg1,
-	int arg2 MEM_STAT_DECL)
+	rtx arg1 MEM_STAT_DECL)
 {
   rtx rt;
   rt = rtx_alloc_stat (code PASS_MEM_STAT);
@@ -568,13 +553,12 @@ gen_rtx_fmt_tei_stat (RTX_CODE code, enum machine_mode mode,
   PUT_MODE (rt, mode);
   XTREE (rt, 0) = arg0;
   XEXP (rt, 1) = arg1;
-  XINT (rt, 2) = arg2;
 
   return rt;
 }
 
-#define gen_rtx_fmt_tei(c, m, p0, p1, p2)\
-        gen_rtx_fmt_tei_stat (c, m, p0, p1, p2 MEM_STAT_INFO)
+#define gen_rtx_fmt_te(c, m, p0, p1)\
+        gen_rtx_fmt_te_stat (c, m, p0, p1 MEM_STAT_INFO)
 
 static inline rtx
 gen_rtx_fmt_t_stat (RTX_CODE code, enum machine_mode mode,
@@ -899,20 +883,20 @@ gen_rtx_fmt_ssss_stat (RTX_CODE code, enum machine_mode mode,
   gen_rtx_fmt_E (SEQUENCE, (MODE), (ARG0))
 #define gen_rtx_ADDRESS(MODE, ARG0) \
   gen_rtx_fmt_i (ADDRESS, (MODE), (ARG0))
-#define gen_rtx_DEBUG_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7) \
-  gen_rtx_fmt_iuuBeiie (DEBUG_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6), (ARG7))
-#define gen_rtx_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7) \
-  gen_rtx_fmt_iuuBeiie (INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6), (ARG7))
-#define gen_rtx_JUMP_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7) \
-  gen_rtx_fmt_iuuBeiie0 (JUMP_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6), (ARG7))
-#define gen_rtx_CALL_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7, ARG8) \
-  gen_rtx_fmt_iuuBeiiee (CALL_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6), (ARG7), (ARG8))
-#define gen_rtx_JUMP_TABLE_DATA(MODE, ARG0, ARG1, ARG2, ARG3, ARG4) \
-  gen_rtx_fmt_iuuBe0000 (JUMP_TABLE_DATA, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4))
-#define gen_rtx_BARRIER(MODE, ARG0, ARG1, ARG2) \
-  gen_rtx_fmt_iuu00000 (BARRIER, (MODE), (ARG0), (ARG1), (ARG2))
-#define gen_rtx_CODE_LABEL(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5) \
-  gen_rtx_fmt_iuuB00is (CODE_LABEL, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5))
+#define gen_rtx_DEBUG_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6) \
+  gen_rtx_fmt_uuBeiie (DEBUG_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6))
+#define gen_rtx_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6) \
+  gen_rtx_fmt_uuBeiie (INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6))
+#define gen_rtx_JUMP_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6) \
+  gen_rtx_fmt_uuBeiie0 (JUMP_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6))
+#define gen_rtx_CALL_INSN(MODE, ARG0, ARG1, ARG2, ARG3, ARG4, ARG5, ARG6, ARG7) \
+  gen_rtx_fmt_uuBeiiee (CALL_INSN, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4), (ARG5), (ARG6), (ARG7))
+#define gen_rtx_JUMP_TABLE_DATA(MODE, ARG0, ARG1, ARG2, ARG3) \
+  gen_rtx_fmt_uuBe0000 (JUMP_TABLE_DATA, (MODE), (ARG0), (ARG1), (ARG2), (ARG3))
+#define gen_rtx_BARRIER(MODE, ARG0, ARG1) \
+  gen_rtx_fmt_uu00000 (BARRIER, (MODE), (ARG0), (ARG1))
+#define gen_rtx_CODE_LABEL(MODE, ARG0, ARG1, ARG2, ARG3, ARG4) \
+  gen_rtx_fmt_uuB00is (CODE_LABEL, (MODE), (ARG0), (ARG1), (ARG2), (ARG3), (ARG4))
 #define gen_rtx_COND_EXEC(MODE, ARG0, ARG1) \
   gen_rtx_fmt_ee (COND_EXEC, (MODE), (ARG0), (ARG1))
 #define gen_rtx_PARALLEL(MODE, ARG0) \
@@ -958,9 +942,9 @@ gen_rtx_fmt_ssss_stat (RTX_CODE code, enum machine_mode mode,
 #define gen_rtx_raw_PC(MODE) \
   gen_rtx_fmt_ (PC, (MODE))
 #define gen_rtx_raw_REG(MODE, ARG0) \
-  gen_rtx_fmt_i00 (REG, (MODE), (ARG0))
+  gen_rtx_fmt_i0 (REG, (MODE), (ARG0))
 #define gen_rtx_SCRATCH(MODE) \
-  gen_rtx_fmt_0 (SCRATCH, (MODE))
+  gen_rtx_fmt_ (SCRATCH, (MODE))
 #define gen_rtx_raw_SUBREG(MODE, ARG0, ARG1) \
   gen_rtx_fmt_ei (SUBREG, (MODE), (ARG0), (ARG1))
 #define gen_rtx_STRICT_LOW_PART(MODE, ARG0) \
@@ -974,7 +958,7 @@ gen_rtx_fmt_ssss_stat (RTX_CODE code, enum machine_mode mode,
 #define gen_rtx_LABEL_REF(MODE, ARG0) \
   gen_rtx_fmt_u (LABEL_REF, (MODE), (ARG0))
 #define gen_rtx_SYMBOL_REF(MODE, ARG0) \
-  gen_rtx_fmt_s00 (SYMBOL_REF, (MODE), (ARG0))
+  gen_rtx_fmt_s0 (SYMBOL_REF, (MODE), (ARG0))
 #define gen_rtx_raw_CC0(MODE) \
   gen_rtx_fmt_ (CC0, (MODE))
 #define gen_rtx_IF_THEN_ELSE(MODE, ARG0, ARG1, ARG2) \
@@ -1163,8 +1147,6 @@ gen_rtx_fmt_ssss_stat (RTX_CODE code, enum machine_mode mode,
   gen_rtx_fmt_e (US_TRUNCATE, (MODE), (ARG0))
 #define gen_rtx_FMA(MODE, ARG0, ARG1, ARG2) \
   gen_rtx_fmt_eee (FMA, (MODE), (ARG0), (ARG1), (ARG2))
-#define gen_rtx_VAR_LOCATION(MODE, ARG0, ARG1, ARG2) \
-  gen_rtx_fmt_tei (VAR_LOCATION, (MODE), (ARG0), (ARG1), (ARG2))
 #define gen_rtx_DEBUG_IMPLICIT_PTR(MODE, ARG0) \
   gen_rtx_fmt_t (DEBUG_IMPLICIT_PTR, (MODE), (ARG0))
 #define gen_rtx_ENTRY_VALUE(MODE) \
