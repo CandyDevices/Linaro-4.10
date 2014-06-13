@@ -4,7 +4,7 @@
 ;;; Don't parse this file wihout knowing GCC gengtype internals.
 ;;; This file should be parsed by the same gengtype which wrote it.
 
-(!version  "4.10.0 20140518 (experimental)")
+(!version  "4.10.0 20140521 (experimental)")
 (!srcdir  "../.././../gcc/gcc-UBER/gcc")
 (!languages 9 ada c cp fortran go java lto objc objcp)
 (!fileslist 190
@@ -2519,7 +2519,7 @@
                (!type struct 140 
                 (!type already_seen 138)
                 gc_pointed_to "rtx_def"
-                (!srcfileloc  "rtl.h" 387)
+                (!srcfileloc  "rtl.h" 388)
                 (!fields 12 
                  (!pair  "code"
                   (!type already_seen 9)
@@ -2531,74 +2531,74 @@
                   nil )
                  (!pair  "jump"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 285)
+                  (!srcfileloc  "rtl.h" 286)
                   nil )
                  (!pair  "call"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 290)
+                  (!srcfileloc  "rtl.h" 291)
                   nil )
                  (!pair  "unchanging"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 301)
+                  (!srcfileloc  "rtl.h" 302)
                   nil )
                  (!pair  "volatil"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 314)
+                  (!srcfileloc  "rtl.h" 315)
                   nil )
                  (!pair  "in_struct"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 328)
+                  (!srcfileloc  "rtl.h" 329)
                   nil )
                  (!pair  "used"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 337)
+                  (!srcfileloc  "rtl.h" 338)
                   nil )
                  (!pair  "frame_related"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 345)
+                  (!srcfileloc  "rtl.h" 346)
                   nil )
                  (!pair  "return_val"
                   (!type already_seen 9)
-                  (!srcfileloc  "rtl.h" 351)
+                  (!srcfileloc  "rtl.h" 352)
                   nil )
                  (!pair  "u2"
-                  (!type union 141 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/rtl.h:353"
-                   (!srcfileloc  "rtl.h" 374)
+                  (!type union 141 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/rtl.h:354"
+                   (!srcfileloc  "rtl.h" 375)
                    (!fields 5 
                     (!pair  "original_regno"
                      (!type already_seen 9)
-                     (!srcfileloc  "rtl.h" 360)
+                     (!srcfileloc  "rtl.h" 361)
                      nil )
                     (!pair  "insn_uid"
                      (!type already_seen 9)
-                     (!srcfileloc  "rtl.h" 363)
+                     (!srcfileloc  "rtl.h" 364)
                      nil )
                     (!pair  "symbol_ref_flags"
                      (!type already_seen 9)
-                     (!srcfileloc  "rtl.h" 366)
+                     (!srcfileloc  "rtl.h" 367)
                      nil )
                     (!pair  "var_location_status"
                      (!type already_seen 9)
-                     (!srcfileloc  "rtl.h" 369)
+                     (!srcfileloc  "rtl.h" 370)
                      nil )
                     (!pair  "num_elem"
                      (!type already_seen 9)
-                     (!srcfileloc  "rtl.h" 373)
+                     (!srcfileloc  "rtl.h" 374)
                      nil )
                    )
                    nil 511 nil )
-                  (!srcfileloc  "rtl.h" 374)
+                  (!srcfileloc  "rtl.h" 375)
                   (!options 
                    (!option skip string  "")
                   )
                  )
                  (!pair  "u"
                   (!type union 142 nil  gc_used "rtx_def_subunion"
-                   (!srcfileloc  "rtl.h" 386)
+                   (!srcfileloc  "rtl.h" 387)
                    (!fields 148 
                     (!pair  ""
                      (!type struct 143 nil  gc_used "rtx_def_debug_parameter_ref"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_tree"
                         (!type already_seen 5)
@@ -2617,7 +2617,7 @@
                     )
                     (!pair  ""
                      (!type struct 144 nil  gc_used "rtx_def_entry_value"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2636,7 +2636,7 @@
                     )
                     (!pair  ""
                      (!type struct 145 nil  gc_used "rtx_def_debug_implicit_ptr"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_tree"
                         (!type already_seen 5)
@@ -2655,7 +2655,7 @@
                     )
                     (!pair  ""
                      (!type struct 146 nil  gc_used "rtx_def_var_location"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2681,7 +2681,7 @@
                     )
                     (!pair  ""
                      (!type struct 147 nil  gc_used "rtx_def_fma"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -2714,7 +2714,7 @@
                     )
                     (!pair  ""
                      (!type struct 148 nil  gc_used "rtx_def_us_truncate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2733,7 +2733,7 @@
                     )
                     (!pair  ""
                      (!type struct 149 nil  gc_used "rtx_def_ss_truncate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2752,7 +2752,7 @@
                     )
                     (!pair  ""
                      (!type struct 150 nil  gc_used "rtx_def_us_minus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2778,7 +2778,7 @@
                     )
                     (!pair  ""
                      (!type struct 151 nil  gc_used "rtx_def_us_ashift"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2804,7 +2804,7 @@
                     )
                     (!pair  ""
                      (!type struct 152 nil  gc_used "rtx_def_ss_ashift"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2830,7 +2830,7 @@
                     )
                     (!pair  ""
                      (!type struct 153 nil  gc_used "rtx_def_ss_abs"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2849,7 +2849,7 @@
                     )
                     (!pair  ""
                      (!type struct 154 nil  gc_used "rtx_def_us_neg"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2868,7 +2868,7 @@
                     )
                     (!pair  ""
                      (!type struct 155 nil  gc_used "rtx_def_ss_neg"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2887,7 +2887,7 @@
                     )
                     (!pair  ""
                      (!type struct 156 nil  gc_used "rtx_def_ss_minus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2913,7 +2913,7 @@
                     )
                     (!pair  ""
                      (!type struct 157 nil  gc_used "rtx_def_us_plus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2939,7 +2939,7 @@
                     )
                     (!pair  ""
                      (!type struct 158 nil  gc_used "rtx_def_ss_plus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -2965,7 +2965,7 @@
                     )
                     (!pair  ""
                      (!type struct 159 nil  gc_used "rtx_def_vec_duplicate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -2984,7 +2984,7 @@
                     )
                     (!pair  ""
                      (!type struct 160 nil  gc_used "rtx_def_vec_concat"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3010,7 +3010,7 @@
                     )
                     (!pair  ""
                      (!type struct 161 nil  gc_used "rtx_def_vec_select"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3036,7 +3036,7 @@
                     )
                     (!pair  ""
                      (!type struct 162 nil  gc_used "rtx_def_vec_merge"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -3069,7 +3069,7 @@
                     )
                     (!pair  ""
                      (!type struct 163 nil  gc_used "rtx_def_lo_sum"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3095,7 +3095,7 @@
                     )
                     (!pair  ""
                      (!type struct 164 nil  gc_used "rtx_def_high"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3114,7 +3114,7 @@
                     )
                     (!pair  ""
                      (!type struct 165 nil  gc_used "rtx_def_zero_extract"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -3147,7 +3147,7 @@
                     )
                     (!pair  ""
                      (!type struct 166 nil  gc_used "rtx_def_sign_extract"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -3180,7 +3180,7 @@
                     )
                     (!pair  ""
                      (!type struct 167 nil  gc_used "rtx_def_parity"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3199,7 +3199,7 @@
                     )
                     (!pair  ""
                      (!type struct 168 nil  gc_used "rtx_def_popcount"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3218,7 +3218,7 @@
                     )
                     (!pair  ""
                      (!type struct 169 nil  gc_used "rtx_def_ctz"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3237,7 +3237,7 @@
                     )
                     (!pair  ""
                      (!type struct 170 nil  gc_used "rtx_def_clz"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3256,7 +3256,7 @@
                     )
                     (!pair  ""
                      (!type struct 171 nil  gc_used "rtx_def_clrsb"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3275,7 +3275,7 @@
                     )
                     (!pair  ""
                      (!type struct 172 nil  gc_used "rtx_def_ffs"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3294,7 +3294,7 @@
                     )
                     (!pair  ""
                      (!type struct 173 nil  gc_used "rtx_def_bswap"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3313,7 +3313,7 @@
                     )
                     (!pair  ""
                      (!type struct 174 nil  gc_used "rtx_def_sqrt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3332,7 +3332,7 @@
                     )
                     (!pair  ""
                      (!type struct 175 nil  gc_used "rtx_def_abs"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3351,7 +3351,7 @@
                     )
                     (!pair  ""
                      (!type struct 176 nil  gc_used "rtx_def_unsigned_sat_fract"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3370,7 +3370,7 @@
                     )
                     (!pair  ""
                      (!type struct 177 nil  gc_used "rtx_def_sat_fract"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3389,7 +3389,7 @@
                     )
                     (!pair  ""
                      (!type struct 178 nil  gc_used "rtx_def_unsigned_fract_convert"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3408,7 +3408,7 @@
                     )
                     (!pair  ""
                      (!type struct 179 nil  gc_used "rtx_def_fract_convert"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3427,7 +3427,7 @@
                     )
                     (!pair  ""
                      (!type struct 180 nil  gc_used "rtx_def_unsigned_fix"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3446,7 +3446,7 @@
                     )
                     (!pair  ""
                      (!type struct 181 nil  gc_used "rtx_def_unsigned_float"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3465,7 +3465,7 @@
                     )
                     (!pair  ""
                      (!type struct 182 nil  gc_used "rtx_def_fix"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3484,7 +3484,7 @@
                     )
                     (!pair  ""
                      (!type struct 183 nil  gc_used "rtx_def_float"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3503,7 +3503,7 @@
                     )
                     (!pair  ""
                      (!type struct 184 nil  gc_used "rtx_def_float_truncate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3522,7 +3522,7 @@
                     )
                     (!pair  ""
                      (!type struct 185 nil  gc_used "rtx_def_float_extend"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3541,7 +3541,7 @@
                     )
                     (!pair  ""
                      (!type struct 186 nil  gc_used "rtx_def_truncate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3560,7 +3560,7 @@
                     )
                     (!pair  ""
                      (!type struct 187 nil  gc_used "rtx_def_zero_extend"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3579,7 +3579,7 @@
                     )
                     (!pair  ""
                      (!type struct 188 nil  gc_used "rtx_def_sign_extend"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -3598,7 +3598,7 @@
                     )
                     (!pair  ""
                      (!type struct 189 nil  gc_used "rtx_def_ltgt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3624,7 +3624,7 @@
                     )
                     (!pair  ""
                      (!type struct 190 nil  gc_used "rtx_def_unlt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3650,7 +3650,7 @@
                     )
                     (!pair  ""
                      (!type struct 191 nil  gc_used "rtx_def_unle"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3676,7 +3676,7 @@
                     )
                     (!pair  ""
                      (!type struct 192 nil  gc_used "rtx_def_ungt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3702,7 +3702,7 @@
                     )
                     (!pair  ""
                      (!type struct 193 nil  gc_used "rtx_def_unge"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3728,7 +3728,7 @@
                     )
                     (!pair  ""
                      (!type struct 194 nil  gc_used "rtx_def_uneq"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3754,7 +3754,7 @@
                     )
                     (!pair  ""
                      (!type struct 195 nil  gc_used "rtx_def_ordered"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3780,7 +3780,7 @@
                     )
                     (!pair  ""
                      (!type struct 196 nil  gc_used "rtx_def_unordered"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3806,7 +3806,7 @@
                     )
                     (!pair  ""
                      (!type struct 197 nil  gc_used "rtx_def_ltu"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3832,7 +3832,7 @@
                     )
                     (!pair  ""
                      (!type struct 198 nil  gc_used "rtx_def_leu"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3858,7 +3858,7 @@
                     )
                     (!pair  ""
                      (!type struct 199 nil  gc_used "rtx_def_gtu"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3884,7 +3884,7 @@
                     )
                     (!pair  ""
                      (!type struct 200 nil  gc_used "rtx_def_geu"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3910,7 +3910,7 @@
                     )
                     (!pair  ""
                      (!type struct 201 nil  gc_used "rtx_def_lt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3936,7 +3936,7 @@
                     )
                     (!pair  ""
                      (!type struct 202 nil  gc_used "rtx_def_le"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3962,7 +3962,7 @@
                     )
                     (!pair  ""
                      (!type struct 203 nil  gc_used "rtx_def_gt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -3988,7 +3988,7 @@
                     )
                     (!pair  ""
                      (!type struct 204 nil  gc_used "rtx_def_ge"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4014,7 +4014,7 @@
                     )
                     (!pair  ""
                      (!type struct 205 nil  gc_used "rtx_def_eq"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4040,7 +4040,7 @@
                     )
                     (!pair  ""
                      (!type struct 206 nil  gc_used "rtx_def_ne"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4066,7 +4066,7 @@
                     )
                     (!pair  ""
                      (!type struct 207 nil  gc_used "rtx_def_post_modify"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4092,7 +4092,7 @@
                     )
                     (!pair  ""
                      (!type struct 208 nil  gc_used "rtx_def_pre_modify"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4118,7 +4118,7 @@
                     )
                     (!pair  ""
                      (!type struct 209 nil  gc_used "rtx_def_post_inc"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4137,7 +4137,7 @@
                     )
                     (!pair  ""
                      (!type struct 210 nil  gc_used "rtx_def_post_dec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4156,7 +4156,7 @@
                     )
                     (!pair  ""
                      (!type struct 211 nil  gc_used "rtx_def_pre_inc"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4175,7 +4175,7 @@
                     )
                     (!pair  ""
                      (!type struct 212 nil  gc_used "rtx_def_pre_dec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4194,7 +4194,7 @@
                     )
                     (!pair  ""
                      (!type struct 213 nil  gc_used "rtx_def_umax"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4220,7 +4220,7 @@
                     )
                     (!pair  ""
                      (!type struct 214 nil  gc_used "rtx_def_umin"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4246,7 +4246,7 @@
                     )
                     (!pair  ""
                      (!type struct 215 nil  gc_used "rtx_def_smax"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4272,7 +4272,7 @@
                     )
                     (!pair  ""
                      (!type struct 216 nil  gc_used "rtx_def_smin"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4298,7 +4298,7 @@
                     )
                     (!pair  ""
                      (!type struct 217 nil  gc_used "rtx_def_rotatert"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4324,7 +4324,7 @@
                     )
                     (!pair  ""
                      (!type struct 218 nil  gc_used "rtx_def_lshiftrt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4350,7 +4350,7 @@
                     )
                     (!pair  ""
                      (!type struct 219 nil  gc_used "rtx_def_ashiftrt"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4376,7 +4376,7 @@
                     )
                     (!pair  ""
                      (!type struct 220 nil  gc_used "rtx_def_rotate"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4402,7 +4402,7 @@
                     )
                     (!pair  ""
                      (!type struct 221 nil  gc_used "rtx_def_ashift"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4428,7 +4428,7 @@
                     )
                     (!pair  ""
                      (!type struct 222 nil  gc_used "rtx_def_not"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4447,7 +4447,7 @@
                     )
                     (!pair  ""
                      (!type struct 223 nil  gc_used "rtx_def_xor"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4473,7 +4473,7 @@
                     )
                     (!pair  ""
                      (!type struct 224 nil  gc_used "rtx_def_ior"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4499,7 +4499,7 @@
                     )
                     (!pair  ""
                      (!type struct 225 nil  gc_used "rtx_def_and"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4525,7 +4525,7 @@
                     )
                     (!pair  ""
                      (!type struct 226 nil  gc_used "rtx_def_umod"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4551,7 +4551,7 @@
                     )
                     (!pair  ""
                      (!type struct 227 nil  gc_used "rtx_def_udiv"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4577,7 +4577,7 @@
                     )
                     (!pair  ""
                      (!type struct 228 nil  gc_used "rtx_def_mod"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4603,7 +4603,7 @@
                     )
                     (!pair  ""
                      (!type struct 229 nil  gc_used "rtx_def_us_div"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4629,7 +4629,7 @@
                     )
                     (!pair  ""
                      (!type struct 230 nil  gc_used "rtx_def_ss_div"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4655,7 +4655,7 @@
                     )
                     (!pair  ""
                      (!type struct 231 nil  gc_used "rtx_def_div"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4681,7 +4681,7 @@
                     )
                     (!pair  ""
                      (!type struct 232 nil  gc_used "rtx_def_us_mult"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4707,7 +4707,7 @@
                     )
                     (!pair  ""
                      (!type struct 233 nil  gc_used "rtx_def_ss_mult"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4733,7 +4733,7 @@
                     )
                     (!pair  ""
                      (!type struct 234 nil  gc_used "rtx_def_mult"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4759,7 +4759,7 @@
                     )
                     (!pair  ""
                      (!type struct 235 nil  gc_used "rtx_def_neg"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -4778,7 +4778,7 @@
                     )
                     (!pair  ""
                      (!type struct 236 nil  gc_used "rtx_def_minus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4804,7 +4804,7 @@
                     )
                     (!pair  ""
                      (!type struct 237 nil  gc_used "rtx_def_plus"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4830,7 +4830,7 @@
                     )
                     (!pair  ""
                      (!type struct 238 nil  gc_used "rtx_def_compare"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -4856,7 +4856,7 @@
                     )
                     (!pair  ""
                      (!type struct 239 nil  gc_used "rtx_def_if_then_else"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -4889,7 +4889,7 @@
                     )
                     (!pair  ""
                      (!type struct 240 nil  gc_used "rtx_def_cc0"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -4900,11 +4900,11 @@
                     )
                     (!pair  ""
                      (!type struct 241 nil  gc_used "rtx_def_symbol_ref"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  "block_sym"
                         (!type union 242 nil  gc_used "fake_union_1"
-                         (!srcfileloc  "rtl.h" 386)
+                         (!srcfileloc  "rtl.h" 387)
                          (!fields 1 
                           (!pair  ""
                            (!type struct 243 nil  gc_used "block_symbol"
@@ -5094,54 +5094,54 @@
                        )
                        (!pair  ".fld[1]."
                         (!type union 256 nil  gc_used "rtx_def_symbol_subunion"
-                         (!srcfileloc  "rtl.h" 386)
+                         (!srcfileloc  "rtl.h" 387)
                          (!fields 2 
                           (!pair  "rt_constant"
                            (!type pointer 257 nil  gc_used
                             (!type struct 258 
                              (!type already_seen 257)
                              gc_pointed_to "constant_descriptor_rtx"
-                             (!srcfileloc  "varasm.c" 3488)
+                             (!srcfileloc  "varasm.c" 3489)
                              (!fields 10 
                               (!pair  "next"
                                (!type already_seen 257)
-                               (!srcfileloc  "varasm.c" 3478)
+                               (!srcfileloc  "varasm.c" 3479)
                                nil )
                               (!pair  "mem"
                                (!type already_seen 138)
-                               (!srcfileloc  "varasm.c" 3479)
+                               (!srcfileloc  "varasm.c" 3480)
                                nil )
                               (!pair  "sym"
                                (!type already_seen 138)
-                               (!srcfileloc  "varasm.c" 3480)
+                               (!srcfileloc  "varasm.c" 3481)
                                nil )
                               (!pair  "constant"
                                (!type already_seen 138)
-                               (!srcfileloc  "varasm.c" 3481)
+                               (!srcfileloc  "varasm.c" 3482)
                                nil )
                               (!pair  "offset"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3482)
+                               (!srcfileloc  "varasm.c" 3483)
                                nil )
                               (!pair  "hash"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3483)
+                               (!srcfileloc  "varasm.c" 3484)
                                nil )
                               (!pair  "mode"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3484)
+                               (!srcfileloc  "varasm.c" 3485)
                                nil )
                               (!pair  "align"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3485)
+                               (!srcfileloc  "varasm.c" 3486)
                                nil )
                               (!pair  "labelno"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3486)
+                               (!srcfileloc  "varasm.c" 3487)
                                nil )
                               (!pair  "mark"
                                (!type already_seen 9)
-                               (!srcfileloc  "varasm.c" 3487)
+                               (!srcfileloc  "varasm.c" 3488)
                                nil )
                              )
                              (!options 
@@ -5188,7 +5188,7 @@
                     )
                     (!pair  ""
                      (!type struct 259 nil  gc_used "rtx_def_label_ref"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -5207,7 +5207,7 @@
                     )
                     (!pair  ""
                      (!type struct 260 nil  gc_used "rtx_def_mem"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_mem"
                         (!type pointer 261 nil  gc_used
@@ -5273,24 +5273,24 @@
                     )
                     (!pair  ""
                      (!type struct 263 nil  gc_used "rtx_def_concatn"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtvec"
                         (!type pointer 264 nil  gc_used
                          (!type struct 265 
                           (!type already_seen 264)
                           gc_pointed_to "rtvec_def"
-                          (!srcfileloc  "rtl.h" 428)
+                          (!srcfileloc  "rtl.h" 429)
                           (!fields 2 
                            (!pair  "num_elem"
                             (!type already_seen 9)
-                            (!srcfileloc  "rtl.h" 426)
+                            (!srcfileloc  "rtl.h" 427)
                             nil )
                            (!pair  "elem"
                             (!type array 266 nil  gc_used "1" 
                              (!type already_seen 138)
                             )
-                            (!srcfileloc  "rtl.h" 427)
+                            (!srcfileloc  "rtl.h" 428)
                             (!options 
                              (!option length string  "%h.num_elem")
                             )
@@ -5313,7 +5313,7 @@
                     )
                     (!pair  ""
                      (!type struct 267 nil  gc_used "rtx_def_concat"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -5339,7 +5339,7 @@
                     )
                     (!pair  ""
                      (!type struct 268 nil  gc_used "rtx_def_strict_low_part"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -5358,7 +5358,7 @@
                     )
                     (!pair  ""
                      (!type struct 269 nil  gc_used "rtx_def_subreg"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_int"
                         (!type already_seen 9)
@@ -5384,7 +5384,7 @@
                     )
                     (!pair  ""
                      (!type struct 270 nil  gc_used "rtx_def_scratch"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5395,7 +5395,7 @@
                     )
                     (!pair  ""
                      (!type struct 271 nil  gc_used "rtx_def_reg"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_reg"
                         (!type pointer 272 nil  gc_used
@@ -5437,7 +5437,7 @@
                     )
                     (!pair  ""
                      (!type struct 274 nil  gc_used "rtx_def_pc"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5448,7 +5448,7 @@
                     )
                     (!pair  ""
                      (!type struct 275 nil  gc_used "rtx_def_const"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -5467,7 +5467,7 @@
                     )
                     (!pair  ""
                      (!type struct 276 nil  gc_used "rtx_def_const_string"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_str"
                         (!type already_seen 38)
@@ -5486,7 +5486,7 @@
                     )
                     (!pair  ""
                      (!type struct 277 nil  gc_used "rtx_def_const_vector"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtvec"
                         (!type already_seen 264)
@@ -5505,7 +5505,7 @@
                     )
                     (!pair  ""
                      (!type struct 278 nil  gc_used "rtx_def_const_double"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_int"
                         (!type already_seen 9)
@@ -5531,7 +5531,7 @@
                     )
                     (!pair  ""
                      (!type struct 279 nil  gc_used "rtx_def_const_fixed"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_int"
                         (!type already_seen 9)
@@ -5564,7 +5564,7 @@
                     )
                     (!pair  ""
                      (!type struct 280 nil  gc_used "rtx_def_const_wide_int"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5575,7 +5575,7 @@
                     )
                     (!pair  ""
                      (!type struct 281 nil  gc_used "rtx_def_const_int"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_int"
                         (!type already_seen 9)
@@ -5594,7 +5594,7 @@
                     )
                     (!pair  ""
                      (!type struct 282 nil  gc_used "rtx_def_trap_if"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -5620,7 +5620,7 @@
                     )
                     (!pair  ""
                      (!type struct 283 nil  gc_used "rtx_def_eh_return"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5631,7 +5631,7 @@
                     )
                     (!pair  ""
                      (!type struct 284 nil  gc_used "rtx_def_simple_return"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5642,7 +5642,7 @@
                     )
                     (!pair  ""
                      (!type struct 285 nil  gc_used "rtx_def_return"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 0 )
                       nil 511 nil nil )
                      (!srcfileloc  "gengtype.c" 1371)
@@ -5653,7 +5653,7 @@
                     )
                     (!pair  ""
                      (!type struct 286 nil  gc_used "rtx_def_call"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -5679,7 +5679,7 @@
                     )
                     (!pair  ""
                      (!type struct 287 nil  gc_used "rtx_def_clobber"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -5698,7 +5698,7 @@
                     )
                     (!pair  ""
                      (!type struct 288 nil  gc_used "rtx_def_use"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtx"
                         (!type already_seen 138)
@@ -5717,7 +5717,7 @@
                     )
                     (!pair  ""
                      (!type struct 289 nil  gc_used "rtx_def_set"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -5743,7 +5743,7 @@
                     )
                     (!pair  ""
                      (!type struct 290 nil  gc_used "rtx_def_prefetch"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 3 
                        (!pair  ".fld[2].rt_rtx"
                         (!type already_seen 138)
@@ -5776,7 +5776,7 @@
                     )
                     (!pair  ""
                      (!type struct 291 nil  gc_used "rtx_def_addr_diff_vec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 5 
                        (!pair  ".fld[4].rt_int"
                         (!type already_seen 9)
@@ -5823,7 +5823,7 @@
                     )
                     (!pair  ""
                      (!type struct 292 nil  gc_used "rtx_def_addr_vec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtvec"
                         (!type already_seen 264)
@@ -5842,7 +5842,7 @@
                     )
                     (!pair  ""
                      (!type struct 293 nil  gc_used "rtx_def_unspec_volatile"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_int"
                         (!type already_seen 9)
@@ -5868,7 +5868,7 @@
                     )
                     (!pair  ""
                      (!type struct 294 nil  gc_used "rtx_def_unspec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_int"
                         (!type already_seen 9)
@@ -5894,7 +5894,7 @@
                     )
                     (!pair  ""
                      (!type struct 295 nil  gc_used "rtx_def_asm_operands"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 7 
                        (!pair  ".fld[6].rt_int"
                         (!type already_seen 9)
@@ -5955,7 +5955,7 @@
                     )
                     (!pair  ""
                      (!type struct 296 nil  gc_used "rtx_def_asm_input"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_int"
                         (!type already_seen 9)
@@ -5981,7 +5981,7 @@
                     )
                     (!pair  ""
                      (!type struct 297 nil  gc_used "rtx_def_parallel"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtvec"
                         (!type already_seen 264)
@@ -6000,7 +6000,7 @@
                     )
                     (!pair  ""
                      (!type struct 298 nil  gc_used "rtx_def_cond_exec"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -6026,7 +6026,7 @@
                     )
                     (!pair  ""
                      (!type struct 299 nil  gc_used "rtx_def_note"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 6 
                        (!pair  ".fld[5].rt_int"
                         (!type already_seen 9)
@@ -6044,7 +6044,7 @@
                        )
                        (!pair  ".fld[3]."
                         (!type union 300 nil  gc_used "rtx_def_note_subunion"
-                         (!srcfileloc  "rtl.h" 386)
+                         (!srcfileloc  "rtl.h" 387)
                          (!fields 17 
                           (!pair  "rt_str"
                            (!type already_seen 38)
@@ -6713,7 +6713,7 @@
                     )
                     (!pair  ""
                      (!type struct 328 nil  gc_used "rtx_def_code_label"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 7 
                        (!pair  ".fld[6].rt_str"
                         (!type already_seen 38)
@@ -6774,7 +6774,7 @@
                     )
                     (!pair  ""
                      (!type struct 329 nil  gc_used "rtx_def_barrier"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 7 
                        (!pair  ".fld[6].rt_int"
                         (!type already_seen 9)
@@ -6835,7 +6835,7 @@
                     )
                     (!pair  ""
                      (!type struct 330 nil  gc_used "rtx_def_jump_table_data"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 8 
                        (!pair  ".fld[7].rt_int"
                         (!type already_seen 9)
@@ -6903,7 +6903,7 @@
                     )
                     (!pair  ""
                      (!type struct 331 nil  gc_used "rtx_def_call_insn"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 8 
                        (!pair  ".fld[7].rt_rtx"
                         (!type already_seen 138)
@@ -6971,7 +6971,7 @@
                     )
                     (!pair  ""
                      (!type struct 332 nil  gc_used "rtx_def_jump_insn"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 8 
                        (!pair  ".fld[7].rt_rtx"
                         (!type already_seen 138)
@@ -7039,7 +7039,7 @@
                     )
                     (!pair  ""
                      (!type struct 333 nil  gc_used "rtx_def_insn"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 7 
                        (!pair  ".fld[6].rt_rtx"
                         (!type already_seen 138)
@@ -7100,7 +7100,7 @@
                     )
                     (!pair  ""
                      (!type struct 334 nil  gc_used "rtx_def_debug_insn"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 7 
                        (!pair  ".fld[6].rt_rtx"
                         (!type already_seen 138)
@@ -7161,7 +7161,7 @@
                     )
                     (!pair  ""
                      (!type struct 335 nil  gc_used "rtx_def_address"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_int"
                         (!type already_seen 9)
@@ -7180,7 +7180,7 @@
                     )
                     (!pair  ""
                      (!type struct 336 nil  gc_used "rtx_def_sequence"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_rtvec"
                         (!type already_seen 264)
@@ -7199,7 +7199,7 @@
                     )
                     (!pair  ""
                      (!type struct 337 nil  gc_used "rtx_def_int_list"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -7225,7 +7225,7 @@
                     )
                     (!pair  ""
                      (!type struct 338 nil  gc_used "rtx_def_insn_list"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -7251,7 +7251,7 @@
                     )
                     (!pair  ""
                      (!type struct 339 nil  gc_used "rtx_def_expr_list"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 2 
                        (!pair  ".fld[1].rt_rtx"
                         (!type already_seen 138)
@@ -7277,7 +7277,7 @@
                     )
                     (!pair  ""
                      (!type struct 340 nil  gc_used "rtx_def_debug_expr"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_tree"
                         (!type already_seen 5)
@@ -7296,7 +7296,7 @@
                     )
                     (!pair  ""
                      (!type struct 341 nil  gc_used "rtx_def_value"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_int"
                         (!type already_seen 9)
@@ -7315,7 +7315,7 @@
                     )
                     (!pair  ""
                      (!type struct 342 nil  gc_used "rtx_def_UnKnown"
-                      (!srcfileloc  "rtl.h" 386)
+                      (!srcfileloc  "rtl.h" 387)
                       (!fields 1 
                        (!pair  ".fld[0].rt_int"
                         (!type already_seen 9)
@@ -7337,7 +7337,7 @@
                     (!option dot string  "")
                    )
                    511 nil )
-                  (!srcfileloc  "rtl.h" 386)
+                  (!srcfileloc  "rtl.h" 387)
                   (!options 
                    (!option desc string  "GET_CODE (&%0)")
                    (!option special string  "rtx_def")
@@ -11968,45 +11968,45 @@
                    (!type struct 540 
                     (!type already_seen 539)
                     gc_pointed_to "target_rtl"
-                    (!srcfileloc  "rtl.h" 2510)
+                    (!srcfileloc  "rtl.h" 2515)
                     (!fields 7 
                      (!pair  "x_global_rtl"
                       (!type array 541 nil  gc_used "GR_MAX" 
                        (!type already_seen 138)
                       )
-                      (!srcfileloc  "rtl.h" 2485)
+                      (!srcfileloc  "rtl.h" 2490)
                       nil )
                      (!pair  "x_pic_offset_table_rtx"
                       (!type already_seen 138)
-                      (!srcfileloc  "rtl.h" 2488)
+                      (!srcfileloc  "rtl.h" 2493)
                       nil )
                      (!pair  "x_return_address_pointer_rtx"
                       (!type already_seen 138)
-                      (!srcfileloc  "rtl.h" 2493)
+                      (!srcfileloc  "rtl.h" 2498)
                       nil )
                      (!pair  "x_initial_regno_reg_rtx"
                       (!type array 542 nil  gc_used "FIRST_PSEUDO_REGISTER" 
                        (!type already_seen 138)
                       )
-                      (!srcfileloc  "rtl.h" 2499)
+                      (!srcfileloc  "rtl.h" 2504)
                       nil )
                      (!pair  "x_top_of_stack"
                       (!type array 543 nil  gc_used "MAX_MACHINE_MODE" 
                        (!type already_seen 138)
                       )
-                      (!srcfileloc  "rtl.h" 2502)
+                      (!srcfileloc  "rtl.h" 2507)
                       nil )
                      (!pair  "x_static_reg_base_value"
                       (!type array 544 nil  gc_used "FIRST_PSEUDO_REGISTER" 
                        (!type already_seen 138)
                       )
-                      (!srcfileloc  "rtl.h" 2506)
+                      (!srcfileloc  "rtl.h" 2511)
                       nil )
                      (!pair  "x_mode_mem_attrs"
                       (!type array 545 nil  gc_used "(int) MAX_MACHINE_MODE" 
                        (!type already_seen 261)
                       )
-                      (!srcfileloc  "rtl.h" 2509)
+                      (!srcfileloc  "rtl.h" 2514)
                       nil )
                     )
                     nil 511 nil nil )
@@ -15750,7 +15750,7 @@
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 836 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/ada/gcc-interface/decl.c:178"nil 
+ (!type struct 836 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/ada/gcc-interface/decl.c:179"nil 
   (!fields 0 )
   nil 0 nil nil )
  
@@ -15803,14 +15803,14 @@
   nil 0 nil nil )
  
  (!type user_struct 849 nil  gc_unused "hash_table<polymorphic_call_target_hasher>"
-  (!srcfileloc  "ipa-devirt.c" 1013)
+  (!srcfileloc  "ipa-devirt.c" 1014)
   (!fields 1 
    (!pair  "polymorphic_call_target_hasher"
     (!type struct 850 nil  gc_unused "polymorphic_call_target_hasher"
-     (!srcfileloc  "ipa-devirt.c" 1013)
+     (!srcfileloc  "ipa-devirt.c" 1014)
      (!fields 0 )
      nil 511 nil nil )
-    (!srcfileloc  "ipa-devirt.c" 1013)
+    (!srcfileloc  "ipa-devirt.c" 1014)
     nil )
   )
  )
@@ -15826,92 +15826,92 @@
    (!type already_seen 852)
   )
   gc_pointed_to "vec<odr_type,va_gc>"
-  (!srcfileloc  "ipa-devirt.c" 333)
+  (!srcfileloc  "ipa-devirt.c" 334)
   (!fields 2 
    (!pair  "va_gc"
     (!type already_seen 3)
-    (!srcfileloc  "ipa-devirt.c" 333)
+    (!srcfileloc  "ipa-devirt.c" 334)
     nil )
    (!pair  "odr_type"
     (!type pointer 854 nil  gc_used
      (!type struct 855 
       (!type already_seen 854)
       gc_pointed_to "odr_type_d"
-      (!srcfileloc  "ipa-devirt.c" 167)
+      (!srcfileloc  "ipa-devirt.c" 168)
       (!fields 8 
        (!pair  "type"
         (!type already_seen 5)
-        (!srcfileloc  "ipa-devirt.c" 150)
+        (!srcfileloc  "ipa-devirt.c" 151)
         nil )
        (!pair  "bases"
         (!type user_struct 856 nil  gc_unused "vec<odr_type>"
-         (!srcfileloc  "ipa-devirt.c" 152)
+         (!srcfileloc  "ipa-devirt.c" 153)
          (!fields 1 
           (!pair  "odr_type"
            (!type already_seen 854)
-           (!srcfileloc  "ipa-devirt.c" 152)
+           (!srcfileloc  "ipa-devirt.c" 153)
            nil )
          )
         )
-        (!srcfileloc  "ipa-devirt.c" 152)
+        (!srcfileloc  "ipa-devirt.c" 153)
         (!options 
          (!option skip string  "")
         )
        )
        (!pair  "derived_types"
         (!type already_seen 856)
-        (!srcfileloc  "ipa-devirt.c" 154)
+        (!srcfileloc  "ipa-devirt.c" 155)
         (!options 
          (!option skip string  "")
         )
        )
        (!pair  "types"
         (!type already_seen 47)
-        (!srcfileloc  "ipa-devirt.c" 157)
+        (!srcfileloc  "ipa-devirt.c" 158)
         nil )
        (!pair  "types_set"
         (!type pointer 857 nil  gc_unused
          (!type struct 858 
           (!type already_seen 857)
           gc_unused "pointer_set_t"
-          (!srcfileloc  "ipa-devirt.c" 159)
+          (!srcfileloc  "ipa-devirt.c" 160)
           (!fields 0 )
           nil 511 nil nil )
         )
-        (!srcfileloc  "ipa-devirt.c" 159)
+        (!srcfileloc  "ipa-devirt.c" 160)
         (!options 
          (!option skip string  "")
         )
        )
        (!pair  "id"
         (!type already_seen 9)
-        (!srcfileloc  "ipa-devirt.c" 162)
+        (!srcfileloc  "ipa-devirt.c" 163)
         nil )
        (!pair  "anonymous_namespace"
         (!type already_seen 9)
-        (!srcfileloc  "ipa-devirt.c" 164)
+        (!srcfileloc  "ipa-devirt.c" 165)
         nil )
        (!pair  "all_derivations_known"
         (!type already_seen 9)
-        (!srcfileloc  "ipa-devirt.c" 166)
+        (!srcfileloc  "ipa-devirt.c" 167)
         nil )
       )
       nil 511 nil nil )
     )
-    (!srcfileloc  "ipa-devirt.c" 333)
+    (!srcfileloc  "ipa-devirt.c" 334)
     nil )
   )
  )
  
  (!type user_struct 859 nil  gc_unused "hash_table<odr_hasher>"
-  (!srcfileloc  "ipa-devirt.c" 326)
+  (!srcfileloc  "ipa-devirt.c" 327)
   (!fields 1 
    (!pair  "odr_hasher"
     (!type struct 860 nil  gc_unused "odr_hasher"
-     (!srcfileloc  "ipa-devirt.c" 326)
+     (!srcfileloc  "ipa-devirt.c" 327)
      (!fields 0 )
      nil 511 nil nil )
-    (!srcfileloc  "ipa-devirt.c" 326)
+    (!srcfileloc  "ipa-devirt.c" 327)
     nil )
   )
  )
@@ -18775,11 +18775,11 @@
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 1142 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/varasm.c:4825"nil 
+ (!type struct 1142 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/varasm.c:4826"nil 
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 1143 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/varasm.c:4583"nil 
+ (!type struct 1143 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/varasm.c:4584"nil 
   (!fields 0 )
   nil 0 nil nil )
  
@@ -19024,14 +19024,14 @@
   nil 0 nil nil )
  
  (!type user_struct 1193 nil  gc_unused "hash_table<ehspec_hasher>"
-  (!srcfileloc  "except.c" 786)
+  (!srcfileloc  "except.c" 799)
   (!fields 1 
    (!pair  "ehspec_hasher"
     (!type struct 1194 nil  gc_unused "ehspec_hasher"
-     (!srcfileloc  "except.c" 786)
+     (!srcfileloc  "except.c" 799)
      (!fields 0 )
      nil 511 nil nil )
-    (!srcfileloc  "except.c" 786)
+    (!srcfileloc  "except.c" 799)
     nil )
   )
  )
@@ -19039,14 +19039,14 @@
  (!type already_seen 1194)
  
  (!type user_struct 1195 nil  gc_unused "hash_table<ttypes_filter_hasher>"
-  (!srcfileloc  "except.c" 749)
+  (!srcfileloc  "except.c" 762)
   (!fields 1 
    (!pair  "ttypes_filter_hasher"
     (!type struct 1196 nil  gc_unused "ttypes_filter_hasher"
-     (!srcfileloc  "except.c" 749)
+     (!srcfileloc  "except.c" 762)
      (!fields 0 )
      nil 511 nil nil )
-    (!srcfileloc  "except.c" 749)
+    (!srcfileloc  "except.c" 762)
     nil )
   )
  )
@@ -20226,19 +20226,19 @@
    (!type already_seen 1337)
   )
   gc_pointed_to "constant_descriptor_tree"
-  (!srcfileloc  "cgraph.h" 1338)
+  (!srcfileloc  "cgraph.h" 1368)
   (!fields 3 
    (!pair  "rtl"
     (!type already_seen 138)
-    (!srcfileloc  "cgraph.h" 1329)
+    (!srcfileloc  "cgraph.h" 1359)
     nil )
    (!pair  "value"
     (!type already_seen 5)
-    (!srcfileloc  "cgraph.h" 1332)
+    (!srcfileloc  "cgraph.h" 1362)
     nil )
    (!pair  "hash"
     (!type already_seen 9)
-    (!srcfileloc  "cgraph.h" 1337)
+    (!srcfileloc  "cgraph.h" 1367)
     nil )
   )
   nil 511 nil nil )
@@ -20619,15 +20619,15 @@
         (!type struct 1377 
          (!type already_seen 1376)
          gc_pointed_to "rtx_constant_pool"
-         (!srcfileloc  "varasm.c" 3475)
+         (!srcfileloc  "varasm.c" 3476)
          (!fields 4 
           (!pair  "first"
            (!type already_seen 257)
-           (!srcfileloc  "varasm.c" 3463)
+           (!srcfileloc  "varasm.c" 3464)
            nil )
           (!pair  "last"
            (!type already_seen 257)
-           (!srcfileloc  "varasm.c" 3464)
+           (!srcfileloc  "varasm.c" 3465)
            nil )
           (!pair  "const_rtx_htab"
            (!type pointer 1378 nil  gc_used
@@ -20639,7 +20639,7 @@
              (!type already_seen 257)
              nil nil nil nil nil nil nil nil nil nil )
            )
-           (!srcfileloc  "varasm.c" 3470)
+           (!srcfileloc  "varasm.c" 3471)
            (!options 
             (!option param_is type 
              (!type already_seen 258)
@@ -20648,7 +20648,7 @@
           )
           (!pair  "offset"
            (!type already_seen 9)
-           (!srcfileloc  "varasm.c" 3474)
+           (!srcfileloc  "varasm.c" 3475)
            nil )
          )
          nil 511 nil nil )
@@ -21440,19 +21440,19 @@
  (!type already_seen 354)
  
  (!type undefined 1427 nil  gc_unused "enum machine_mode"
-  (!srcfileloc  "rtl.h" 1418)
+  (!srcfileloc  "rtl.h" 1423)
  )
  
  (!type user_struct 1428 nil  gc_unused "std::pair<rtx,enum machine_mode>"
-  (!srcfileloc  "rtl.h" 1418)
+  (!srcfileloc  "rtl.h" 1423)
   (!fields 2 
    (!pair  "enum machine_mode"
     (!type already_seen 1427)
-    (!srcfileloc  "rtl.h" 1418)
+    (!srcfileloc  "rtl.h" 1423)
     nil )
    (!pair  "rtx"
     (!type already_seen 138)
-    (!srcfileloc  "rtl.h" 1418)
+    (!srcfileloc  "rtl.h" 1423)
     nil )
   )
  )
@@ -21772,31 +21772,31 @@
  (!type already_seen 258)
  
  (!type union 1431 nil  gc_unused "u"
-  (!srcfileloc  "rtl.h" 386)
+  (!srcfileloc  "rtl.h" 387)
   (!fields 6 
    (!pair  "fld"
     (!type array 1432 nil  gc_unused "1" 
      (!type already_seen 245)
     )
-    (!srcfileloc  "rtl.h" 380)
+    (!srcfileloc  "rtl.h" 381)
     nil )
    (!pair  "hwint"
     (!type array 1433 nil  gc_unused "1" 
      (!type already_seen 9)
     )
-    (!srcfileloc  "rtl.h" 381)
+    (!srcfileloc  "rtl.h" 382)
     nil )
    (!pair  "block_sym"
     (!type already_seen 243)
-    (!srcfileloc  "rtl.h" 382)
+    (!srcfileloc  "rtl.h" 383)
     nil )
    (!pair  "rv"
     (!type already_seen 24)
-    (!srcfileloc  "rtl.h" 383)
+    (!srcfileloc  "rtl.h" 384)
     nil )
    (!pair  "fv"
     (!type already_seen 28)
-    (!srcfileloc  "rtl.h" 384)
+    (!srcfileloc  "rtl.h" 385)
     nil )
    (!pair  "hwiv"
     (!type struct 1434 
@@ -21817,7 +21817,7 @@
       (!option variable_size string  "")
      )
      511 nil nil )
-    (!srcfileloc  "rtl.h" 385)
+    (!srcfileloc  "rtl.h" 386)
     nil )
   )
   nil 511 nil )
@@ -22213,11 +22213,11 @@
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 1493 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/../libcpp/include/cpplib.h:999"nil 
+ (!type struct 1493 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/../libcpp/include/cpplib.h:1016"nil 
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 1494 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/../libcpp/include/cpplib.h:988"nil 
+ (!type struct 1494 nil  gc_unused "anonymous:../.././../gcc/gcc-UBER/gcc/../libcpp/include/cpplib.h:1005"nil 
   (!fields 0 )
   nil 0 nil nil )
  
@@ -22506,7 +22506,7 @@
  
  (!type already_seen 1510)
 )
-(!typedefs 588
+(!typedefs 589
  (!pair  "vec<ivarref_entry,va_gc>"
   (!type already_seen 1)
   (!srcfileloc  "objc/objc-next-runtime-abi-02.c" 2765)
@@ -22887,11 +22887,11 @@
   nil )
  (!pair  "predefined_identifier"
   (!type already_seen 738)
-  (!srcfileloc  "cp/decl.c" 3646)
+  (!srcfileloc  "cp/decl.c" 3647)
   nil )
  (!pair  "typename_info"
   (!type already_seen 739)
-  (!srcfileloc  "cp/decl.c" 3225)
+  (!srcfileloc  "cp/decl.c" 3226)
   nil )
  (!pair  "vec<incomplete_var,va_gc>"
   (!type already_seen 741)
@@ -23283,7 +23283,7 @@
   nil )
  (!pair  "builtin_type"
   (!type already_seen 9)
-  (!srcfileloc  "ada/gcc-interface/utils.c" 5948)
+  (!srcfileloc  "ada/gcc-interface/utils.c" 5949)
   nil )
  (!pair  "vec<loop_info,va_gc>"
   (!type already_seen 823)
@@ -23311,11 +23311,11 @@
   nil )
  (!pair  "vinfo_t"
   (!type already_seen 835)
-  (!srcfileloc  "ada/gcc-interface/decl.c" 6885)
+  (!srcfileloc  "ada/gcc-interface/decl.c" 6879)
   nil )
  (!pair  "intrin_binding_t"
   (!type already_seen 836)
-  (!srcfileloc  "ada/gcc-interface/decl.c" 182)
+  (!srcfileloc  "ada/gcc-interface/decl.c" 183)
   nil )
  (!pair  "variant_desc"
   (!type already_seen 837)
@@ -23327,39 +23327,39 @@
   nil )
  (!pair  "polymorphic_call_target_hash_type"
   (!type already_seen 849)
-  (!srcfileloc  "ipa-devirt.c" 1014)
+  (!srcfileloc  "ipa-devirt.c" 1015)
   nil )
  (!pair  "polymorphic_call_target_hasher"
   (!type already_seen 850)
-  (!srcfileloc  "ipa-devirt.c" 1013)
+  (!srcfileloc  "ipa-devirt.c" 1014)
   nil )
  (!pair  "hash_table<polymorphic_call_target_hasher>"
   (!type already_seen 849)
-  (!srcfileloc  "ipa-devirt.c" 1013)
+  (!srcfileloc  "ipa-devirt.c" 1014)
   nil )
  (!pair  "vec<odr_type,va_gc>"
   (!type already_seen 852)
-  (!srcfileloc  "ipa-devirt.c" 333)
+  (!srcfileloc  "ipa-devirt.c" 334)
   nil )
  (!pair  "odr_hash_type"
   (!type already_seen 859)
-  (!srcfileloc  "ipa-devirt.c" 326)
+  (!srcfileloc  "ipa-devirt.c" 327)
   nil )
  (!pair  "odr_hasher"
   (!type already_seen 860)
-  (!srcfileloc  "ipa-devirt.c" 326)
+  (!srcfileloc  "ipa-devirt.c" 327)
   nil )
  (!pair  "hash_table<odr_hasher>"
   (!type already_seen 859)
-  (!srcfileloc  "ipa-devirt.c" 326)
+  (!srcfileloc  "ipa-devirt.c" 327)
   nil )
  (!pair  "pointer_set_t"
   (!type already_seen 858)
-  (!srcfileloc  "ipa-devirt.c" 159)
+  (!srcfileloc  "ipa-devirt.c" 160)
   nil )
  (!pair  "vec<odr_type>"
   (!type already_seen 856)
-  (!srcfileloc  "ipa-devirt.c" 152)
+  (!srcfileloc  "ipa-devirt.c" 153)
   nil )
  (!pair  "vtbl_map_iterator_type"
   (!type already_seen 875)
@@ -23691,15 +23691,15 @@
   nil )
  (!pair  "tm_alias_pair"
   (!type already_seen 1141)
-  (!srcfileloc  "varasm.c" 5747)
+  (!srcfileloc  "varasm.c" 5748)
   nil )
  (!pair  "oc_local_state"
   (!type already_seen 1142)
-  (!srcfileloc  "varasm.c" 4846)
+  (!srcfileloc  "varasm.c" 4847)
   nil )
  (!pair  "oc_outer_state"
   (!type already_seen 1143)
-  (!srcfileloc  "varasm.c" 4586)
+  (!srcfileloc  "varasm.c" 4587)
   nil )
  (!pair  "block_info"
   (!type already_seen 1159)
@@ -23767,27 +23767,27 @@
   nil )
  (!pair  "ehspec_hash_type"
   (!type already_seen 1193)
-  (!srcfileloc  "except.c" 786)
+  (!srcfileloc  "except.c" 799)
   nil )
  (!pair  "ehspec_hasher"
   (!type already_seen 1194)
-  (!srcfileloc  "except.c" 786)
+  (!srcfileloc  "except.c" 799)
   nil )
  (!pair  "hash_table<ehspec_hasher>"
   (!type already_seen 1193)
-  (!srcfileloc  "except.c" 786)
+  (!srcfileloc  "except.c" 799)
   nil )
  (!pair  "ttypes_hash_type"
   (!type already_seen 1195)
-  (!srcfileloc  "except.c" 749)
+  (!srcfileloc  "except.c" 762)
   nil )
  (!pair  "ttypes_filter_hasher"
   (!type already_seen 1196)
-  (!srcfileloc  "except.c" 749)
+  (!srcfileloc  "except.c" 762)
   nil )
  (!pair  "hash_table<ttypes_filter_hasher>"
   (!type already_seen 1195)
-  (!srcfileloc  "except.c" 749)
+  (!srcfileloc  "except.c" 762)
   nil )
  (!pair  "action_hash_type"
   (!type already_seen 1199)
@@ -24139,23 +24139,23 @@
   nil )
  (!pair  "cgraph_2node_hook"
   (!type already_seen 9)
-  (!srcfileloc  "cgraph.h" 833)
+  (!srcfileloc  "cgraph.h" 834)
   nil )
  (!pair  "cgraph_2edge_hook"
   (!type already_seen 9)
-  (!srcfileloc  "cgraph.h" 831)
+  (!srcfileloc  "cgraph.h" 832)
   nil )
  (!pair  "varpool_node_hook"
   (!type already_seen 9)
-  (!srcfileloc  "cgraph.h" 829)
+  (!srcfileloc  "cgraph.h" 830)
   nil )
  (!pair  "cgraph_node_hook"
   (!type already_seen 9)
-  (!srcfileloc  "cgraph.h" 828)
+  (!srcfileloc  "cgraph.h" 829)
   nil )
  (!pair  "cgraph_edge_hook"
   (!type already_seen 9)
-  (!srcfileloc  "cgraph.h" 827)
+  (!srcfileloc  "cgraph.h" 828)
   nil )
  (!pair  "cgraph_edge_p"
   (!type already_seen 923)
@@ -24361,31 +24361,31 @@
   nil )
  (!pair  "hash_rtx_callback_function"
   (!type already_seen 9)
-  (!srcfileloc  "rtl.h" 2309)
+  (!srcfileloc  "rtl.h" 2314)
   nil )
  (!pair  "rtx_equal_p_callback_function"
   (!type already_seen 9)
-  (!srcfileloc  "rtl.h" 2304)
+  (!srcfileloc  "rtl.h" 2309)
   nil )
  (!pair  "for_each_inc_dec_fn"
   (!type already_seen 9)
-  (!srcfileloc  "rtl.h" 2300)
+  (!srcfileloc  "rtl.h" 2305)
   nil )
  (!pair  "rtx_function"
   (!type already_seen 9)
-  (!srcfileloc  "rtl.h" 2289)
+  (!srcfileloc  "rtl.h" 2294)
   nil )
  (!pair  "rtx_mode_t"
   (!type already_seen 1428)
-  (!srcfileloc  "rtl.h" 1418)
+  (!srcfileloc  "rtl.h" 1423)
   nil )
  (!pair  "enum machine_mode"
   (!type already_seen 1427)
-  (!srcfileloc  "rtl.h" 1418)
+  (!srcfileloc  "rtl.h" 1423)
   nil )
  (!pair  "std::pair<rtx,enum machine_mode>"
   (!type already_seen 1428)
-  (!srcfileloc  "rtl.h" 1418)
+  (!srcfileloc  "rtl.h" 1423)
   nil )
  (!pair  "va_gc"
   (!type already_seen 3)
@@ -24725,23 +24725,27 @@
   nil )
  (!pair  "cpp_cb"
   (!type already_seen 9)
-  (!srcfileloc  "../libcpp/include/cpplib.h" 1021)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 1038)
   nil )
  (!pair  "cpp_comment_table"
   (!type already_seen 1493)
-  (!srcfileloc  "../libcpp/include/cpplib.h" 1008)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 1025)
   nil )
  (!pair  "cpp_comment"
   (!type already_seen 1494)
-  (!srcfileloc  "../libcpp/include/cpplib.h" 994)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 1011)
   nil )
  (!pair  "cpp_num"
   (!type already_seen 1495)
-  (!srcfileloc  "../libcpp/include/cpplib.h" 823)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 840)
+  nil )
+ (!pair  "__int64"
+  (!type already_seen 9)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 833)
   nil )
  (!pair  "cpp_num_part"
   (!type already_seen 9)
-  (!srcfileloc  "../libcpp/include/cpplib.h" 822)
+  (!srcfileloc  "../libcpp/include/cpplib.h" 827)
   nil )
  (!pair  "missing_header_cb"
   (!type already_seen 9)
@@ -26230,11 +26234,11 @@
   nil )
  (!pair  "generic_parm_count"
   (!type already_seen 9)
-  (!srcfileloc  "cp/parser.c" 31983)
+  (!srcfileloc  "cp/parser.c" 31976)
   nil )
  (!pair  "the_parser"
   (!type already_seen 698)
-  (!srcfileloc  "cp/parser.c" 31406)
+  (!srcfileloc  "cp/parser.c" 31399)
   nil )
  (!pair  "lambda_scope_stack"
   (!type already_seen 693)
@@ -26383,7 +26387,7 @@
   nil )
  (!pair  "typename_htab"
   (!type already_seen 55)
-  (!srcfileloc  "cp/decl.c" 3248)
+  (!srcfileloc  "cp/decl.c" 3249)
   (!options 
    (!option param_is type 
     (!type already_seen 7)
@@ -26663,13 +26667,13 @@
   (!type array 1620 nil  gc_used "(int) ATTR_LAST" 
    (!type already_seen 5)
   )
-  (!srcfileloc  "ada/gcc-interface/utils.c" 6091)
+  (!srcfileloc  "ada/gcc-interface/utils.c" 6092)
   nil )
  (!pair  "builtin_types"
   (!type array 1621 nil  gc_used "(int) BT_LAST + 1" 
    (!type already_seen 5)
   )
-  (!srcfileloc  "ada/gcc-interface/utils.c" 5951)
+  (!srcfileloc  "ada/gcc-interface/utils.c" 5952)
   nil )
  (!pair  "dummy_global"
   (!type already_seen 5)
@@ -26749,11 +26753,11 @@
  )
  (!pair  "gnat_vms_condition_handler_decl"
   (!type already_seen 5)
-  (!srcfileloc  "ada/gcc-interface/trans.c" 2950)
+  (!srcfileloc  "ada/gcc-interface/trans.c" 2949)
   nil )
  (!pair  "vms_builtin_establish_handler_decl"
   (!type already_seen 5)
-  (!srcfileloc  "ada/gcc-interface/trans.c" 2949)
+  (!srcfileloc  "ada/gcc-interface/trans.c" 2948)
   nil )
  (!pair  "gnu_program_error_label_stack"
   (!type already_seen 47)
@@ -26836,7 +26840,7 @@
   nil )
  (!pair  "odr_types_ptr"
   (!type already_seen 853)
-  (!srcfileloc  "ipa-devirt.c" 333)
+  (!srcfileloc  "ipa-devirt.c" 334)
   nil )
  (!pair  "decl_tree_for_type"
   (!type already_seen 1537)
@@ -26907,11 +26911,11 @@
   nil )
  (!pair  "vtable_entry_type"
   (!type already_seen 5)
-  (!srcfileloc  "cgraphunit.c" 234)
+  (!srcfileloc  "cgraphunit.c" 235)
   nil )
  (!pair  "asm_last_node"
   (!type already_seen 1345)
-  (!srcfileloc  "cgraphunit.c" 231)
+  (!srcfileloc  "cgraphunit.c" 232)
   nil )
  (!pair  "order"
   (!type already_seen 921)
@@ -27044,15 +27048,15 @@
   nil )
  (!pair  "elf_fini_array_section"
   (!type already_seen 248)
-  (!srcfileloc  "varasm.c" 7529)
+  (!srcfileloc  "varasm.c" 7530)
   nil )
  (!pair  "elf_init_array_section"
   (!type already_seen 248)
-  (!srcfileloc  "varasm.c" 7528)
+  (!srcfileloc  "varasm.c" 7529)
   nil )
  (!pair  "tm_clone_hash"
   (!type already_seen 1543)
-  (!srcfileloc  "varasm.c" 5705)
+  (!srcfileloc  "varasm.c" 5706)
   (!options 
    (!option param_is type 
     (!type already_seen 1413)
@@ -27062,11 +27066,11 @@
  )
  (!pair  "weakref_targets"
   (!type already_seen 5)
-  (!srcfileloc  "varasm.c" 5399)
+  (!srcfileloc  "varasm.c" 5400)
   nil )
  (!pair  "const_desc_htab"
   (!type already_seen 1545)
-  (!srcfileloc  "varasm.c" 2787)
+  (!srcfileloc  "varasm.c" 2788)
   (!options 
    (!option param_is type 
     (!type already_seen 1337)
@@ -27075,15 +27079,15 @@
  )
  (!pair  "initial_trampoline"
   (!type already_seen 138)
-  (!srcfileloc  "varasm.c" 2498)
+  (!srcfileloc  "varasm.c" 2499)
   nil )
  (!pair  "weak_decls"
   (!type already_seen 5)
-  (!srcfileloc  "varasm.c" 2276)
+  (!srcfileloc  "varasm.c" 2277)
   nil )
  (!pair  "pending_assemble_externals"
   (!type already_seen 5)
-  (!srcfileloc  "varasm.c" 2206)
+  (!srcfileloc  "varasm.c" 2207)
   nil )
  (!pair  "shared_constant_pool"
   (!type already_seen 1376)
@@ -27370,14 +27374,14 @@
     (!type already_seen 138)
    )
   )
-  (!srcfileloc  "emit-rtl.c" 6078)
+  (!srcfileloc  "emit-rtl.c" 6080)
   (!options 
    (!option deletable string  "")
   )
  )
  (!pair  "free_sequence_stack"
   (!type already_seen 1373)
-  (!srcfileloc  "emit-rtl.c" 5226)
+  (!srcfileloc  "emit-rtl.c" 5227)
   (!options 
    (!option deletable string  "")
   )
@@ -28121,27 +28125,27 @@
   nil )
  (!pair  "stack_limit_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2941)
+  (!srcfileloc  "rtl.h" 2946)
   nil )
  (!pair  "default_target_rtl"
   (!type already_seen 540)
-  (!srcfileloc  "rtl.h" 2512)
+  (!srcfileloc  "rtl.h" 2517)
   nil )
  (!pair  "simple_return_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2413)
+  (!srcfileloc  "rtl.h" 2418)
   nil )
  (!pair  "ret_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2412)
+  (!srcfileloc  "rtl.h" 2417)
   nil )
  (!pair  "cc0_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2411)
+  (!srcfileloc  "rtl.h" 2416)
   nil )
  (!pair  "pc_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2410)
+  (!srcfileloc  "rtl.h" 2415)
   nil )
  (!pair  "const_tiny_rtx"
   (!type array 1637 nil  gc_used "4" 
@@ -28149,17 +28153,17 @@
     (!type already_seen 138)
    )
   )
-  (!srcfileloc  "rtl.h" 2397)
+  (!srcfileloc  "rtl.h" 2402)
   nil )
  (!pair  "const_true_rtx"
   (!type already_seen 138)
-  (!srcfileloc  "rtl.h" 2395)
+  (!srcfileloc  "rtl.h" 2400)
   nil )
  (!pair  "const_int_rtx"
   (!type array 1639 nil  gc_used "MAX_SAVED_CONST_INT * 2 + 1" 
    (!type already_seen 138)
   )
-  (!srcfileloc  "rtl.h" 2389)
+  (!srcfileloc  "rtl.h" 2394)
   nil )
  (!pair  "gcov_fn_info_ptr_type"
   (!type already_seen 5)

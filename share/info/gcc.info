@@ -21946,6 +21946,7 @@ extensions, accepted by GCC in C90 mode and in C++.
 * Mixed Declarations::  Mixing declarations and code.
 * Function Attributes:: Declaring that functions have no side effects,
                         or that they can never return.
+* Label Attributes::    Specifying attributes on labels.
 * Attribute Syntax::    Formal syntax for attributes.
 * Function Prototypes:: Prototype declarations and old-style definitions.
 * C++ Comments::        C++ comments are recognized.
@@ -23633,7 +23634,7 @@ C90 mode.  For example, you could do:
 the enclosing block.
 
 
-File: gcc.info,  Node: Function Attributes,  Next: Attribute Syntax,  Prev: Mixed Declarations,  Up: C Extensions
+File: gcc.info,  Node: Function Attributes,  Next: Label Attributes,  Prev: Mixed Declarations,  Up: C Extensions
 
 6.30 Declaring Attributes of Functions
 ======================================
@@ -23657,8 +23658,8 @@ currently defined for functions on all targets: 'aligned', 'alloc_size',
 'no_sanitize_undefined', 'error' and 'warning'.  Several other
 attributes are defined for functions on particular target systems.
 Other attributes, including 'section' are supported for variables
-declarations (*note Variable Attributes::) and for types (*note Type
-Attributes::).
+declarations (*note Variable Attributes::), labels (*note Label
+Attributes::) and for types (*note Type Attributes::).
 
  GCC plugins may provide their own attributes.
 
@@ -24917,9 +24918,9 @@ attributes.
 'hot'
      The 'hot' attribute on a function is used to inform the compiler
      that the function is a hot spot of the compiled program.  The
-     function is optimized more aggressively and on many target it is
-     placed into special subsection of the text section so all hot
-     functions appears close together improving locality.
+     function is optimized more aggressively and on many targets it is
+     placed into a special subsection of the text section so all hot
+     functions appear close together, improving locality.
 
      When profile feedback is available, via '-fprofile-use', hot
      functions are automatically detected and this attribute is ignored.
@@ -24927,22 +24928,13 @@ attributes.
      The 'hot' attribute on functions is not implemented in GCC versions
      earlier than 4.3.
 
-     The 'hot' attribute on a label is used to inform the compiler that
-     path following the label are more likely than paths that are not so
-     annotated.  This attribute is used in cases where
-     '__builtin_expect' cannot be used, for instance with computed goto
-     or 'asm goto'.
-
-     The 'hot' attribute on labels is not implemented in GCC versions
-     earlier than 4.8.
-
 'cold'
      The 'cold' attribute on functions is used to inform the compiler
      that the function is unlikely to be executed.  The function is
      optimized for size rather than speed and on many targets it is
-     placed into special subsection of the text section so all cold
-     functions appears close together improving code locality of
-     non-cold parts of program.  The paths leading to call of cold
+     placed into a special subsection of the text section so all cold
+     functions appear close together, improving code locality of
+     non-cold parts of program.  The paths leading to calls of cold
      functions within code are marked as unlikely by the branch
      prediction mechanism.  It is thus useful to mark functions used to
      handle unlikely conditions, such as 'perror', as cold to improve
@@ -24954,14 +24946,6 @@ attributes.
 
      The 'cold' attribute on functions is not implemented in GCC
      versions earlier than 4.3.
-
-     The 'cold' attribute on labels is used to inform the compiler that
-     the path following the label is unlikely to be executed.  This
-     attribute is used in cases where '__builtin_expect' cannot be used,
-     for instance with computed goto or 'asm goto'.
-
-     The 'cold' attribute on labels is not implemented in GCC versions
-     earlier than 4.8.
 
 'no_sanitize_address'
 'no_address_safety_analysis'
@@ -25716,9 +25700,63 @@ constructs that do not naturally form part of the grammar.  *Note
 Pragmas Accepted by GCC: Pragmas.
 
 
-File: gcc.info,  Node: Attribute Syntax,  Next: Function Prototypes,  Prev: Function Attributes,  Up: C Extensions
+File: gcc.info,  Node: Label Attributes,  Next: Attribute Syntax,  Prev: Function Attributes,  Up: C Extensions
 
-6.31 Attribute Syntax
+6.31 Label Attributes
+=====================
+
+GCC allows attributes to be set on C labels.  *Note Attribute Syntax::,
+for details of the exact syntax for using attributes.  Other attributes
+are available for functions (*note Function Attributes::), variables
+(*note Variable Attributes::) and for types (*note Type Attributes::).
+
+ This example uses the 'cold' label attribute to indicate the
+'ErrorHandling' branch is unlikely to be taken and that the
+'ErrorHandling' label is unused:
+
+
+        asm goto ("some asm" : : : : NoError);
+
+     /* This branch (the fallthru from the asm) is less commonly used */
+     ErrorHandling:
+        __attribute__((cold, unused)); /* Semi-colon is required here */
+        printf("error\n");
+        return 0;
+
+     NoError:
+        printf("no error\n");
+        return 1;
+
+'unused'
+     This feature is intended for program-generated code that may
+     contain unused labels, but which is compiled with '-Wall'.  It is
+     not normally appropriate to use in it human-written code, though it
+     could be useful in cases where the code that jumps to the label is
+     contained within an '#ifdef' conditional.
+
+'hot'
+     The 'hot' attribute on a label is used to inform the compiler that
+     the path following the label is more likely than paths that are not
+     so annotated.  This attribute is used in cases where
+     '__builtin_expect' cannot be used, for instance with computed goto
+     or 'asm goto'.
+
+     The 'hot' attribute on labels is not implemented in GCC versions
+     earlier than 4.8.
+
+'cold'
+     The 'cold' attribute on labels is used to inform the compiler that
+     the path following the label is unlikely to be executed.  This
+     attribute is used in cases where '__builtin_expect' cannot be used,
+     for instance with computed goto or 'asm goto'.
+
+     The 'cold' attribute on labels is not implemented in GCC versions
+     earlier than 4.8.
+
+
+File: gcc.info,  Node: Attribute Syntax,  Next: Function Prototypes,  Prev: Label Attributes,  Up: C Extensions
+
+6.32 Attribute Syntax
 =====================
 
 This section describes the syntax with which '__attribute__' may be
@@ -25739,7 +25777,8 @@ declarations only, but not on nested declarators.
 applying to functions.  *Note Variable Attributes::, for details of the
 semantics of attributes applying to variables.  *Note Type Attributes::,
 for details of the semantics of attributes applying to structure, union
-and enumerated types.
+and enumerated types.  *Note Label Attributes::, for details of the
+semantics of attributes applying to labels.
 
  An "attribute specifier" is of the form '__attribute__
 ((ATTRIBUTE-LIST))'.  An "attribute list" is a possibly empty
@@ -25769,22 +25808,23 @@ the following:
  An "attribute specifier list" is a sequence of one or more attribute
 specifiers, not separated by any other tokens.
 
- In GNU C, an attribute specifier list may appear after the colon
-following a label, other than a 'case' or 'default' label.  The only
-attribute it makes sense to use after a label is 'unused'.  This feature
-is intended for program-generated code that may contain unused labels,
-but which is compiled with '-Wall'.  It is not normally appropriate to
-use in it human-written code, though it could be useful in cases where
-the code that jumps to the label is contained within an '#ifdef'
-conditional.  GNU C++ only permits attributes on labels if the attribute
-specifier is immediately followed by a semicolon (i.e., the label
-applies to an empty statement).  If the semicolon is missing, C++ label
-attributes are ambiguous, as it is permissible for a declaration, which
-could begin with an attribute list, to be labelled in C++.  Declarations
-cannot be labelled in C90 or C99, so the ambiguity does not arise there.
+Label Attributes
+................
 
- An attribute specifier list may appear as part of a 'struct', 'union'
-or 'enum' specifier.  It may go either immediately after the 'struct',
+In GNU C, an attribute specifier list may appear after the colon
+following a label, other than a 'case' or 'default' label.  GNU C++ only
+permits attributes on labels if the attribute specifier is immediately
+followed by a semicolon (i.e., the label applies to an empty statement).
+If the semicolon is missing, C++ label attributes are ambiguous, as it
+is permissible for a declaration, which could begin with an attribute
+list, to be labelled in C++.  Declarations cannot be labelled in C90 or
+C99, so the ambiguity does not arise there.
+
+Type Attributes
+...............
+
+An attribute specifier list may appear as part of a 'struct', 'union' or
+'enum' specifier.  It may go either immediately after the 'struct',
 'union' or 'enum' keyword, or after the closing brace.  The former
 syntax is preferred.  Where attribute specifiers follow the closing
 brace, they are considered to relate to the structure, union or
@@ -25792,7 +25832,10 @@ enumerated type defined, not to any enclosing declaration the type
 specifier appears in, and the type defined is not complete until after
 the attribute specifiers.
 
- Otherwise, an attribute specifier appears as part of a declaration,
+All other attributes
+....................
+
+Otherwise, an attribute specifier appears as part of a declaration,
 counting declarations of unnamed parameters and type names, and relates
 to that declaration (which may be nested in another declaration, for
 example in the case of a parameter declaration), or to a particular
@@ -25918,7 +25961,7 @@ type.
 
 File: gcc.info,  Node: Function Prototypes,  Next: C++ Comments,  Prev: Attribute Syntax,  Up: C Extensions
 
-6.32 Prototypes and Old-Style Function Definitions
+6.33 Prototypes and Old-Style Function Definitions
 ==================================================
 
 GNU C extends ISO C to allow a function prototype to override a later
@@ -25971,7 +26014,7 @@ extension is irrelevant.
 
 File: gcc.info,  Node: C++ Comments,  Next: Dollar Signs,  Prev: Function Prototypes,  Up: C Extensions
 
-6.33 C++ Style Comments
+6.34 C++ Style Comments
 =======================
 
 In GNU C, you may use C++ style comments, which start with '//' and
@@ -25984,7 +26027,7 @@ specifying a version of ISO C before C99, or '-ansi' (equivalent to
 
 File: gcc.info,  Node: Dollar Signs,  Next: Character Escapes,  Prev: C++ Comments,  Up: C Extensions
 
-6.34 Dollar Signs in Identifier Names
+6.35 Dollar Signs in Identifier Names
 =====================================
 
 In GNU C, you may normally use dollar signs in identifier names.  This
@@ -25995,7 +26038,7 @@ machines, typically because the target assembler does not allow them.
 
 File: gcc.info,  Node: Character Escapes,  Next: Variable Attributes,  Prev: Dollar Signs,  Up: C Extensions
 
-6.35 The Character <ESC> in Constants
+6.36 The Character <ESC> in Constants
 =====================================
 
 You can use the sequence '\e' in a string or character constant to stand
@@ -26004,7 +26047,7 @@ for the ASCII character <ESC>.
 
 File: gcc.info,  Node: Variable Attributes,  Next: Type Attributes,  Prev: Character Escapes,  Up: C Extensions
 
-6.36 Specifying Attributes of Variables
+6.37 Specifying Attributes of Variables
 =======================================
 
 The keyword '__attribute__' allows you to specify special attributes of
@@ -26012,9 +26055,10 @@ variables or structure fields.  This keyword is followed by an attribute
 specification inside double parentheses.  Some attributes are currently
 defined generically for variables.  Other attributes are defined for
 variables on particular target systems.  Other attributes are available
-for functions (*note Function Attributes::) and for types (*note Type
-Attributes::).  Other front ends might define more attributes (*note
-Extensions to the C++ Language: C++ Extensions.).
+for functions (*note Function Attributes::), labels (*note Label
+Attributes::) and for types (*note Type Attributes::).  Other front ends
+might define more attributes (*note Extensions to the C++ Language: C++
+Extensions.).
 
  You may also specify attributes with '__' preceding and following each
 keyword.  This allows you to use them in header files without being
@@ -26311,7 +26355,7 @@ attributes.
      The 'dllexport' attribute is described in *note Function
      Attributes::.
 
-6.36.1 AVR Variable Attributes
+6.37.1 AVR Variable Attributes
 ------------------------------
 
 'progmem'
@@ -26345,7 +26389,7 @@ attributes.
      See also the *note AVR Named Address Spaces:: section for an
      alternate way to locate and access data in flash memory.
 
-6.36.2 Blackfin Variable Attributes
+6.37.2 Blackfin Variable Attributes
 -----------------------------------
 
 Three attributes are currently defined for the Blackfin.
@@ -26365,7 +26409,7 @@ Three attributes are currently defined for the Blackfin.
      SRAM. Variables with 'l2' attribute are put into the specific
      section named '.l2.data'.
 
-6.36.3 M32R/D Variable Attributes
+6.37.3 M32R/D Variable Attributes
 ---------------------------------
 
 One attribute is currently defined for the M32R/D.
@@ -26382,7 +26426,7 @@ One attribute is currently defined for the M32R/D.
      address space (the compiler generates 'seth/add3' instructions to
      load their addresses).
 
-6.36.4 MeP Variable Attributes
+6.37.4 MeP Variable Attributes
 ------------------------------
 
 The MeP target has a number of addressing modes and busses.  The 'near'
@@ -26431,7 +26475,7 @@ attributes.
 
           int cpu_clock __attribute__((cb(0x123)));
 
-6.36.5 i386 Variable Attributes
+6.37.5 i386 Variable Attributes
 -------------------------------
 
 Two attributes are currently defined for i386 configurations:
@@ -26553,7 +26597,7 @@ Two attributes are currently defined for i386 configurations:
 
           Here, 't5' takes up 2 bytes.
 
-6.36.6 PowerPC Variable Attributes
+6.37.6 PowerPC Variable Attributes
 ----------------------------------
 
 Three attributes currently are defined for PowerPC configurations:
@@ -26565,14 +26609,14 @@ documentation in *note i386 Variable Attributes::.
  For documentation of 'altivec' attribute please see the documentation
 in *note PowerPC Type Attributes::.
 
-6.36.7 SPU Variable Attributes
+6.37.7 SPU Variable Attributes
 ------------------------------
 
 The SPU supports the 'spu_vector' attribute for variables.  For
 documentation of this attribute please see the documentation in *note
 SPU Type Attributes::.
 
-6.36.8 Xstormy16 Variable Attributes
+6.37.8 Xstormy16 Variable Attributes
 ------------------------------------
 
 One attribute is currently defined for xstormy16 configurations:
@@ -26588,7 +26632,7 @@ One attribute is currently defined for xstormy16 configurations:
 
 File: gcc.info,  Node: Type Attributes,  Next: Alignment,  Prev: Variable Attributes,  Up: C Extensions
 
-6.37 Specifying Attributes of Types
+6.38 Specifying Attributes of Types
 ===================================
 
 The keyword '__attribute__' allows you to specify special attributes of
@@ -26597,7 +26641,8 @@ followed by an attribute specification inside double parentheses.  Seven
 attributes are currently defined for types: 'aligned', 'packed',
 'transparent_union', 'unused', 'deprecated', 'visibility', and
 'may_alias'.  Other attributes are defined for functions (*note Function
-Attributes::) and for variables (*note Variable Attributes::).
+Attributes::), labels (*note Label Attributes::) and for variables
+(*note Variable Attributes::).
 
  You may also specify any one of these attributes with '__' preceding
 and following its keyword.  This allows you to use these attributes in
@@ -26871,7 +26916,7 @@ attributes.
 double parentheses: for example, '__attribute__ ((aligned (16),
 packed))'.
 
-6.37.1 ARM Type Attributes
+6.38.1 ARM Type Attributes
 --------------------------
 
 On those ARM targets that support 'dllimport' (such as Symbian OS), you
@@ -26892,7 +26937,7 @@ In this code, 'C::C' is exported from the current DLL, but the virtual
 table for 'C' is not exported.  (You can use '__attribute__' instead of
 '__declspec' if you prefer, but most Symbian OS code uses '__declspec'.)
 
-6.37.2 MeP Type Attributes
+6.38.2 MeP Type Attributes
 --------------------------
 
 Many of the MeP variable attributes may be applied to types as well.
@@ -26900,7 +26945,7 @@ Specifically, the 'based', 'tiny', 'near', and 'far' attributes may be
 applied to either.  The 'io' and 'cb' attributes may not be applied to
 types.
 
-6.37.3 i386 Type Attributes
+6.38.3 i386 Type Attributes
 ---------------------------
 
 Two attributes are currently defined for i386 configurations:
@@ -26919,7 +26964,7 @@ Two attributes are currently defined for i386 configurations:
      Currently '-m[no-]ms-bitfields' is provided for the Microsoft
      Windows X86 compilers to match the native Microsoft compiler.
 
-6.37.4 PowerPC Type Attributes
+6.38.4 PowerPC Type Attributes
 ------------------------------
 
 Three attributes currently are defined for PowerPC configurations:
@@ -26941,7 +26986,7 @@ followed by unsigned).
  These attributes mainly are intended to support the '__vector',
 '__pixel', and '__bool' AltiVec keywords.
 
-6.37.5 SPU Type Attributes
+6.38.5 SPU Type Attributes
 --------------------------
 
 The SPU supports the 'spu_vector' attribute for types.  This attribute
@@ -26952,7 +26997,7 @@ to support the '__vector' keyword.
 
 File: gcc.info,  Node: Alignment,  Next: Inline,  Prev: Type Attributes,  Up: C Extensions
 
-6.38 Inquiring on Alignment of Types or Variables
+6.39 Inquiring on Alignment of Types or Variables
 =================================================
 
 The keyword '__alignof__' allows you to inquire about how an object is
@@ -26984,7 +27029,7 @@ alignment is probably 2 or 4, the same as '__alignof__ (int)'.
 
 File: gcc.info,  Node: Inline,  Next: Volatiles,  Prev: Alignment,  Up: C Extensions
 
-6.39 An Inline Function is As Fast As a Macro
+6.40 An Inline Function is As Fast As a Macro
 =============================================
 
 By declaring a function inline, you can direct GCC to make calls to that
@@ -27090,7 +27135,7 @@ library.
 
 File: gcc.info,  Node: Volatiles,  Next: Using Assembly Language with C,  Prev: Inline,  Up: C Extensions
 
-6.40 When is a Volatile Object Accessed?
+6.41 When is a Volatile Object Accessed?
 ========================================
 
 C has the concept of volatile objects.  These are normally accessed by
@@ -27161,7 +27206,7 @@ access hardware.
 
 File: gcc.info,  Node: Using Assembly Language with C,  Next: Alternate Keywords,  Prev: Volatiles,  Up: C Extensions
 
-6.41 How to Use Inline Assembly Language in C Code
+6.42 How to Use Inline Assembly Language in C Code
 ==================================================
 
 GCC provides various extensions that allow you to embed assembler within
@@ -27179,7 +27224,7 @@ C code.
 
 File: gcc.info,  Node: Basic Asm,  Next: Extended Asm,  Up: Using Assembly Language with C
 
-6.41.1 Basic Asm -- Assembler Instructions with No Operands
+6.42.1 Basic Asm -- Assembler Instructions with No Operands
 -----------------------------------------------------------
 
 The 'asm' keyword allows you to embed assembler instructions within C
@@ -27272,7 +27317,7 @@ provide different assembler strings for different dialects.
 
 File: gcc.info,  Node: Extended Asm,  Next: Constraints,  Prev: Basic Asm,  Up: Using Assembly Language with C
 
-6.41.2 Extended Asm - Assembler Instructions with C Expression Operands
+6.42.2 Extended Asm - Assembler Instructions with C Expression Operands
 -----------------------------------------------------------------------
 
 The 'asm' keyword allows you to embed assembler instructions within C
@@ -27367,7 +27412,7 @@ useful) example for i386 using 'asm' might look like this:
 
  This code will copy SRC to DST and add 1 to DST.
 
-6.41.2.1 Volatile
+6.42.2.1 Volatile
 .................
 
 GCC's optimizers sometimes discard 'asm' statements if they determine
@@ -27477,7 +27522,7 @@ duplicate symbol errors during compilation if your asm code defines
 symbols or labels.  Using %= (*note AssemblerTemplate::) may help
 resolve this problem.
 
-6.41.2.2 Assembler Template
+6.42.2.2 Assembler Template
 ...........................
 
 An assembler template is a literal string containing assembler
@@ -27572,7 +27617,7 @@ operands, there are a few special cases:
      creating local labels and referring to them multiple times in a
      single template that generates multiple assembler instructions.
 
-6.41.2.3 Output Operands
+6.42.2.3 Output Operands
 ........................
 
 An 'asm' statement has zero or more output operands indicating the names
@@ -27725,7 +27770,7 @@ might already have the current value of the uint32_t pointed to by E in
 a register, you can enable it to choose the best location for D by
 specifying both constraints.
 
-6.41.2.4 Input Operands
+6.42.2.4 Input Operands
 .......................
 
 Input operands make inputs from C variables and expressions available to
@@ -27819,7 +27864,7 @@ are in the same place in the generated assembler code.
         : [result] "=r"(result)
         : "r" (test), "r" (new), "[result]" (old));
 
-6.41.2.5 Clobbers
+6.42.2.5 Clobbers
 .................
 
 While the compiler is aware of changes to entries listed in the output
@@ -27885,7 +27930,7 @@ registers:
 
      '{"m"( ({ struct { char x[10]; } *p = (void *)ptr ; *p; }) )}'.
 
-6.41.2.6 Goto Labels
+6.42.2.6 Goto Labels
 ....................
 
 'asm goto' allows assembly code to jump to one or more C labels.  The
@@ -27893,8 +27938,9 @@ GotoLabels section in an 'asm goto' statement contains a comma-separated
 list of all C labels to which the assembler code may jump.  GCC assumes
 that 'asm' execution falls through to the next statement (if this is not
 the case, consider using the '__builtin_unreachable' intrinsic after the
-'asm' statement).  The total number of input + output + goto operands
-has a limit of 30.
+'asm' statement).  Optimization of 'asm goto' may be improved by using
+the 'hot' and 'cold' label attributes (*note Label Attributes::).  The
+total number of input + output + goto operands has a limit of 30.
 
  An 'asm goto' statement can not have outputs (which means that the
 statement is implicitly volatile).  This is due to an internal
@@ -27943,7 +27989,7 @@ take account of them when deciding how to optimize.
        return -1;
      }
 
-6.41.2.7 i386 Operand modifiers
+6.42.2.7 i386 Operand modifiers
 ...............................
 
 Input, output, and goto operands for extended 'asm' statements can use
@@ -28001,7 +28047,7 @@ Modifier   Description                                  Operand   'masm=att' 'ma
 'c'        Require a constant operand and print the     '%c1'     '2'        '2'
            constant expression with no punctuation.
 
-6.41.2.8 i386 floating-point asm operands
+6.42.2.8 i386 floating-point asm operands
 .........................................
 
 On i386 targets, there are several rules on the usage of stack-like
@@ -28082,7 +28128,7 @@ the compiler to know that 'fyl2xp1' pops both inputs.
 
 File: gcc.info,  Node: Constraints,  Next: Asm Labels,  Prev: Extended Asm,  Up: Using Assembly Language with C
 
-6.41.3 Constraints for 'asm' Operands
+6.42.3 Constraints for 'asm' Operands
 -------------------------------------
 
 Here are specific details on what constraint letters you can use with
@@ -28105,7 +28151,7 @@ exactly once in an instruction that can update the addressing register.
 
 File: gcc.info,  Node: Simple Constraints,  Next: Multi-Alternative,  Up: Constraints
 
-6.41.3.1 Simple Constraints
+6.42.3.1 Simple Constraints
 ...........................
 
 The simplest kind of constraint is a string full of letters, each of
@@ -28272,7 +28318,7 @@ OTHER-LETTERS
 
 File: gcc.info,  Node: Multi-Alternative,  Next: Modifiers,  Prev: Simple Constraints,  Up: Constraints
 
-6.41.3.2 Multiple Alternative Constraints
+6.42.3.2 Multiple Alternative Constraints
 .........................................
 
 Sometimes a single instruction has multiple alternative sets of possible
@@ -28310,7 +28356,7 @@ characters:
 
 File: gcc.info,  Node: Modifiers,  Next: Machine Constraints,  Prev: Multi-Alternative,  Up: Constraints
 
-6.41.3.3 Constraint Modifier Characters
+6.42.3.3 Constraint Modifier Characters
 .......................................
 
 Here are constraint modifier characters.
@@ -28379,7 +28425,7 @@ Here are constraint modifier characters.
 
 File: gcc.info,  Node: Machine Constraints,  Prev: Modifiers,  Up: Constraints
 
-6.41.3.4 Constraints for Particular Machines
+6.42.3.4 Constraints for Particular Machines
 ............................................
 
 Whenever possible, you should use the general-purpose constraint letters
@@ -30726,7 +30772,7 @@ _Xtensa--'config/xtensa/constraints.md'_
 
 File: gcc.info,  Node: Asm Labels,  Next: Explicit Reg Vars,  Prev: Constraints,  Up: Using Assembly Language with C
 
-6.41.4 Controlling Names Used in Assembler Code
+6.42.4 Controlling Names Used in Assembler Code
 -----------------------------------------------
 
 You can specify the name to be used in the assembler code for a C
@@ -30768,7 +30814,7 @@ registers.  Perhaps that will be added.
 
 File: gcc.info,  Node: Explicit Reg Vars,  Next: Size of an asm,  Prev: Asm Labels,  Up: Using Assembly Language with C
 
-6.41.5 Variables in Specified Registers
+6.42.5 Variables in Specified Registers
 ---------------------------------------
 
 GNU C allows you to put a few global variables into specified hardware
@@ -30796,40 +30842,15 @@ register variable should be allocated.
      register.  (This works provided the register you specify fits the
      constraints specified for that operand in the 'asm'.)
 
-
-File: gcc.info,  Node: Size of an asm,  Prev: Explicit Reg Vars,  Up: Using Assembly Language with C
-
-6.41.6 Size of an 'asm'
------------------------
-
-Some targets require that GCC track the size of each instruction used in
-order to generate correct code.  Because the final length of the code
-produced by an 'asm' statement is only known by the assembler, GCC must
-make an estimate as to how big it will be.  It does this by counting the
-number of instructions in the pattern of the 'asm' and multiplying that
-by the length of the longest instruction supported by that processor.
-(When working out the number of instructions, it assumes that any
-occurrence of a newline or of whatever statement separator character is
-supported by the assembler - typically ';' -- indicates the end of an
-instruction.)
-
- Normally, GCC's estimate is adequate to ensure that correct code is
-generated, but it is possible to confuse the compiler if you use pseudo
-instructions or assembler macros that expand into multiple real
-instructions, or if you use assembler directives that expand to more
-space in the object file than is needed for a single instruction.  If
-this happens then the assembler may produce a diagnostic saying that a
-label is unreachable.
-
 * Menu:
 
 * Global Reg Vars::
 * Local Reg Vars::
 
 
-File: gcc.info,  Node: Global Reg Vars,  Next: Local Reg Vars,  Up: Size of an asm
+File: gcc.info,  Node: Global Reg Vars,  Next: Local Reg Vars,  Up: Explicit Reg Vars
 
-6.41.6.1 Defining Global Register Variables
+6.42.5.1 Defining Global Register Variables
 ...........................................
 
 You can define a global register variable in GNU C like this:
@@ -30916,9 +30937,9 @@ local temporaries.
 course, it does not do to use more than a few of those.
 
 
-File: gcc.info,  Node: Local Reg Vars,  Prev: Global Reg Vars,  Up: Size of an asm
+File: gcc.info,  Node: Local Reg Vars,  Prev: Global Reg Vars,  Up: Explicit Reg Vars
 
-6.41.6.2 Specifying Registers for Local Variables
+6.42.5.2 Specifying Registers for Local Variables
 .................................................
 
 You can define a local register variable with a specified register like
@@ -30984,9 +31005,34 @@ variables for expressions between the register assignments:
      asm ("sysint" : "=r" (result) : "0" (p1), "r" (p2));
 
 
+File: gcc.info,  Node: Size of an asm,  Prev: Explicit Reg Vars,  Up: Using Assembly Language with C
+
+6.42.6 Size of an 'asm'
+-----------------------
+
+Some targets require that GCC track the size of each instruction used in
+order to generate correct code.  Because the final length of the code
+produced by an 'asm' statement is only known by the assembler, GCC must
+make an estimate as to how big it will be.  It does this by counting the
+number of instructions in the pattern of the 'asm' and multiplying that
+by the length of the longest instruction supported by that processor.
+(When working out the number of instructions, it assumes that any
+occurrence of a newline or of whatever statement separator character is
+supported by the assembler - typically ';' -- indicates the end of an
+instruction.)
+
+ Normally, GCC's estimate is adequate to ensure that correct code is
+generated, but it is possible to confuse the compiler if you use pseudo
+instructions or assembler macros that expand into multiple real
+instructions, or if you use assembler directives that expand to more
+space in the object file than is needed for a single instruction.  If
+this happens then the assembler may produce a diagnostic saying that a
+label is unreachable.
+
+
 File: gcc.info,  Node: Alternate Keywords,  Next: Incomplete Enums,  Prev: Using Assembly Language with C,  Up: C Extensions
 
-6.42 Alternate Keywords
+6.43 Alternate Keywords
 =======================
 
 '-ansi' and the various '-std' options disable certain keywords.  This
@@ -31021,7 +31067,7 @@ aside from this.
 
 File: gcc.info,  Node: Incomplete Enums,  Next: Function Names,  Prev: Alternate Keywords,  Up: C Extensions
 
-6.43 Incomplete 'enum' Types
+6.44 Incomplete 'enum' Types
 ============================
 
 You can define an 'enum' tag without specifying its possible values.
@@ -31040,7 +31086,7 @@ incomplete.  However, you can work with pointers to that type.
 
 File: gcc.info,  Node: Function Names,  Next: Return Address,  Prev: Incomplete Enums,  Up: C Extensions
 
-6.44 Function Names as Strings
+6.45 Function Names as Strings
 ==============================
 
 GCC provides three magic variables that hold the name of the current
@@ -31109,7 +31155,7 @@ and '__PRETTY_FUNCTION__' have always been variables.
 
 File: gcc.info,  Node: Return Address,  Next: Vector Extensions,  Prev: Function Names,  Up: C Extensions
 
-6.45 Getting the Return or Frame Address of a Function
+6.46 Getting the Return or Frame Address of a Function
 ======================================================
 
 These functions may be used to get information about the callers of a
@@ -31183,7 +31229,7 @@ function.
 
 File: gcc.info,  Node: Vector Extensions,  Next: Offsetof,  Prev: Return Address,  Up: C Extensions
 
-6.46 Using Vector Instructions through Built-in Functions
+6.47 Using Vector Instructions through Built-in Functions
 =========================================================
 
 On some targets, the instruction set contains SIMD vector instructions
@@ -31340,7 +31386,7 @@ signedness without a cast.
 
 File: gcc.info,  Node: Offsetof,  Next: __sync Builtins,  Prev: Vector Extensions,  Up: C Extensions
 
-6.47 Offsetof
+6.48 Offsetof
 =============
 
 GCC implements for both C and C++ a syntactic extension to implement the
@@ -31365,7 +31411,7 @@ or a sequence of member accesses and array references.
 
 File: gcc.info,  Node: __sync Builtins,  Next: __atomic Builtins,  Prev: Offsetof,  Up: C Extensions
 
-6.48 Legacy __sync Built-in Functions for Atomic Memory Access
+6.49 Legacy __sync Built-in Functions for Atomic Memory Access
 ==============================================================
 
 The following built-in functions are intended to be compatible with
@@ -31476,7 +31522,7 @@ accessible variables.
 
 File: gcc.info,  Node: __atomic Builtins,  Next: x86 specific memory model extensions for transactional memory,  Prev: __sync Builtins,  Up: C Extensions
 
-6.49 Built-in functions for memory model aware atomic operations
+6.50 Built-in functions for memory model aware atomic operations
 ================================================================
 
 The following built-in functions approximately match the requirements
@@ -31732,7 +31778,7 @@ values ensures proper usage.
 
 File: gcc.info,  Node: x86 specific memory model extensions for transactional memory,  Next: Object Size Checking,  Prev: __atomic Builtins,  Up: C Extensions
 
-6.50 x86 specific memory model extensions for transactional memory
+6.51 x86 specific memory model extensions for transactional memory
 ==================================================================
 
 The i386 architecture supports additional memory ordering flags to mark
@@ -31763,7 +31809,7 @@ the transaction quickly.  This can be done with a '_mm_pause'
 
 File: gcc.info,  Node: Object Size Checking,  Next: Cilk Plus Builtins,  Prev: x86 specific memory model extensions for transactional memory,  Up: C Extensions
 
-6.51 Object Size Checking Built-in Functions
+6.52 Object Size Checking Built-in Functions
 ============================================
 
 GCC implements a limited buffer overflow protection mechanism that can
@@ -31875,7 +31921,7 @@ passed to it.
 
 File: gcc.info,  Node: Cilk Plus Builtins,  Next: Other Builtins,  Prev: Object Size Checking,  Up: C Extensions
 
-6.52 Cilk Plus C/C++ language extension Built-in Functions.
+6.53 Cilk Plus C/C++ language extension Built-in Functions.
 ===========================================================
 
 GCC provides support for the following built-in reduction funtions if
@@ -31903,7 +31949,7 @@ described in the Cilk Plus language manual which can be found at
 
 File: gcc.info,  Node: Other Builtins,  Next: Target Builtins,  Prev: Cilk Plus Builtins,  Up: C Extensions
 
-6.53 Other Built-in Functions Provided by GCC
+6.54 Other Built-in Functions Provided by GCC
 =============================================
 
 GCC provides a large number of built-in functions other than the ones
@@ -32514,7 +32560,7 @@ and 'isnan' built-in functions appear both with and without the
 
 File: gcc.info,  Node: Target Builtins,  Next: Target Format Checks,  Prev: Other Builtins,  Up: C Extensions
 
-6.54 Built-in Functions Specific to Particular Target Machines
+6.55 Built-in Functions Specific to Particular Target Machines
 ==============================================================
 
 On some target machines, GCC supports many built-in functions specific
@@ -32557,7 +32603,7 @@ instructions, but allow the compiler to schedule those calls.
 
 File: gcc.info,  Node: Alpha Built-in Functions,  Next: Altera Nios II Built-in Functions,  Up: Target Builtins
 
-6.54.1 Alpha Built-in Functions
+6.55.1 Alpha Built-in Functions
 -------------------------------
 
 These built-in functions are available for the Alpha family of
@@ -32632,7 +32678,7 @@ calls, but when invoked with '-mtls-kernel', they invoke 'rdval' and
 
 File: gcc.info,  Node: Altera Nios II Built-in Functions,  Next: ARC Built-in Functions,  Prev: Alpha Built-in Functions,  Up: Target Builtins
 
-6.54.2 Altera Nios II Built-in Functions
+6.55.2 Altera Nios II Built-in Functions
 ----------------------------------------
 
 These built-in functions are available for the Altera Nios II family of
@@ -32731,7 +32777,7 @@ two parameters to the function.
 
 File: gcc.info,  Node: ARC Built-in Functions,  Next: ARC SIMD Built-in Functions,  Prev: Altera Nios II Built-in Functions,  Up: Target Builtins
 
-6.54.3 ARC Built-in Functions
+6.55.3 ARC Built-in Functions
 -----------------------------
 
 The following built-in functions are provided for ARC targets.  The
@@ -32872,7 +32918,7 @@ in the C code:
 
 File: gcc.info,  Node: ARC SIMD Built-in Functions,  Next: ARM iWMMXt Built-in Functions,  Prev: ARC Built-in Functions,  Up: Target Builtins
 
-6.54.4 ARC SIMD Built-in Functions
+6.55.4 ARC SIMD Built-in Functions
 ----------------------------------
 
 SIMD builtins provided by the compiler can be used to generate the
@@ -33064,7 +33110,7 @@ constant.
 
 File: gcc.info,  Node: ARM iWMMXt Built-in Functions,  Next: ARM NEON Intrinsics,  Prev: ARC SIMD Built-in Functions,  Up: Target Builtins
 
-6.54.5 ARM iWMMXt Built-in Functions
+6.55.5 ARM iWMMXt Built-in Functions
 ------------------------------------
 
 These built-in functions are available for the ARM family of processors
@@ -33218,13 +33264,13 @@ when the '-mcpu=iwmmxt' switch is used:
 
 File: gcc.info,  Node: ARM NEON Intrinsics,  Next: ARM ACLE Intrinsics,  Prev: ARM iWMMXt Built-in Functions,  Up: Target Builtins
 
-6.54.6 ARM NEON Intrinsics
+6.55.6 ARM NEON Intrinsics
 --------------------------
 
 These built-in intrinsics for the ARM Advanced SIMD extension are
 available when the '-mfpu=neon' switch is used:
 
-6.54.6.1 Addition
+6.55.6.1 Addition
 .................
 
    * uint32x2_t vadd_u32 (uint32x2_t, uint32x2_t)
@@ -33471,7 +33517,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x8_t vraddhn_s16 (int16x8_t, int16x8_t)
      _Form of expected instruction(s):_ 'vraddhn.i16 D0, Q0, Q0'
 
-6.54.6.2 Multiplication
+6.55.6.2 Multiplication
 .......................
 
    * uint32x2_t vmul_u32 (uint32x2_t, uint32x2_t)
@@ -33573,7 +33619,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmull_s16 (int16x4_t, int16x4_t)
      _Form of expected instruction(s):_ 'vqdmull.s16 Q0, D0, D0'
 
-6.54.6.3 Multiply-accumulate
+6.55.6.3 Multiply-accumulate
 ............................
 
    * uint32x2_t vmla_u32 (uint32x2_t, uint32x2_t, uint32x2_t)
@@ -33642,7 +33688,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmlal_s16 (int32x4_t, int16x4_t, int16x4_t)
      _Form of expected instruction(s):_ 'vqdmlal.s16 Q0, D0, D0'
 
-6.54.6.4 Multiply-subtract
+6.55.6.4 Multiply-subtract
 ..........................
 
    * uint32x2_t vmls_u32 (uint32x2_t, uint32x2_t, uint32x2_t)
@@ -33711,7 +33757,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmlsl_s16 (int32x4_t, int16x4_t, int16x4_t)
      _Form of expected instruction(s):_ 'vqdmlsl.s16 Q0, D0, D0'
 
-6.54.6.5 Fused-multiply-accumulate
+6.55.6.5 Fused-multiply-accumulate
 ..................................
 
    * float32x2_t vfma_f32 (float32x2_t, float32x2_t, float32x2_t)
@@ -33720,7 +33766,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vfmaq_f32 (float32x4_t, float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vfma.f32 Q0, Q0, Q0'
 
-6.54.6.6 Fused-multiply-subtract
+6.55.6.6 Fused-multiply-subtract
 ................................
 
    * float32x2_t vfms_f32 (float32x2_t, float32x2_t, float32x2_t)
@@ -33729,7 +33775,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vfmsq_f32 (float32x4_t, float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vfms.f32 Q0, Q0, Q0'
 
-6.54.6.7 Round to integral (to nearest, ties to even)
+6.55.6.7 Round to integral (to nearest, ties to even)
 .....................................................
 
    * float32x2_t vrndn_f32 (float32x2_t)
@@ -33738,7 +33784,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrndqn_f32 (float32x4_t)
      _Form of expected instruction(s):_ 'vrintn.f32 Q0, Q0'
 
-6.54.6.8 Round to integral (to nearest, ties away from zero)
+6.55.6.8 Round to integral (to nearest, ties away from zero)
 ............................................................
 
    * float32x2_t vrnda_f32 (float32x2_t)
@@ -33747,7 +33793,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrndqa_f32 (float32x4_t)
      _Form of expected instruction(s):_ 'vrinta.f32 Q0, Q0'
 
-6.54.6.9 Round to integral (towards +Inf)
+6.55.6.9 Round to integral (towards +Inf)
 .........................................
 
    * float32x2_t vrndp_f32 (float32x2_t)
@@ -33756,7 +33802,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrndqp_f32 (float32x4_t)
      _Form of expected instruction(s):_ 'vrintp.f32 Q0, Q0'
 
-6.54.6.10 Round to integral (towards -Inf)
+6.55.6.10 Round to integral (towards -Inf)
 ..........................................
 
    * float32x2_t vrndm_f32 (float32x2_t)
@@ -33765,7 +33811,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrndqm_f32 (float32x4_t)
      _Form of expected instruction(s):_ 'vrintm.f32 Q0, Q0'
 
-6.54.6.11 Round to integral (towards 0)
+6.55.6.11 Round to integral (towards 0)
 .......................................
 
    * float32x2_t vrnd_f32 (float32x2_t)
@@ -33774,7 +33820,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrndq_f32 (float32x4_t)
      _Form of expected instruction(s):_ 'vrintz.f32 Q0, Q0'
 
-6.54.6.12 Subtraction
+6.55.6.12 Subtraction
 .....................
 
    * uint32x2_t vsub_u32 (uint32x2_t, uint32x2_t)
@@ -33985,7 +34031,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x8_t vrsubhn_s16 (int16x8_t, int16x8_t)
      _Form of expected instruction(s):_ 'vrsubhn.i16 D0, Q0, Q0'
 
-6.54.6.13 Comparison (equal-to)
+6.55.6.13 Comparison (equal-to)
 ...............................
 
    * uint32x2_t vceq_u32 (uint32x2_t, uint32x2_t)
@@ -34036,7 +34082,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vceqq_p8 (poly8x16_t, poly8x16_t)
      _Form of expected instruction(s):_ 'vceq.i8 Q0, Q0, Q0'
 
-6.54.6.14 Comparison (greater-than-or-equal-to)
+6.55.6.14 Comparison (greater-than-or-equal-to)
 ...............................................
 
    * uint32x2_t vcge_s32 (int32x2_t, int32x2_t)
@@ -34081,7 +34127,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vcgeq_u8 (uint8x16_t, uint8x16_t)
      _Form of expected instruction(s):_ 'vcge.u8 Q0, Q0, Q0'
 
-6.54.6.15 Comparison (less-than-or-equal-to)
+6.55.6.15 Comparison (less-than-or-equal-to)
 ............................................
 
    * uint32x2_t vcle_s32 (int32x2_t, int32x2_t)
@@ -34126,7 +34172,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vcleq_u8 (uint8x16_t, uint8x16_t)
      _Form of expected instruction(s):_ 'vcge.u8 Q0, Q0, Q0'
 
-6.54.6.16 Comparison (greater-than)
+6.55.6.16 Comparison (greater-than)
 ...................................
 
    * uint32x2_t vcgt_s32 (int32x2_t, int32x2_t)
@@ -34171,7 +34217,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vcgtq_u8 (uint8x16_t, uint8x16_t)
      _Form of expected instruction(s):_ 'vcgt.u8 Q0, Q0, Q0'
 
-6.54.6.17 Comparison (less-than)
+6.55.6.17 Comparison (less-than)
 ................................
 
    * uint32x2_t vclt_s32 (int32x2_t, int32x2_t)
@@ -34216,7 +34262,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vcltq_u8 (uint8x16_t, uint8x16_t)
      _Form of expected instruction(s):_ 'vcgt.u8 Q0, Q0, Q0'
 
-6.54.6.18 Comparison (absolute greater-than-or-equal-to)
+6.55.6.18 Comparison (absolute greater-than-or-equal-to)
 ........................................................
 
    * uint32x2_t vcage_f32 (float32x2_t, float32x2_t)
@@ -34225,7 +34271,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vcageq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vacge.f32 Q0, Q0, Q0'
 
-6.54.6.19 Comparison (absolute less-than-or-equal-to)
+6.55.6.19 Comparison (absolute less-than-or-equal-to)
 .....................................................
 
    * uint32x2_t vcale_f32 (float32x2_t, float32x2_t)
@@ -34234,7 +34280,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vcaleq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vacge.f32 Q0, Q0, Q0'
 
-6.54.6.20 Comparison (absolute greater-than)
+6.55.6.20 Comparison (absolute greater-than)
 ............................................
 
    * uint32x2_t vcagt_f32 (float32x2_t, float32x2_t)
@@ -34243,7 +34289,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vcagtq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vacgt.f32 Q0, Q0, Q0'
 
-6.54.6.21 Comparison (absolute less-than)
+6.55.6.21 Comparison (absolute less-than)
 .........................................
 
    * uint32x2_t vcalt_f32 (float32x2_t, float32x2_t)
@@ -34252,7 +34298,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vcaltq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vacgt.f32 Q0, Q0, Q0'
 
-6.54.6.22 Test bits
+6.55.6.22 Test bits
 ...................
 
    * uint32x2_t vtst_u32 (uint32x2_t, uint32x2_t)
@@ -34297,7 +34343,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x16_t vtstq_p8 (poly8x16_t, poly8x16_t)
      _Form of expected instruction(s):_ 'vtst.8 Q0, Q0, Q0'
 
-6.54.6.23 Absolute difference
+6.55.6.23 Absolute difference
 .............................
 
    * uint32x2_t vabd_u32 (uint32x2_t, uint32x2_t)
@@ -34360,7 +34406,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vabdl_s8 (int8x8_t, int8x8_t)
      _Form of expected instruction(s):_ 'vabdl.s8 Q0, D0, D0'
 
-6.54.6.24 Absolute difference and accumulate
+6.55.6.24 Absolute difference and accumulate
 ............................................
 
    * uint32x2_t vaba_u32 (uint32x2_t, uint32x2_t, uint32x2_t)
@@ -34417,7 +34463,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vabal_s8 (int16x8_t, int8x8_t, int8x8_t)
      _Form of expected instruction(s):_ 'vabal.s8 Q0, D0, D0'
 
-6.54.6.25 Maximum
+6.55.6.25 Maximum
 .................
 
    * uint32x2_t vmax_u32 (uint32x2_t, uint32x2_t)
@@ -34462,7 +34508,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vmaxq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vmax.f32 Q0, Q0, Q0'
 
-6.54.6.26 Minimum
+6.55.6.26 Minimum
 .................
 
    * uint32x2_t vmin_u32 (uint32x2_t, uint32x2_t)
@@ -34507,7 +34553,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vminq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vmin.f32 Q0, Q0, Q0'
 
-6.54.6.27 Pairwise add
+6.55.6.27 Pairwise add
 ......................
 
    * uint32x2_t vpadd_u32 (uint32x2_t, uint32x2_t)
@@ -34567,7 +34613,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vpaddlq_s8 (int8x16_t)
      _Form of expected instruction(s):_ 'vpaddl.s8 Q0, Q0'
 
-6.54.6.28 Pairwise add, single_opcode widen and accumulate
+6.55.6.28 Pairwise add, single_opcode widen and accumulate
 ..........................................................
 
    * uint64x1_t vpadal_u32 (uint64x1_t, uint32x2_t)
@@ -34606,7 +34652,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vpadalq_s8 (int16x8_t, int8x16_t)
      _Form of expected instruction(s):_ 'vpadal.s8 Q0, Q0'
 
-6.54.6.29 Folding maximum
+6.55.6.29 Folding maximum
 .........................
 
    * uint32x2_t vpmax_u32 (uint32x2_t, uint32x2_t)
@@ -34630,7 +34676,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x2_t vpmax_f32 (float32x2_t, float32x2_t)
      _Form of expected instruction(s):_ 'vpmax.f32 D0, D0, D0'
 
-6.54.6.30 Folding minimum
+6.55.6.30 Folding minimum
 .........................
 
    * uint32x2_t vpmin_u32 (uint32x2_t, uint32x2_t)
@@ -34654,7 +34700,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x2_t vpmin_f32 (float32x2_t, float32x2_t)
      _Form of expected instruction(s):_ 'vpmin.f32 D0, D0, D0'
 
-6.54.6.31 Reciprocal step
+6.55.6.31 Reciprocal step
 .........................
 
    * float32x2_t vrecps_f32 (float32x2_t, float32x2_t)
@@ -34669,7 +34715,7 @@ available when the '-mfpu=neon' switch is used:
    * float32x4_t vrsqrtsq_f32 (float32x4_t, float32x4_t)
      _Form of expected instruction(s):_ 'vrsqrts.f32 Q0, Q0, Q0'
 
-6.54.6.32 Vector shift left
+6.55.6.32 Vector shift left
 ...........................
 
    * uint32x2_t vshl_u32 (uint32x2_t, int32x2_t)
@@ -34864,7 +34910,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vqrshlq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'vqrshl.s64 Q0, Q0, Q0'
 
-6.54.6.33 Vector shift left by constant
+6.55.6.33 Vector shift left by constant
 .......................................
 
    * uint32x2_t vshl_n_u32 (uint32x2_t, const int)
@@ -35005,7 +35051,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vshll_n_s8 (int8x8_t, const int)
      _Form of expected instruction(s):_ 'vshll.s8 Q0, D0, #0'
 
-6.54.6.34 Vector shift right by constant
+6.55.6.34 Vector shift right by constant
 ........................................
 
    * uint32x2_t vshr_n_u32 (uint32x2_t, const int)
@@ -35194,7 +35240,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x8_t vqrshrun_n_s16 (int16x8_t, const int)
      _Form of expected instruction(s):_ 'vqrshrun.s16 D0, Q0, #0'
 
-6.54.6.35 Vector shift right by constant and accumulate
+6.55.6.35 Vector shift right by constant and accumulate
 .......................................................
 
    * uint32x2_t vsra_n_u32 (uint32x2_t, uint32x2_t, const int)
@@ -35293,7 +35339,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vrsraq_n_s64 (int64x2_t, int64x2_t, const int)
      _Form of expected instruction(s):_ 'vrsra.s64 Q0, Q0, #0'
 
-6.54.6.36 Vector shift right and insert
+6.55.6.36 Vector shift right and insert
 .......................................
 
    * poly64x1_t vsri_n_p64 (poly64x1_t, poly64x1_t, const int)
@@ -35362,7 +35408,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vsriq_n_p8 (poly8x16_t, poly8x16_t, const int)
      _Form of expected instruction(s):_ 'vsri.8 Q0, Q0, #0'
 
-6.54.6.37 Vector shift left and insert
+6.55.6.37 Vector shift left and insert
 ......................................
 
    * poly64x1_t vsli_n_p64 (poly64x1_t, poly64x1_t, const int)
@@ -35431,7 +35477,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vsliq_n_p8 (poly8x16_t, poly8x16_t, const int)
      _Form of expected instruction(s):_ 'vsli.8 Q0, Q0, #0'
 
-6.54.6.38 Absolute value
+6.55.6.38 Absolute value
 ........................
 
    * float32x2_t vabs_f32 (float32x2_t)
@@ -35476,7 +35522,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x16_t vqabsq_s8 (int8x16_t)
      _Form of expected instruction(s):_ 'vqabs.s8 Q0, Q0'
 
-6.54.6.39 Negation
+6.55.6.39 Negation
 ..................
 
    * float32x2_t vneg_f32 (float32x2_t)
@@ -35521,7 +35567,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x16_t vqnegq_s8 (int8x16_t)
      _Form of expected instruction(s):_ 'vqneg.s8 Q0, Q0'
 
-6.54.6.40 Bitwise not
+6.55.6.40 Bitwise not
 .....................
 
    * uint32x2_t vmvn_u32 (uint32x2_t)
@@ -35566,7 +35612,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vmvnq_p8 (poly8x16_t)
      _Form of expected instruction(s):_ 'vmvn Q0, Q0'
 
-6.54.6.41 Count leading sign bits
+6.55.6.41 Count leading sign bits
 .................................
 
    * int32x2_t vcls_s32 (int32x2_t)
@@ -35587,7 +35633,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x16_t vclsq_s8 (int8x16_t)
      _Form of expected instruction(s):_ 'vcls.s8 Q0, Q0'
 
-6.54.6.42 Count leading zeros
+6.55.6.42 Count leading zeros
 .............................
 
    * uint32x2_t vclz_u32 (uint32x2_t)
@@ -35626,7 +35672,7 @@ available when the '-mfpu=neon' switch is used:
    * int8x16_t vclzq_s8 (int8x16_t)
      _Form of expected instruction(s):_ 'vclz.i8 Q0, Q0'
 
-6.54.6.43 Count number of set bits
+6.55.6.43 Count number of set bits
 ..................................
 
    * uint8x8_t vcnt_u8 (uint8x8_t)
@@ -35647,7 +35693,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vcntq_p8 (poly8x16_t)
      _Form of expected instruction(s):_ 'vcnt.8 Q0, Q0'
 
-6.54.6.44 Reciprocal estimate
+6.55.6.44 Reciprocal estimate
 .............................
 
    * float32x2_t vrecpe_f32 (float32x2_t)
@@ -35662,7 +35708,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vrecpeq_u32 (uint32x4_t)
      _Form of expected instruction(s):_ 'vrecpe.u32 Q0, Q0'
 
-6.54.6.45 Reciprocal square-root estimate
+6.55.6.45 Reciprocal square-root estimate
 .........................................
 
    * float32x2_t vrsqrte_f32 (float32x2_t)
@@ -35677,7 +35723,7 @@ available when the '-mfpu=neon' switch is used:
    * uint32x4_t vrsqrteq_u32 (uint32x4_t)
      _Form of expected instruction(s):_ 'vrsqrte.u32 Q0, Q0'
 
-6.54.6.46 Get lanes from a vector
+6.55.6.46 Get lanes from a vector
 .................................
 
    * uint32_t vget_lane_u32 (uint32x2_t, const int)
@@ -35746,7 +35792,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vmov R0, R0, D0' _or_ 'fmrrd
      R0, R0, D0'
 
-6.54.6.47 Set lanes in a vector
+6.55.6.47 Set lanes in a vector
 ...............................
 
    * uint32x2_t vset_lane_u32 (uint32_t, uint32x2_t, const int)
@@ -35813,7 +35859,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vsetq_lane_s64 (int64_t, int64x2_t, const int)
      _Form of expected instruction(s):_ 'vmov D0, R0, R0'
 
-6.54.6.48 Create vector from literal bit pattern
+6.55.6.48 Create vector from literal bit pattern
 ................................................
 
    * poly64x1_t vcreate_p64 (uint64_t)
@@ -35840,7 +35886,7 @@ available when the '-mfpu=neon' switch is used:
 
    * poly8x8_t vcreate_p8 (uint64_t)
 
-6.54.6.49 Set all lanes to the same value
+6.55.6.49 Set all lanes to the same value
 .........................................
 
    * uint32x2_t vdup_n_u32 (uint32_t)
@@ -36037,7 +36083,7 @@ available when the '-mfpu=neon' switch is used:
 
    * int64x2_t vdupq_lane_s64 (int64x1_t, const int)
 
-6.54.6.50 Combining vectors
+6.55.6.50 Combining vectors
 ...........................
 
    * poly64x2_t vcombine_p64 (poly64x1_t, poly64x1_t)
@@ -36064,7 +36110,7 @@ available when the '-mfpu=neon' switch is used:
 
    * poly8x16_t vcombine_p8 (poly8x8_t, poly8x8_t)
 
-6.54.6.51 Splitting vectors
+6.55.6.51 Splitting vectors
 ...........................
 
    * poly64x1_t vget_high_p64 (poly64x2_t)
@@ -36124,7 +36170,7 @@ available when the '-mfpu=neon' switch is used:
 
    * int64x1_t vget_low_s64 (int64x2_t)
 
-6.54.6.52 Conversions
+6.55.6.52 Conversions
 .....................
 
    * float32x2_t vcvt_f32_u32 (uint32x2_t)
@@ -36181,7 +36227,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vcvtq_n_s32_f32 (float32x4_t, const int)
      _Form of expected instruction(s):_ 'vcvt.s32.f32 Q0, Q0, #0'
 
-6.54.6.53 Move, single_opcode narrowing
+6.55.6.53 Move, single_opcode narrowing
 .......................................
 
    * uint32x2_t vmovn_u64 (uint64x2_t)
@@ -36229,7 +36275,7 @@ available when the '-mfpu=neon' switch is used:
    * uint8x8_t vqmovun_s16 (int16x8_t)
      _Form of expected instruction(s):_ 'vqmovun.s16 D0, Q0'
 
-6.54.6.54 Move, single_opcode long
+6.55.6.54 Move, single_opcode long
 ..................................
 
    * uint64x2_t vmovl_u32 (uint32x2_t)
@@ -36250,7 +36296,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vmovl_s8 (int8x8_t)
      _Form of expected instruction(s):_ 'vmovl.s8 Q0, D0'
 
-6.54.6.55 Table lookup
+6.55.6.55 Table lookup
 ......................
 
    * poly8x8_t vtbl1_p8 (poly8x8_t, uint8x8_t)
@@ -36292,7 +36338,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vtbl.8 D0, {D0, D1, D2, D3},
      D0'
 
-6.54.6.56 Extended table lookup
+6.55.6.56 Extended table lookup
 ...............................
 
    * poly8x8_t vtbx1_p8 (poly8x8_t, poly8x8_t, uint8x8_t)
@@ -36334,7 +36380,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vtbx.8 D0, {D0, D1, D2, D3},
      D0'
 
-6.54.6.57 Multiply, lane
+6.55.6.57 Multiply, lane
 ........................
 
    * float32x2_t vmul_lane_f32 (float32x2_t, float32x2_t, const int)
@@ -36367,7 +36413,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vmulq_lane_s16 (int16x8_t, int16x4_t, const int)
      _Form of expected instruction(s):_ 'vmul.i16 Q0, Q0, D0[0]'
 
-6.54.6.58 Long multiply, lane
+6.55.6.58 Long multiply, lane
 .............................
 
    * uint64x2_t vmull_lane_u32 (uint32x2_t, uint32x2_t, const int)
@@ -36382,7 +36428,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vmull_lane_s16 (int16x4_t, int16x4_t, const int)
      _Form of expected instruction(s):_ 'vmull.s16 Q0, D0, D0[0]'
 
-6.54.6.59 Saturating doubling long multiply, lane
+6.55.6.59 Saturating doubling long multiply, lane
 .................................................
 
    * int64x2_t vqdmull_lane_s32 (int32x2_t, int32x2_t, const int)
@@ -36391,7 +36437,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmull_lane_s16 (int16x4_t, int16x4_t, const int)
      _Form of expected instruction(s):_ 'vqdmull.s16 Q0, D0, D0[0]'
 
-6.54.6.60 Saturating doubling multiply high, lane
+6.55.6.60 Saturating doubling multiply high, lane
 .................................................
 
    * int32x4_t vqdmulhq_lane_s32 (int32x4_t, int32x2_t, const int)
@@ -36418,7 +36464,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x4_t vqrdmulh_lane_s16 (int16x4_t, int16x4_t, const int)
      _Form of expected instruction(s):_ 'vqrdmulh.s16 D0, D0, D0[0]'
 
-6.54.6.61 Multiply-accumulate, lane
+6.55.6.61 Multiply-accumulate, lane
 ...................................
 
    * float32x2_t vmla_lane_f32 (float32x2_t, float32x2_t, float32x2_t,
@@ -36485,7 +36531,7 @@ available when the '-mfpu=neon' switch is used:
      int)
      _Form of expected instruction(s):_ 'vqdmlal.s16 Q0, D0, D0[0]'
 
-6.54.6.62 Multiply-subtract, lane
+6.55.6.62 Multiply-subtract, lane
 .................................
 
    * float32x2_t vmls_lane_f32 (float32x2_t, float32x2_t, float32x2_t,
@@ -36552,7 +36598,7 @@ available when the '-mfpu=neon' switch is used:
      int)
      _Form of expected instruction(s):_ 'vqdmlsl.s16 Q0, D0, D0[0]'
 
-6.54.6.63 Vector multiply by scalar
+6.55.6.63 Vector multiply by scalar
 ...................................
 
    * float32x2_t vmul_n_f32 (float32x2_t, float32_t)
@@ -36585,7 +36631,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x8_t vmulq_n_s16 (int16x8_t, int16_t)
      _Form of expected instruction(s):_ 'vmul.i16 Q0, Q0, D0[0]'
 
-6.54.6.64 Vector long multiply by scalar
+6.55.6.64 Vector long multiply by scalar
 ........................................
 
    * uint64x2_t vmull_n_u32 (uint32x2_t, uint32_t)
@@ -36600,7 +36646,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vmull_n_s16 (int16x4_t, int16_t)
      _Form of expected instruction(s):_ 'vmull.s16 Q0, D0, D0[0]'
 
-6.54.6.65 Vector saturating doubling long multiply by scalar
+6.55.6.65 Vector saturating doubling long multiply by scalar
 ............................................................
 
    * int64x2_t vqdmull_n_s32 (int32x2_t, int32_t)
@@ -36609,7 +36655,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmull_n_s16 (int16x4_t, int16_t)
      _Form of expected instruction(s):_ 'vqdmull.s16 Q0, D0, D0[0]'
 
-6.54.6.66 Vector saturating doubling multiply high by scalar
+6.55.6.66 Vector saturating doubling multiply high by scalar
 ............................................................
 
    * int32x4_t vqdmulhq_n_s32 (int32x4_t, int32_t)
@@ -36636,7 +36682,7 @@ available when the '-mfpu=neon' switch is used:
    * int16x4_t vqrdmulh_n_s16 (int16x4_t, int16_t)
      _Form of expected instruction(s):_ 'vqrdmulh.s16 D0, D0, D0[0]'
 
-6.54.6.67 Vector multiply-accumulate by scalar
+6.55.6.67 Vector multiply-accumulate by scalar
 ..............................................
 
    * float32x2_t vmla_n_f32 (float32x2_t, float32x2_t, float32_t)
@@ -36687,7 +36733,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmlal_n_s16 (int32x4_t, int16x4_t, int16_t)
      _Form of expected instruction(s):_ 'vqdmlal.s16 Q0, D0, D0[0]'
 
-6.54.6.68 Vector multiply-subtract by scalar
+6.55.6.68 Vector multiply-subtract by scalar
 ............................................
 
    * float32x2_t vmls_n_f32 (float32x2_t, float32x2_t, float32_t)
@@ -36738,7 +36784,7 @@ available when the '-mfpu=neon' switch is used:
    * int32x4_t vqdmlsl_n_s16 (int32x4_t, int16x4_t, int16_t)
      _Form of expected instruction(s):_ 'vqdmlsl.s16 Q0, D0, D0[0]'
 
-6.54.6.69 Vector extract
+6.55.6.69 Vector extract
 ........................
 
    * poly64x1_t vext_p64 (poly64x1_t, poly64x1_t, const int)
@@ -36813,7 +36859,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vextq_p8 (poly8x16_t, poly8x16_t, const int)
      _Form of expected instruction(s):_ 'vext.8 Q0, Q0, Q0, #0'
 
-6.54.6.70 Reverse elements
+6.55.6.70 Reverse elements
 ..........................
 
    * uint32x2_t vrev64_u32 (uint32x2_t)
@@ -36924,7 +36970,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16_t vrev16q_p8 (poly8x16_t)
      _Form of expected instruction(s):_ 'vrev16.8 Q0, Q0'
 
-6.54.6.71 Bit selection
+6.55.6.71 Bit selection
 .......................
 
    * poly64x1_t vbsl_p64 (uint64x1_t, poly64x1_t, poly64x1_t)
@@ -37023,7 +37069,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vbsl Q0, Q0, Q0' _or_ 'vbit Q0,
      Q0, Q0' _or_ 'vbif Q0, Q0, Q0'
 
-6.54.6.72 Transpose elements
+6.55.6.72 Transpose elements
 ............................
 
    * uint16x4x2_t vtrn_u16 (uint16x4_t, uint16x4_t)
@@ -37080,7 +37126,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16x2_t vtrnq_p8 (poly8x16_t, poly8x16_t)
      _Form of expected instruction(s):_ 'vtrn.8 Q0, Q1'
 
-6.54.6.73 Zip elements
+6.55.6.73 Zip elements
 ......................
 
    * uint16x4x2_t vzip_u16 (uint16x4_t, uint16x4_t)
@@ -37137,7 +37183,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16x2_t vzipq_p8 (poly8x16_t, poly8x16_t)
      _Form of expected instruction(s):_ 'vzip.8 Q0, Q1'
 
-6.54.6.74 Unzip elements
+6.55.6.74 Unzip elements
 ........................
 
    * uint32x2x2_t vuzp_u32 (uint32x2_t, uint32x2_t)
@@ -37194,7 +37240,7 @@ available when the '-mfpu=neon' switch is used:
    * poly8x16x2_t vuzpq_p8 (poly8x16_t, poly8x16_t)
      _Form of expected instruction(s):_ 'vuzp.8 Q0, Q1'
 
-6.54.6.75 Element/structure loads, VLD1 variants
+6.55.6.75 Element/structure loads, VLD1 variants
 ................................................
 
    * poly64x1_t vld1_p64 (const poly64_t *)
@@ -37420,7 +37466,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vld1q_dup_s64 (const int64_t *)
      _Form of expected instruction(s):_ 'vld1.64 {D0}, [R0]'
 
-6.54.6.76 Element/structure stores, VST1 variants
+6.55.6.76 Element/structure stores, VST1 variants
 .................................................
 
    * void vst1_p64 (poly64_t *, poly64x1_t)
@@ -37567,7 +37613,7 @@ available when the '-mfpu=neon' switch is used:
    * void vst1q_lane_u64 (uint64_t *, uint64x2_t, const int)
      _Form of expected instruction(s):_ 'vst1.64 {D0}, [R0]'
 
-6.54.6.77 Element/structure loads, VLD2 variants
+6.55.6.77 Element/structure loads, VLD2 variants
 ................................................
 
    * uint32x2x2_t vld2_u32 (const uint32_t *)
@@ -37726,7 +37772,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x1x2_t vld2_dup_s64 (const int64_t *)
      _Form of expected instruction(s):_ 'vld1.64 {D0, D1}, [R0]'
 
-6.54.6.78 Element/structure stores, VST2 variants
+6.55.6.78 Element/structure stores, VST2 variants
 .................................................
 
    * void vst2_u32 (uint32_t *, uint32x2x2_t)
@@ -37837,7 +37883,7 @@ available when the '-mfpu=neon' switch is used:
    * void vst2q_lane_p16 (poly16_t *, poly16x8x2_t, const int)
      _Form of expected instruction(s):_ 'vst2.16 {D0[0], D1[0]}, [R0]'
 
-6.54.6.79 Element/structure loads, VLD3 variants
+6.55.6.79 Element/structure loads, VLD3 variants
 ................................................
 
    * uint32x2x3_t vld3_u32 (const uint32_t *)
@@ -38020,7 +38066,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x1x3_t vld3_dup_s64 (const int64_t *)
      _Form of expected instruction(s):_ 'vld1.64 {D0, D1, D2}, [R0]'
 
-6.54.6.80 Element/structure stores, VST3 variants
+6.55.6.80 Element/structure stores, VST3 variants
 .................................................
 
    * void vst3_u32 (uint32_t *, uint32x2x3_t)
@@ -38146,7 +38192,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vst3.16 {D0[0], D1[0], D2[0]},
      [R0]'
 
-6.54.6.81 Element/structure loads, VLD4 variants
+6.55.6.81 Element/structure loads, VLD4 variants
 ................................................
 
    * uint32x2x4_t vld4_u32 (const uint32_t *)
@@ -38329,7 +38375,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x1x4_t vld4_dup_s64 (const int64_t *)
      _Form of expected instruction(s):_ 'vld1.64 {D0, D1, D2, D3}, [R0]'
 
-6.54.6.82 Element/structure stores, VST4 variants
+6.55.6.82 Element/structure stores, VST4 variants
 .................................................
 
    * void vst4_u32 (uint32_t *, uint32x2x4_t)
@@ -38455,7 +38501,7 @@ available when the '-mfpu=neon' switch is used:
      _Form of expected instruction(s):_ 'vst4.16 {D0[0], D1[0], D2[0],
      D3[0]}, [R0]'
 
-6.54.6.83 Logical operations (AND)
+6.55.6.83 Logical operations (AND)
 ..................................
 
    * uint32x2_t vand_u32 (uint32x2_t, uint32x2_t)
@@ -38504,7 +38550,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vandq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'vand Q0, Q0, Q0'
 
-6.54.6.84 Logical operations (OR)
+6.55.6.84 Logical operations (OR)
 .................................
 
    * uint32x2_t vorr_u32 (uint32x2_t, uint32x2_t)
@@ -38553,7 +38599,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vorrq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'vorr Q0, Q0, Q0'
 
-6.54.6.85 Logical operations (exclusive OR)
+6.55.6.85 Logical operations (exclusive OR)
 ...........................................
 
    * uint32x2_t veor_u32 (uint32x2_t, uint32x2_t)
@@ -38602,7 +38648,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t veorq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'veor Q0, Q0, Q0'
 
-6.54.6.86 Logical operations (AND-NOT)
+6.55.6.86 Logical operations (AND-NOT)
 ......................................
 
    * uint32x2_t vbic_u32 (uint32x2_t, uint32x2_t)
@@ -38651,7 +38697,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vbicq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'vbic Q0, Q0, Q0'
 
-6.54.6.87 Logical operations (OR-NOT)
+6.55.6.87 Logical operations (OR-NOT)
 .....................................
 
    * uint32x2_t vorn_u32 (uint32x2_t, uint32x2_t)
@@ -38700,7 +38746,7 @@ available when the '-mfpu=neon' switch is used:
    * int64x2_t vornq_s64 (int64x2_t, int64x2_t)
      _Form of expected instruction(s):_ 'vorn Q0, Q0, Q0'
 
-6.54.6.88 Reinterpret casts
+6.55.6.88 Reinterpret casts
 ...........................
 
    * poly8x8_t vreinterpret_p8_p16 (poly16x4_t)
@@ -39326,13 +39372,13 @@ available when the '-mfpu=neon' switch is used:
 
 File: gcc.info,  Node: ARM ACLE Intrinsics,  Next: AVR Built-in Functions,  Prev: ARM NEON Intrinsics,  Up: Target Builtins
 
-6.54.7 ARM ACLE Intrinsics
+6.55.7 ARM ACLE Intrinsics
 --------------------------
 
 These built-in intrinsics for the ARMv8-A CRC32 extension are available
 when the '-march=armv8-a+crc' switch is used:
 
-6.54.7.1 CRC32 intrinsics
+6.55.7.1 CRC32 intrinsics
 .........................
 
    * uint32_t __crc32b (uint32_t, uint8_t)
@@ -39366,7 +39412,7 @@ when the '-march=armv8-a+crc' switch is used:
 
 File: gcc.info,  Node: AVR Built-in Functions,  Next: Blackfin Built-in Functions,  Prev: ARM ACLE Intrinsics,  Up: Target Builtins
 
-6.54.8 AVR Built-in Functions
+6.55.8 AVR Built-in Functions
 -----------------------------
 
 For each built-in function for AVR, there is an equally named, uppercase
@@ -39441,7 +39487,7 @@ values to non-contiguous port layouts.  Some examples:
 
 File: gcc.info,  Node: Blackfin Built-in Functions,  Next: FR-V Built-in Functions,  Prev: AVR Built-in Functions,  Up: Target Builtins
 
-6.54.9 Blackfin Built-in Functions
+6.55.9 Blackfin Built-in Functions
 ----------------------------------
 
 Currently, there are two Blackfin-specific built-in functions.  These
@@ -39456,7 +39502,7 @@ instructions.  These functions are named as follows:
 
 File: gcc.info,  Node: FR-V Built-in Functions,  Next: X86 Built-in Functions,  Prev: Blackfin Built-in Functions,  Up: Target Builtins
 
-6.54.10 FR-V Built-in Functions
+6.55.10 FR-V Built-in Functions
 -------------------------------
 
 GCC provides many FR-V-specific built-in functions.  In general, these
@@ -39480,7 +39526,7 @@ tabular form.
 
 File: gcc.info,  Node: Argument Types,  Next: Directly-mapped Integer Functions,  Up: FR-V Built-in Functions
 
-6.54.10.1 Argument Types
+6.55.10.1 Argument Types
 ........................
 
 The arguments to the built-in functions can be divided into three
@@ -39519,7 +39565,7 @@ details.
 
 File: gcc.info,  Node: Directly-mapped Integer Functions,  Next: Directly-mapped Media Functions,  Prev: Argument Types,  Up: FR-V Built-in Functions
 
-6.54.10.2 Directly-mapped Integer Functions
+6.55.10.2 Directly-mapped Integer Functions
 ...........................................
 
 The functions listed below map directly to FR-V I-type instructions.
@@ -39539,7 +39585,7 @@ Function prototype               Example usage           Assembly output
 
 File: gcc.info,  Node: Directly-mapped Media Functions,  Next: Raw read/write Functions,  Prev: Directly-mapped Integer Functions,  Up: FR-V Built-in Functions
 
-6.54.10.3 Directly-mapped Media Functions
+6.55.10.3 Directly-mapped Media Functions
 .........................................
 
 The functions listed below map directly to FR-V M-type instructions.
@@ -39686,7 +39732,7 @@ sw2)'                            B)'                     A,B,C'
 
 File: gcc.info,  Node: Raw read/write Functions,  Next: Other Built-in Functions,  Prev: Directly-mapped Media Functions,  Up: FR-V Built-in Functions
 
-6.54.10.4 Raw read/write Functions
+6.55.10.4 Raw read/write Functions
 ..................................
 
 This sections describes built-in functions related to read and write
@@ -39707,7 +39753,7 @@ described in Fujitsu's manual described above.
 
 File: gcc.info,  Node: Other Built-in Functions,  Prev: Raw read/write Functions,  Up: FR-V Built-in Functions
 
-6.54.10.5 Other Built-in Functions
+6.55.10.5 Other Built-in Functions
 ..................................
 
 This section describes built-in functions that are not named after a
@@ -39740,7 +39786,7 @@ specific FR-V instruction.
 
 File: gcc.info,  Node: X86 Built-in Functions,  Next: X86 transactional memory intrinsics,  Prev: FR-V Built-in Functions,  Up: Target Builtins
 
-6.54.11 X86 Built-in Functions
+6.55.11 X86 Built-in Functions
 ------------------------------
 
 These built-in functions are available for the i386 and x86-64 family of
@@ -41047,7 +41093,7 @@ transactional memory intrinsics:: should be used instead.
 
 File: gcc.info,  Node: X86 transactional memory intrinsics,  Next: MIPS DSP Built-in Functions,  Prev: X86 Built-in Functions,  Up: Target Builtins
 
-6.54.12 X86 transaction memory intrinsics
+6.55.12 X86 transaction memory intrinsics
 -----------------------------------------
 
 Hardware transactional memory intrinsics for i386.  These allow to use
@@ -41113,7 +41159,7 @@ and suitable fallback code always needs to be supplied.
 
 File: gcc.info,  Node: MIPS DSP Built-in Functions,  Next: MIPS Paired-Single Support,  Prev: X86 transactional memory intrinsics,  Up: Target Builtins
 
-6.54.13 MIPS DSP Built-in Functions
+6.55.13 MIPS DSP Built-in Functions
 -----------------------------------
 
 The MIPS DSP Application-Specific Extension (ASE) includes new
@@ -41386,7 +41432,7 @@ details on what each instruction does.
 
 File: gcc.info,  Node: MIPS Paired-Single Support,  Next: MIPS Loongson Built-in Functions,  Prev: MIPS DSP Built-in Functions,  Up: Target Builtins
 
-6.54.14 MIPS Paired-Single Support
+6.55.14 MIPS Paired-Single Support
 ----------------------------------
 
 The MIPS64 architecture includes a number of instructions that operate
@@ -41422,7 +41468,7 @@ targets.  For example, the code above sets the lower half of 'a' to
 
 File: gcc.info,  Node: MIPS Loongson Built-in Functions,  Next: Other MIPS Built-in Functions,  Prev: MIPS Paired-Single Support,  Up: Target Builtins
 
-6.54.15 MIPS Loongson Built-in Functions
+6.55.15 MIPS Loongson Built-in Functions
 ----------------------------------------
 
 GCC provides intrinsics to access the SIMD instructions provided by the
@@ -41553,7 +41599,7 @@ each instruction.
 
 File: gcc.info,  Node: Paired-Single Arithmetic,  Next: Paired-Single Built-in Functions,  Up: MIPS Loongson Built-in Functions
 
-6.54.15.1 Paired-Single Arithmetic
+6.55.15.1 Paired-Single Arithmetic
 ..................................
 
 The table below lists the 'v2sf' operations for which hardware support
@@ -41577,7 +41623,7 @@ the command-line option '-mno-fused-madd'.
 
 File: gcc.info,  Node: Paired-Single Built-in Functions,  Next: MIPS-3D Built-in Functions,  Prev: Paired-Single Arithmetic,  Up: MIPS Loongson Built-in Functions
 
-6.54.15.2 Paired-Single Built-in Functions
+6.55.15.2 Paired-Single Built-in Functions
 ..........................................
 
 The following paired-single functions map directly to a particular MIPS
@@ -41656,7 +41702,7 @@ case, COND can be any of the 16 floating-point conditions: 'f', 'un',
 
 File: gcc.info,  Node: MIPS-3D Built-in Functions,  Prev: Paired-Single Built-in Functions,  Up: MIPS Loongson Built-in Functions
 
-6.54.15.3 MIPS-3D Built-in Functions
+6.55.15.3 MIPS-3D Built-in Functions
 ....................................
 
 The MIPS-3D Application-Specific Extension (ASE) includes additional
@@ -41804,7 +41850,7 @@ case, COND can be any of the 16 floating-point conditions: 'f', 'un',
 
 File: gcc.info,  Node: Other MIPS Built-in Functions,  Next: MSP430 Built-in Functions,  Prev: MIPS Loongson Built-in Functions,  Up: Target Builtins
 
-6.54.16 Other MIPS Built-in Functions
+6.55.16 Other MIPS Built-in Functions
 -------------------------------------
 
 GCC provides other MIPS-specific built-in functions:
@@ -41828,7 +41874,7 @@ GCC provides other MIPS-specific built-in functions:
 
 File: gcc.info,  Node: MSP430 Built-in Functions,  Next: NDS32 Built-in Functions,  Prev: Other MIPS Built-in Functions,  Up: Target Builtins
 
-6.54.17 MSP430 Built-in Functions
+6.55.17 MSP430 Built-in Functions
 ---------------------------------
 
 GCC provides a couple of special builtin functions to aid in the writing
@@ -41858,7 +41904,7 @@ of interrupt handlers in C.
 
 File: gcc.info,  Node: NDS32 Built-in Functions,  Next: picoChip Built-in Functions,  Prev: MSP430 Built-in Functions,  Up: Target Builtins
 
-6.54.18 NDS32 Built-in Functions
+6.55.18 NDS32 Built-in Functions
 --------------------------------
 
 These built-in functions are available for the NDS32 target:
@@ -41891,7 +41937,7 @@ These built-in functions are available for the NDS32 target:
 
 File: gcc.info,  Node: picoChip Built-in Functions,  Next: PowerPC Built-in Functions,  Prev: NDS32 Built-in Functions,  Up: Target Builtins
 
-6.54.19 picoChip Built-in Functions
+6.55.19 picoChip Built-in Functions
 -----------------------------------
 
 GCC provides an interface to selected machine instructions from the
@@ -41927,7 +41973,7 @@ picoChip instruction set.
 
 File: gcc.info,  Node: PowerPC Built-in Functions,  Next: PowerPC AltiVec/VSX Built-in Functions,  Prev: picoChip Built-in Functions,  Up: Target Builtins
 
-6.54.20 PowerPC Built-in Functions
+6.55.20 PowerPC Built-in Functions
 ----------------------------------
 
 These built-in functions are available for the PowerPC family of
@@ -42006,7 +42052,7 @@ of processors when the Vector Scalar (vsx) instruction set is available:
 
 File: gcc.info,  Node: PowerPC AltiVec/VSX Built-in Functions,  Next: PowerPC Hardware Transactional Memory Built-in Functions,  Prev: PowerPC Built-in Functions,  Up: Target Builtins
 
-6.54.21 PowerPC AltiVec Built-in Functions
+6.55.21 PowerPC AltiVec Built-in Functions
 ------------------------------------------
 
 GCC provides an interface for the PowerPC family of processors to access
@@ -44466,7 +44512,7 @@ constant integer in the range of 0 to 15.
 
 File: gcc.info,  Node: PowerPC Hardware Transactional Memory Built-in Functions,  Next: RX Built-in Functions,  Prev: PowerPC AltiVec/VSX Built-in Functions,  Up: Target Builtins
 
-6.54.22 PowerPC Hardware Transactional Memory Built-in Functions
+6.55.22 PowerPC Hardware Transactional Memory Built-in Functions
 ----------------------------------------------------------------
 
 GCC provides two interfaces for accessing the Hardware Transactional
@@ -44476,7 +44522,7 @@ interface, consisting of built-in functions specific to PowerPC and a
 higher level interface consisting of inline functions that are common
 between PowerPC and S/390.
 
-6.54.22.1 PowerPC HTM Low Level Built-in Functions
+6.55.22.1 PowerPC HTM Low Level Built-in Functions
 ..................................................
 
 The following low level built-in functions are available with '-mhtm' or
@@ -44580,7 +44626,7 @@ using the following code example:
          /* Code to use in transaction suspended state.  */
        }
 
-6.54.22.2 PowerPC HTM High Level Inline Functions
+6.55.22.2 PowerPC HTM High Level Inline Functions
 .................................................
 
 The following high level HTM interface is made available by including
@@ -44646,7 +44692,7 @@ work on either PowerPC or S/390:
 
 File: gcc.info,  Node: RX Built-in Functions,  Next: S/390 System z Built-in Functions,  Prev: PowerPC Hardware Transactional Memory Built-in Functions,  Up: Target Builtins
 
-6.54.23 RX Built-in Functions
+6.55.23 RX Built-in Functions
 -----------------------------
 
 GCC supports some of the RX instructions which cannot be expressed in
@@ -44744,7 +44790,7 @@ following functions are supported:
 
 File: gcc.info,  Node: S/390 System z Built-in Functions,  Next: SH Built-in Functions,  Prev: RX Built-in Functions,  Up: Target Builtins
 
-6.54.24 S/390 System z Built-in Functions
+6.55.24 S/390 System z Built-in Functions
 -----------------------------------------
 
  -- Built-in Function: int __builtin_tbegin (void*)
@@ -44849,7 +44895,7 @@ File: gcc.info,  Node: S/390 System z Built-in Functions,  Next: SH Built-in Fun
 
 File: gcc.info,  Node: SH Built-in Functions,  Next: SPARC VIS Built-in Functions,  Prev: S/390 System z Built-in Functions,  Up: Target Builtins
 
-6.54.25 SH Built-in Functions
+6.55.25 SH Built-in Functions
 -----------------------------
 
 The following built-in functions are supported on the SH1, SH2, SH3 and
@@ -44884,7 +44930,7 @@ SH4 families of processors:
 
 File: gcc.info,  Node: SPARC VIS Built-in Functions,  Next: SPU Built-in Functions,  Prev: SH Built-in Functions,  Up: Target Builtins
 
-6.54.26 SPARC VIS Built-in Functions
+6.55.26 SPARC VIS Built-in Functions
 ------------------------------------
 
 GCC supports SIMD operations on the SPARC using both the generic vector
@@ -45024,7 +45070,7 @@ functions also become available:
 
 File: gcc.info,  Node: SPU Built-in Functions,  Next: TI C6X Built-in Functions,  Prev: SPARC VIS Built-in Functions,  Up: Target Builtins
 
-6.54.27 SPU Built-in Functions
+6.55.27 SPU Built-in Functions
 ------------------------------
 
 GCC provides extensions for the SPU processor as described in the
@@ -45069,7 +45115,7 @@ are subject to change without notice.
 
 File: gcc.info,  Node: TI C6X Built-in Functions,  Next: TILE-Gx Built-in Functions,  Prev: SPU Built-in Functions,  Up: Target Builtins
 
-6.54.28 TI C6X Built-in Functions
+6.55.28 TI C6X Built-in Functions
 ---------------------------------
 
 GCC provides intrinsics to access certain instructions of the TI C6X
@@ -45109,7 +45155,7 @@ C6X instructions.
 
 File: gcc.info,  Node: TILE-Gx Built-in Functions,  Next: TILEPro Built-in Functions,  Prev: TI C6X Built-in Functions,  Up: Target Builtins
 
-6.54.29 TILE-Gx Built-in Functions
+6.55.29 TILE-Gx Built-in Functions
 ----------------------------------
 
 GCC provides intrinsics to access every instruction of the TILE-Gx
@@ -45142,7 +45188,7 @@ that no network operations before it are reordered with those after it.
 
 File: gcc.info,  Node: TILEPro Built-in Functions,  Prev: TILE-Gx Built-in Functions,  Up: Target Builtins
 
-6.54.30 TILEPro Built-in Functions
+6.55.30 TILEPro Built-in Functions
 ----------------------------------
 
 GCC provides intrinsics to access every instruction of the TILEPro
@@ -45177,7 +45223,7 @@ that no network operations before it are reordered with those after it.
 
 File: gcc.info,  Node: Target Format Checks,  Next: Pragmas,  Prev: Target Builtins,  Up: C Extensions
 
-6.55 Format Checks Specific to Particular Target Machines
+6.56 Format Checks Specific to Particular Target Machines
 =========================================================
 
 For some target machines, GCC supports additional options to the format
@@ -45192,7 +45238,7 @@ Attributes.).
 
 File: gcc.info,  Node: Solaris Format Checks,  Next: Darwin Format Checks,  Up: Target Format Checks
 
-6.55.1 Solaris Format Checks
+6.56.1 Solaris Format Checks
 ----------------------------
 
 Solaris targets support the 'cmn_err' (or '__cmn_err__') format check.
@@ -45203,7 +45249,7 @@ man page for 'cmn_err' for more information.
 
 File: gcc.info,  Node: Darwin Format Checks,  Prev: Solaris Format Checks,  Up: Target Format Checks
 
-6.55.2 Darwin Format Checks
+6.56.2 Darwin Format Checks
 ---------------------------
 
 Darwin targets support the 'CFString' (or '__CFString__') in the format
@@ -45221,7 +45267,7 @@ of 'CFString', 'CFStringRefs' and associated functions.
 
 File: gcc.info,  Node: Pragmas,  Next: Unnamed Fields,  Prev: Target Format Checks,  Up: C Extensions
 
-6.56 Pragmas Accepted by GCC
+6.57 Pragmas Accepted by GCC
 ============================
 
 GCC supports several types of pragmas, primarily in order to compile
@@ -45249,7 +45295,7 @@ further explanation.
 
 File: gcc.info,  Node: ARM Pragmas,  Next: M32C Pragmas,  Up: Pragmas
 
-6.56.1 ARM Pragmas
+6.57.1 ARM Pragmas
 ------------------
 
 The ARM target defines pragmas for controlling the default addition of
@@ -45269,7 +45315,7 @@ Attributes::, for information about the effects of these attributes.
 
 File: gcc.info,  Node: M32C Pragmas,  Next: MeP Pragmas,  Prev: ARM Pragmas,  Up: Pragmas
 
-6.56.2 M32C Pragmas
+6.57.2 M32C Pragmas
 -------------------
 
 'GCC memregs NUMBER'
@@ -45295,7 +45341,7 @@ File: gcc.info,  Node: M32C Pragmas,  Next: MeP Pragmas,  Prev: ARM Pragmas,  Up
 
 File: gcc.info,  Node: MeP Pragmas,  Next: RS/6000 and PowerPC Pragmas,  Prev: M32C Pragmas,  Up: Pragmas
 
-6.56.3 MeP Pragmas
+6.57.3 MeP Pragmas
 ------------------
 
 'custom io_volatile (on|off)'
@@ -45350,7 +45396,7 @@ File: gcc.info,  Node: MeP Pragmas,  Next: RS/6000 and PowerPC Pragmas,  Prev: M
 
 File: gcc.info,  Node: RS/6000 and PowerPC Pragmas,  Next: Darwin Pragmas,  Prev: MeP Pragmas,  Up: Pragmas
 
-6.56.4 RS/6000 and PowerPC Pragmas
+6.57.4 RS/6000 and PowerPC Pragmas
 ----------------------------------
 
 The RS/6000 and PowerPC targets define one pragma for controlling
@@ -45371,7 +45417,7 @@ are not necessary.
 
 File: gcc.info,  Node: Darwin Pragmas,  Next: Solaris Pragmas,  Prev: RS/6000 and PowerPC Pragmas,  Up: Pragmas
 
-6.56.5 Darwin Pragmas
+6.57.5 Darwin Pragmas
 ---------------------
 
 The following pragmas are available for all architectures running the
@@ -45400,7 +45446,7 @@ Mac OS compilers.
 
 File: gcc.info,  Node: Solaris Pragmas,  Next: Symbol-Renaming Pragmas,  Prev: Darwin Pragmas,  Up: Pragmas
 
-6.56.6 Solaris Pragmas
+6.57.6 Solaris Pragmas
 ----------------------
 
 The Solaris target supports '#pragma redefine_extname' (*note
@@ -45431,7 +45477,7 @@ directives for compatibility with the system compiler.
 
 File: gcc.info,  Node: Symbol-Renaming Pragmas,  Next: Structure-Packing Pragmas,  Prev: Solaris Pragmas,  Up: Pragmas
 
-6.56.7 Symbol-Renaming Pragmas
+6.57.7 Symbol-Renaming Pragmas
 ------------------------------
 
 GCC supports a '#pragma' directive that changes the name used in
@@ -45466,7 +45512,7 @@ manner.  Here are some corner cases you may want to be aware of:
 
 File: gcc.info,  Node: Structure-Packing Pragmas,  Next: Weak Pragmas,  Prev: Symbol-Renaming Pragmas,  Up: Pragmas
 
-6.56.8 Structure-Packing Pragmas
+6.57.8 Structure-Packing Pragmas
 --------------------------------
 
 For compatibility with Microsoft Windows compilers, GCC supports a set
@@ -45499,7 +45545,7 @@ which lays out a structure as the documented '__attribute__
 
 File: gcc.info,  Node: Weak Pragmas,  Next: Diagnostic Pragmas,  Prev: Structure-Packing Pragmas,  Up: Pragmas
 
-6.56.9 Weak Pragmas
+6.57.9 Weak Pragmas
 -------------------
 
 For compatibility with SVR4, GCC supports a set of '#pragma' directives
@@ -45518,7 +45564,7 @@ for declaring symbols to be weak, and defining weak aliases.
 
 File: gcc.info,  Node: Diagnostic Pragmas,  Next: Visibility Pragmas,  Prev: Weak Pragmas,  Up: Pragmas
 
-6.56.10 Diagnostic Pragmas
+6.57.10 Diagnostic Pragmas
 --------------------------
 
 GCC allows the user to selectively enable or disable certain types of
@@ -45593,7 +45639,7 @@ compilation.
 
 File: gcc.info,  Node: Visibility Pragmas,  Next: Push/Pop Macro Pragmas,  Prev: Diagnostic Pragmas,  Up: Pragmas
 
-6.56.11 Visibility Pragmas
+6.57.11 Visibility Pragmas
 --------------------------
 
 '#pragma GCC visibility push(VISIBILITY)'
@@ -45611,7 +45657,7 @@ File: gcc.info,  Node: Visibility Pragmas,  Next: Push/Pop Macro Pragmas,  Prev:
 
 File: gcc.info,  Node: Push/Pop Macro Pragmas,  Next: Function Specific Option Pragmas,  Prev: Visibility Pragmas,  Up: Pragmas
 
-6.56.12 Push/Pop Macro Pragmas
+6.57.12 Push/Pop Macro Pragmas
 ------------------------------
 
 For compatibility with Microsoft Windows compilers, GCC supports
@@ -45642,7 +45688,7 @@ push_macro' and restored by '#pragma pop_macro'.
 
 File: gcc.info,  Node: Function Specific Option Pragmas,  Next: Loop-Specific Pragmas,  Prev: Push/Pop Macro Pragmas,  Up: Pragmas
 
-6.56.13 Function Specific Option Pragmas
+6.57.13 Function Specific Option Pragmas
 ----------------------------------------
 
 '#pragma GCC target ("STRING"...)'
@@ -45695,7 +45741,7 @@ File: gcc.info,  Node: Function Specific Option Pragmas,  Next: Loop-Specific Pr
 
 File: gcc.info,  Node: Loop-Specific Pragmas,  Prev: Function Specific Option Pragmas,  Up: Pragmas
 
-6.56.14 Loop-Specific Pragmas
+6.57.14 Loop-Specific Pragmas
 -----------------------------
 
 '#pragma GCC ivdep'
@@ -45731,7 +45777,7 @@ unconditionally vectorize the following loop:
 
 File: gcc.info,  Node: Unnamed Fields,  Next: Thread-Local,  Prev: Pragmas,  Up: C Extensions
 
-6.57 Unnamed struct/union fields within structs/unions
+6.58 Unnamed struct/union fields within structs/unions
 ======================================================
 
 As permitted by ISO C11 and for compatibility with other compilers, GCC
@@ -45797,7 +45843,7 @@ pointer to the anonymous field.
 
 File: gcc.info,  Node: Thread-Local,  Next: Binary constants,  Prev: Unnamed Fields,  Up: C Extensions
 
-6.58 Thread-Local Storage
+6.59 Thread-Local Storage
 =========================
 
 Thread-local storage (TLS) is a mechanism by which variables are
@@ -45850,7 +45896,7 @@ expected to function.
 
 File: gcc.info,  Node: C99 Thread-Local Edits,  Next: C++98 Thread-Local Edits,  Up: Thread-Local
 
-6.58.1 ISO/IEC 9899:1999 Edits for Thread-Local Storage
+6.59.1 ISO/IEC 9899:1999 Edits for Thread-Local Storage
 -------------------------------------------------------
 
 The following are a set of changes to ISO/IEC 9899:1999 (aka C99) that
@@ -45904,7 +45950,7 @@ document the exact semantics of the language extension.
 
 File: gcc.info,  Node: C++98 Thread-Local Edits,  Prev: C99 Thread-Local Edits,  Up: Thread-Local
 
-6.58.2 ISO/IEC 14882:1998 Edits for Thread-Local Storage
+6.59.2 ISO/IEC 14882:1998 Edits for Thread-Local Storage
 --------------------------------------------------------
 
 The following are a set of changes to ISO/IEC 14882:1998 (aka C++98)
@@ -46014,7 +46060,7 @@ that document the exact semantics of the language extension.
 
 File: gcc.info,  Node: Binary constants,  Prev: Thread-Local,  Up: C Extensions
 
-6.59 Binary constants using the '0b' prefix
+6.60 Binary constants using the '0b' prefix
 ===========================================
 
 Integer constants can be written as binary constants, consisting of a
@@ -52510,7 +52556,7 @@ look up both forms.
 * fcilkplus:                             C Dialect Options.  (line  276)
 * fcombine-stack-adjustments:            Optimize Options.   (line  822)
 * fcommon:                               Variable Attributes.
-                                                             (line  104)
+                                                             (line  105)
 * fcompare-debug:                        Debugging Options.  (line  308)
 * fcompare-debug-second:                 Debugging Options.  (line  334)
 * fcompare-elim:                         Optimize Options.   (line 1836)
@@ -52789,7 +52835,7 @@ look up both forms.
                                                              (line  504)
 * fno-common:                            Code Gen Options.   (line  229)
 * fno-common <1>:                        Variable Attributes.
-                                                             (line  104)
+                                                             (line  105)
 * fno-compare-debug:                     Debugging Options.  (line  308)
 * fno-debug-types-section:               Debugging Options.  (line   79)
 * fno-default-inline:                    Inline.             (line   71)
@@ -52986,7 +53032,7 @@ look up both forms.
 * fshort-enums:                          Code Gen Options.   (line  201)
 * fshort-enums <1>:                      Structures unions enumerations and bit-fields implementation.
                                                              (line   48)
-* fshort-enums <2>:                      Type Attributes.    (line  113)
+* fshort-enums <2>:                      Type Attributes.    (line  114)
 * fshort-enums <3>:                      Non-bugs.           (line   42)
 * fshort-wchar:                          Code Gen Options.   (line  219)
 * fshrink-wrap:                          Optimize Options.   (line  805)
@@ -55350,7 +55396,7 @@ Keyword Index
 * '#pragma implementation', implied:     C++ Interface.      (line   46)
 * #pragma interface:                     C++ Interface.      (line   20)
 * '#pragma', reason for not using:       Function Attributes.
-                                                             (line 2064)
+                                                             (line 2047)
 * $:                                     Dollar Signs.       (line    6)
 * '%' in constraint:                     Modifiers.          (line   45)
 * '%include':                            Spec Files.         (line   26)
@@ -55750,8 +55796,8 @@ Keyword Index
 * 'aligned' attribute:                   Function Attributes.
                                                              (line   52)
 * 'aligned' attribute <1>:               Variable Attributes.
-                                                             (line   23)
-* 'aligned' attribute <2>:               Type Attributes.    (line   31)
+                                                             (line   24)
+* 'aligned' attribute <2>:               Type Attributes.    (line   32)
 * alignment:                             Alignment.          (line    6)
 * alloca:                                Other Builtins.     (line    6)
 * 'alloca' vs variable-length arrays:    Variable Length.    (line   35)
@@ -55826,14 +55872,14 @@ Keyword Index
 * basic 'asm':                           Basic Asm.          (line    6)
 * bcmp:                                  Other Builtins.     (line    6)
 * 'below100' attribute:                  Variable Attributes.
-                                                             (line  578)
+                                                             (line  579)
 * binary compatibility:                  Compatibility.      (line    6)
 * Binary constants using the '0b' prefix: Binary constants.  (line    6)
 * Blackfin Options:                      Blackfin Options.   (line    6)
 * bound pointer to member function:      Bound member functions.
                                                              (line    6)
 * break handler functions:               Function Attributes.
-                                                             (line 1432)
+                                                             (line 1415)
 * bug criteria:                          Bug Criteria.       (line    6)
 * bugs:                                  Bugs.               (line    6)
 * bugs, known:                           Trouble.            (line    6)
@@ -55930,7 +55976,7 @@ Keyword Index
 * cimagf:                                Other Builtins.     (line    6)
 * cimagl:                                Other Builtins.     (line    6)
 * 'cleanup' attribute:                   Variable Attributes.
-                                                             (line   89)
+                                                             (line   90)
 * clog:                                  Other Builtins.     (line    6)
 * clogf:                                 Other Builtins.     (line    6)
 * clogl:                                 Other Builtins.     (line    6)
@@ -55938,13 +55984,12 @@ Keyword Index
 * code generation conventions:           Code Gen Options.   (line    6)
 * code, mixed with declarations:         Mixed Declarations. (line    6)
 * 'cold' function attribute:             Function Attributes.
-                                                             (line 1307)
-* 'cold' label attribute:                Function Attributes.
-                                                             (line 1325)
+                                                             (line 1298)
+* 'cold' label attribute:                Label Attributes.   (line   46)
 * command options:                       Invoking GCC.       (line    6)
 * comments, C++ style:                   C++ Comments.       (line    6)
 * 'common' attribute:                    Variable Attributes.
-                                                             (line  104)
+                                                             (line  105)
 * comparison of signed and unsigned values, warning: Warning Options.
                                                              (line 1174)
 * compiler bugs, reporting:              Bug Reporting.      (line    6)
@@ -56049,7 +56094,7 @@ Keyword Index
                                                              (line  154)
 * dependent name lookup:                 Name lookup.        (line    6)
 * 'deprecated' attribute:                Variable Attributes.
-                                                             (line  113)
+                                                             (line  114)
 * 'deprecated' attribute.:               Function Attributes.
                                                              (line  265)
 * designated initializers:               Designated Inits.   (line    6)
@@ -56162,7 +56207,7 @@ Keyword Index
 * fmodf:                                 Other Builtins.     (line    6)
 * fmodl:                                 Other Builtins.     (line    6)
 * 'force_align_arg_pointer' attribute:   Function Attributes.
-                                                             (line 1384)
+                                                             (line 1367)
 * 'format' function attribute:           Function Attributes.
                                                              (line  453)
 * 'format_arg' function attribute:       Function Attributes.
@@ -56205,7 +56250,7 @@ Keyword Index
 * functions that are passed arguments in registers on the 386: Function Attributes.
                                                              (line    6)
 * functions that are passed arguments in registers on the 386 <1>: Function Attributes.
-                                                             (line 1349)
+                                                             (line 1332)
 * functions that behave like malloc:     Function Attributes.
                                                              (line    6)
 * functions that do not handle memory bank switching on 68HC11/68HC12: Function Attributes.
@@ -56231,7 +56276,7 @@ Keyword Index
 * functions that pop the argument stack on the 386 <2>: Function Attributes.
                                                              (line  443)
 * functions that pop the argument stack on the 386 <3>: Function Attributes.
-                                                             (line 1516)
+                                                             (line 1499)
 * functions that return more than once:  Function Attributes.
                                                              (line    6)
 * functions with non-null pointer arguments: Function Attributes.
@@ -56256,9 +56301,9 @@ Keyword Index
                                                              (line   52)
 * GCC_EXEC_PREFIX:                       Environment Variables.
                                                              (line   57)
-* 'gcc_struct':                          Type Attributes.    (line  323)
+* 'gcc_struct':                          Type Attributes.    (line  324)
 * 'gcc_struct' attribute:                Variable Attributes.
-                                                             (line  438)
+                                                             (line  439)
 * 'gcov':                                Debugging Options.  (line  516)
 * gettext:                               Other Builtins.     (line    6)
 * global offset table:                   Code Gen Options.   (line  279)
@@ -56288,8 +56333,7 @@ Keyword Index
 * hosted implementation:                 Standards.          (line   13)
 * 'hot' function attribute:              Function Attributes.
                                                              (line 1285)
-* 'hot' label attribute:                 Function Attributes.
-                                                             (line 1297)
+* 'hot' label attribute:                 Label Attributes.   (line   36)
 * 'hotpatch' attribute:                  Function Attributes.
                                                              (line 1037)
 * HPPA Options:                          HPPA Options.       (line    6)
@@ -56352,7 +56396,7 @@ Keyword Index
 * interrupt handler functions <2>:       Function Attributes.
                                                              (line  665)
 * interrupt handler functions on the AVR processors: Function Attributes.
-                                                             (line 1488)
+                                                             (line 1471)
 * interrupt handler functions on the Blackfin, m68k, H8/300 and SH processors: Function Attributes.
                                                              (line  826)
 * interrupt service routines on ARM:     Function Attributes.
@@ -56418,17 +56462,18 @@ Keyword Index
 * keywords, alternate:                   Alternate Keywords. (line    6)
 * known causes of trouble:               Trouble.            (line    6)
 * 'l1_data' variable attribute:          Variable Attributes.
-                                                             (line  352)
+                                                             (line  353)
 * 'l1_data_A' variable attribute:        Variable Attributes.
-                                                             (line  352)
+                                                             (line  353)
 * 'l1_data_B' variable attribute:        Variable Attributes.
-                                                             (line  352)
+                                                             (line  353)
 * 'l1_text' function attribute:          Function Attributes.
                                                              (line  849)
 * 'l2' function attribute:               Function Attributes.
                                                              (line  855)
 * 'l2' variable attribute:               Variable Attributes.
-                                                             (line  360)
+                                                             (line  361)
+* Label Attributes:                      Label Attributes.   (line    6)
 * labeled elements in initializers:      Designated Inits.   (line    6)
 * labels as values:                      Labels as Values.   (line    6)
 * labs:                                  Other Builtins.     (line    6)
@@ -56560,7 +56605,7 @@ Keyword Index
 * MMIX Options:                          MMIX Options.       (line    6)
 * MN10300 options:                       MN10300 Options.    (line    6)
 * 'mode' attribute:                      Variable Attributes.
-                                                             (line  133)
+                                                             (line  134)
 * modf:                                  Other Builtins.     (line    6)
 * modff:                                 Other Builtins.     (line    6)
 * modfl:                                 Other Builtins.     (line    6)
@@ -56571,9 +56616,9 @@ Keyword Index
                                                              (line 1003)
 * 'ms_hook_prologue' attribute:          Function Attributes.
                                                              (line 1030)
-* 'ms_struct':                           Type Attributes.    (line  323)
+* 'ms_struct':                           Type Attributes.    (line  324)
 * 'ms_struct' attribute:                 Variable Attributes.
-                                                             (line  438)
+                                                             (line  439)
 * multiple alternative constraints:      Multi-Alternative.  (line    6)
 * multiprecision arithmetic:             Long Long.          (line    6)
 * 'n' in constraint:                     Simple Constraints. (line   73)
@@ -56601,13 +56646,13 @@ Keyword Index
 * NFKC:                                  Warning Options.    (line 1308)
 * Nios II options:                       Nios II Options.    (line    6)
 * 'nmi' attribute:                       Function Attributes.
-                                                             (line 1371)
+                                                             (line 1354)
 * NMI handler functions on the Blackfin processor: Function Attributes.
                                                              (line 1073)
 * 'noclone' function attribute:          Function Attributes.
                                                              (line 1107)
 * 'nocommon' attribute:                  Variable Attributes.
-                                                             (line  104)
+                                                             (line  105)
 * 'nocompression' attribute:             Function Attributes.
                                                              (line 1079)
 * 'noinline' function attribute:         Function Attributes.
@@ -56633,9 +56678,9 @@ Keyword Index
 * 'no_instrument_function' function attribute: Function Attributes.
                                                              (line 1085)
 * 'no_sanitize_address' function attribute: Function Attributes.
-                                                             (line 1335)
+                                                             (line 1318)
 * 'no_sanitize_undefined' function attribute: Function Attributes.
-                                                             (line 1343)
+                                                             (line 1326)
 * 'no_split_stack' function attribute:   Function Attributes.
                                                              (line 1090)
 * 'o' in constraint:                     Simple Constraints. (line   23)
@@ -56688,7 +56733,7 @@ Keyword Index
                                                              (line  655)
 * 'p' in constraint:                     Simple Constraints. (line  152)
 * 'packed' attribute:                    Variable Attributes.
-                                                             (line  144)
+                                                             (line  145)
 * parameter forward declaration:         Variable Length.    (line   68)
 * 'partial_save' attribute:              Function Attributes.
                                                              (line  818)
@@ -56749,7 +56794,7 @@ Keyword Index
 * pragma, push_macro:                    Push/Pop Macro Pragmas.
                                                              (line   11)
 * pragma, reason for not using:          Function Attributes.
-                                                             (line 2064)
+                                                             (line 2047)
 * pragma, redefine_extname:              Symbol-Renaming Pragmas.
                                                              (line   11)
 * pragma, segment:                       Darwin Pragmas.     (line   21)
@@ -56770,7 +56815,7 @@ Keyword Index
 * printf_unlocked:                       Other Builtins.     (line    6)
 * 'prof':                                Debugging Options.  (line  435)
 * 'progmem' AVR variable attribute:      Variable Attributes.
-                                                             (line  314)
+                                                             (line  315)
 * promotion of formal parameters:        Function Prototypes.
                                                              (line    6)
 * 'pure' function attribute:             Function Attributes.
@@ -56801,7 +56846,7 @@ Keyword Index
 * registers, global allocation:          Explicit Reg Vars.  (line    6)
 * registers, global variables in:        Global Reg Vars.    (line    6)
 * 'regparm' attribute:                   Function Attributes.
-                                                             (line 1349)
+                                                             (line 1332)
 * relocation truncated to fit (ColdFire): M680x0 Options.    (line  325)
 * relocation truncated to fit (MIPS):    MIPS Options.       (line  207)
 * remainder:                             Other Builtins.     (line    6)
@@ -56811,14 +56856,14 @@ Keyword Index
 * remquof:                               Other Builtins.     (line    6)
 * remquol:                               Other Builtins.     (line    6)
 * 'renesas' attribute:                   Function Attributes.
-                                                             (line 1392)
+                                                             (line 1375)
 * reordering, warning:                   C++ Dialect Options.
                                                              (line  573)
 * reporting bugs:                        Bugs.               (line    6)
 * 'resbank' attribute:                   Function Attributes.
-                                                             (line 1396)
+                                                             (line 1379)
 * reset handler functions:               Function Attributes.
-                                                             (line 1366)
+                                                             (line 1349)
 * rest argument (in macro):              Variadic Macros.    (line    6)
 * restricted pointers:                   Restricted Pointers.
                                                              (line    6)
@@ -56829,7 +56874,7 @@ Keyword Index
 * 'returns_nonnull' function attribute:  Function Attributes.
                                                              (line 1137)
 * 'returns_twice' attribute:             Function Attributes.
-                                                             (line 1410)
+                                                             (line 1393)
 * rindex:                                Other Builtins.     (line    6)
 * rint:                                  Other Builtins.     (line    6)
 * rintf:                                 Other Builtins.     (line    6)
@@ -56847,9 +56892,9 @@ Keyword Index
 * S/390 and zSeries Options:             S/390 and zSeries Options.
                                                              (line    6)
 * save all registers on the Blackfin, H8/300, H8/300H, and H8S: Function Attributes.
-                                                             (line 1419)
+                                                             (line 1402)
 * save volatile registers on the MicroBlaze: Function Attributes.
-                                                             (line 1424)
+                                                             (line 1407)
 * 'save_all' attribute:                  Function Attributes.
                                                              (line  815)
 * scalb:                                 Other Builtins.     (line    6)
@@ -56868,16 +56913,16 @@ Keyword Index
 * Score Options:                         Score Options.      (line    6)
 * search path:                           Directory Options.  (line    6)
 * 'section' function attribute:          Function Attributes.
-                                                             (line 1441)
+                                                             (line 1424)
 * 'section' variable attribute:          Variable Attributes.
-                                                             (line  165)
+                                                             (line  166)
 * 'sentinel' function attribute:         Function Attributes.
-                                                             (line 1457)
+                                                             (line 1440)
 * setjmp:                                Global Reg Vars.    (line   65)
 * 'setjmp' incompatibilities:            Incompatibilities.  (line   39)
 * shared strings:                        Incompatibilities.  (line    9)
 * 'shared' variable attribute:           Variable Attributes.
-                                                             (line  210)
+                                                             (line  211)
 * side effect in '?:':                   Conditionals.       (line   20)
 * side effects, macro argument:          Statement Exprs.    (line   35)
 * side effects, order of evaluation:     Non-bugs.           (line  196)
@@ -56923,14 +56968,14 @@ Keyword Index
 * sprintf:                               Other Builtins.     (line    6)
 * SPU options:                           SPU Options.        (line    6)
 * 'sp_switch' attribute:                 Function Attributes.
-                                                             (line 1506)
+                                                             (line 1489)
 * sqrt:                                  Other Builtins.     (line    6)
 * sqrtf:                                 Other Builtins.     (line    6)
 * sqrtl:                                 Other Builtins.     (line    6)
 * sscanf:                                Other Builtins.     (line    6)
 * 'sscanf', and constant strings:        Incompatibilities.  (line   17)
 * 'sseregparm' attribute:                Function Attributes.
-                                                             (line 1377)
+                                                             (line 1360)
 * statements inside expressions:         Statement Exprs.    (line    6)
 * static data in C++, declaring and defining: Static Definitions.
                                                              (line    6)
@@ -56972,7 +57017,7 @@ Keyword Index
                                                              (line    6)
 * syntax checking:                       Warning Options.    (line   13)
 * 'syscall_linkage' attribute:           Function Attributes.
-                                                             (line 1521)
+                                                             (line 1504)
 * system headers, warnings from:         Warning Options.    (line  848)
 * 'sysv_abi' attribute:                  Function Attributes.
                                                              (line 1003)
@@ -56983,119 +57028,119 @@ Keyword Index
 * tanhl:                                 Other Builtins.     (line    6)
 * tanl:                                  Other Builtins.     (line    6)
 * 'target' function attribute:           Function Attributes.
-                                                             (line 1528)
+                                                             (line 1511)
 * target machine, specifying:            Target Options.     (line    6)
 * target options:                        Target Options.     (line    6)
 * 'target("abm")' attribute:             Function Attributes.
-                                                             (line 1561)
+                                                             (line 1544)
 * 'target("aes")' attribute:             Function Attributes.
-                                                             (line 1566)
+                                                             (line 1549)
 * 'target("align-stringops")' attribute: Function Attributes.
-                                                             (line 1660)
+                                                             (line 1643)
 * 'target("altivec")' attribute:         Function Attributes.
-                                                             (line 1686)
-* 'target("arch=ARCH")' attribute:       Function Attributes.
                                                              (line 1669)
+* 'target("arch=ARCH")' attribute:       Function Attributes.
+                                                             (line 1652)
 * 'target("avoid-indexed-addresses")' attribute: Function Attributes.
-                                                             (line 1807)
-* 'target("cld")' attribute:             Function Attributes.
-                                                             (line 1631)
-* 'target("cmpb")' attribute:            Function Attributes.
-                                                             (line 1692)
-* 'target("cpu=CPU")' attribute:         Function Attributes.
-                                                             (line 1822)
-* 'target("custom-fpu-cfg=NAME")' attribute: Function Attributes.
-                                                             (line 1848)
-* 'target("custom-INSN=N")' attribute:   Function Attributes.
-                                                             (line 1839)
-* 'target("default")' attribute:         Function Attributes.
-                                                             (line 1569)
-* 'target("dlmzb")' attribute:           Function Attributes.
-                                                             (line 1698)
-* 'target("fancy-math-387")' attribute:  Function Attributes.
-                                                             (line 1635)
-* 'target("fma4")' attribute:            Function Attributes.
-                                                             (line 1615)
-* 'target("fpmath=FPMATH")' attribute:   Function Attributes.
-                                                             (line 1677)
-* 'target("fprnd")' attribute:           Function Attributes.
-                                                             (line 1705)
-* 'target("friz")' attribute:            Function Attributes.
-                                                             (line 1798)
-* 'target("fused-madd")' attribute:      Function Attributes.
-                                                             (line 1640)
-* 'target("hard-dfp")' attribute:        Function Attributes.
-                                                             (line 1711)
-* 'target("ieee-fp")' attribute:         Function Attributes.
-                                                             (line 1645)
-* 'target("inline-all-stringops")' attribute: Function Attributes.
-                                                             (line 1650)
-* 'target("inline-stringops-dynamically")' attribute: Function Attributes.
-                                                             (line 1654)
-* 'target("isel")' attribute:            Function Attributes.
-                                                             (line 1717)
-* 'target("longcall")' attribute:        Function Attributes.
-                                                             (line 1817)
-* 'target("lwp")' attribute:             Function Attributes.
-                                                             (line 1623)
-* 'target("mfcrf")' attribute:           Function Attributes.
-                                                             (line 1721)
-* 'target("mfpgpr")' attribute:          Function Attributes.
-                                                             (line 1728)
-* 'target("mmx")' attribute:             Function Attributes.
-                                                             (line 1574)
-* 'target("mulhw")' attribute:           Function Attributes.
-                                                             (line 1735)
-* 'target("multiple")' attribute:        Function Attributes.
-                                                             (line 1742)
-* 'target("no-custom-INSN")' attribute:  Function Attributes.
-                                                             (line 1839)
-* 'target("paired")' attribute:          Function Attributes.
-                                                             (line 1812)
-* 'target("pclmul")' attribute:          Function Attributes.
-                                                             (line 1578)
-* 'target("popcnt")' attribute:          Function Attributes.
-                                                             (line 1582)
-* 'target("popcntb")' attribute:         Function Attributes.
-                                                             (line 1753)
-* 'target("popcntd")' attribute:         Function Attributes.
-                                                             (line 1760)
-* 'target("powerpc-gfxopt")' attribute:  Function Attributes.
-                                                             (line 1766)
-* 'target("powerpc-gpopt")' attribute:   Function Attributes.
-                                                             (line 1772)
-* 'target("recip")' attribute:           Function Attributes.
-                                                             (line 1664)
-* 'target("recip-precision")' attribute: Function Attributes.
-                                                             (line 1778)
-* 'target("sse")' attribute:             Function Attributes.
-                                                             (line 1586)
-* 'target("sse2")' attribute:            Function Attributes.
-                                                             (line 1590)
-* 'target("sse3")' attribute:            Function Attributes.
-                                                             (line 1594)
-* 'target("sse4")' attribute:            Function Attributes.
-                                                             (line 1598)
-* 'target("sse4.1")' attribute:          Function Attributes.
-                                                             (line 1603)
-* 'target("sse4.2")' attribute:          Function Attributes.
-                                                             (line 1607)
-* 'target("sse4a")' attribute:           Function Attributes.
-                                                             (line 1611)
-* 'target("ssse3")' attribute:           Function Attributes.
-                                                             (line 1627)
-* 'target("string")' attribute:          Function Attributes.
-                                                             (line 1784)
-* 'target("tune=TUNE")' attribute:       Function Attributes.
-                                                             (line 1673)
-* 'target("tune=TUNE")' attribute <1>:   Function Attributes.
-                                                             (line 1829)
-* 'target("update")' attribute:          Function Attributes.
-                                                             (line 1747)
-* 'target("vsx")' attribute:             Function Attributes.
                                                              (line 1790)
+* 'target("cld")' attribute:             Function Attributes.
+                                                             (line 1614)
+* 'target("cmpb")' attribute:            Function Attributes.
+                                                             (line 1675)
+* 'target("cpu=CPU")' attribute:         Function Attributes.
+                                                             (line 1805)
+* 'target("custom-fpu-cfg=NAME")' attribute: Function Attributes.
+                                                             (line 1831)
+* 'target("custom-INSN=N")' attribute:   Function Attributes.
+                                                             (line 1822)
+* 'target("default")' attribute:         Function Attributes.
+                                                             (line 1552)
+* 'target("dlmzb")' attribute:           Function Attributes.
+                                                             (line 1681)
+* 'target("fancy-math-387")' attribute:  Function Attributes.
+                                                             (line 1618)
+* 'target("fma4")' attribute:            Function Attributes.
+                                                             (line 1598)
+* 'target("fpmath=FPMATH")' attribute:   Function Attributes.
+                                                             (line 1660)
+* 'target("fprnd")' attribute:           Function Attributes.
+                                                             (line 1688)
+* 'target("friz")' attribute:            Function Attributes.
+                                                             (line 1781)
+* 'target("fused-madd")' attribute:      Function Attributes.
+                                                             (line 1623)
+* 'target("hard-dfp")' attribute:        Function Attributes.
+                                                             (line 1694)
+* 'target("ieee-fp")' attribute:         Function Attributes.
+                                                             (line 1628)
+* 'target("inline-all-stringops")' attribute: Function Attributes.
+                                                             (line 1633)
+* 'target("inline-stringops-dynamically")' attribute: Function Attributes.
+                                                             (line 1637)
+* 'target("isel")' attribute:            Function Attributes.
+                                                             (line 1700)
+* 'target("longcall")' attribute:        Function Attributes.
+                                                             (line 1800)
+* 'target("lwp")' attribute:             Function Attributes.
+                                                             (line 1606)
+* 'target("mfcrf")' attribute:           Function Attributes.
+                                                             (line 1704)
+* 'target("mfpgpr")' attribute:          Function Attributes.
+                                                             (line 1711)
+* 'target("mmx")' attribute:             Function Attributes.
+                                                             (line 1557)
+* 'target("mulhw")' attribute:           Function Attributes.
+                                                             (line 1718)
+* 'target("multiple")' attribute:        Function Attributes.
+                                                             (line 1725)
+* 'target("no-custom-INSN")' attribute:  Function Attributes.
+                                                             (line 1822)
+* 'target("paired")' attribute:          Function Attributes.
+                                                             (line 1795)
+* 'target("pclmul")' attribute:          Function Attributes.
+                                                             (line 1561)
+* 'target("popcnt")' attribute:          Function Attributes.
+                                                             (line 1565)
+* 'target("popcntb")' attribute:         Function Attributes.
+                                                             (line 1736)
+* 'target("popcntd")' attribute:         Function Attributes.
+                                                             (line 1743)
+* 'target("powerpc-gfxopt")' attribute:  Function Attributes.
+                                                             (line 1749)
+* 'target("powerpc-gpopt")' attribute:   Function Attributes.
+                                                             (line 1755)
+* 'target("recip")' attribute:           Function Attributes.
+                                                             (line 1647)
+* 'target("recip-precision")' attribute: Function Attributes.
+                                                             (line 1761)
+* 'target("sse")' attribute:             Function Attributes.
+                                                             (line 1569)
+* 'target("sse2")' attribute:            Function Attributes.
+                                                             (line 1573)
+* 'target("sse3")' attribute:            Function Attributes.
+                                                             (line 1577)
+* 'target("sse4")' attribute:            Function Attributes.
+                                                             (line 1581)
+* 'target("sse4.1")' attribute:          Function Attributes.
+                                                             (line 1586)
+* 'target("sse4.2")' attribute:          Function Attributes.
+                                                             (line 1590)
+* 'target("sse4a")' attribute:           Function Attributes.
+                                                             (line 1594)
+* 'target("ssse3")' attribute:           Function Attributes.
+                                                             (line 1610)
+* 'target("string")' attribute:          Function Attributes.
+                                                             (line 1767)
+* 'target("tune=TUNE")' attribute:       Function Attributes.
+                                                             (line 1656)
+* 'target("tune=TUNE")' attribute <1>:   Function Attributes.
+                                                             (line 1812)
+* 'target("update")' attribute:          Function Attributes.
+                                                             (line 1730)
+* 'target("vsx")' attribute:             Function Attributes.
+                                                             (line 1773)
 * 'target("xop")' attribute:             Function Attributes.
-                                                             (line 1619)
+                                                             (line 1602)
 * TC1:                                   Standards.          (line   13)
 * TC2:                                   Standards.          (line   13)
 * TC3:                                   Standards.          (line   13)
@@ -57114,10 +57159,10 @@ Keyword Index
 * TILE-Gx options:                       TILE-Gx Options.    (line    6)
 * TILEPro options:                       TILEPro Options.    (line    6)
 * tiny data section on the H8/300H and H8S: Function Attributes.
-                                                             (line 1861)
+                                                             (line 1844)
 * TLS:                                   Thread-Local.       (line    6)
 * 'tls_model' attribute:                 Variable Attributes.
-                                                             (line  233)
+                                                             (line  234)
 * TMPDIR:                                Environment Variables.
                                                              (line   45)
 * toascii:                               Other Builtins.     (line    6)
@@ -57127,9 +57172,9 @@ Keyword Index
 * towupper:                              Other Builtins.     (line    6)
 * traditional C language:                C Dialect Options.  (line  331)
 * 'trapa_handler' attribute:             Function Attributes.
-                                                             (line 1873)
+                                                             (line 1856)
 * 'trap_exit' attribute:                 Function Attributes.
-                                                             (line 1868)
+                                                             (line 1851)
 * trunc:                                 Other Builtins.     (line    6)
 * truncf:                                Other Builtins.     (line    6)
 * truncl:                                Other Builtins.     (line    6)
@@ -57164,11 +57209,12 @@ Keyword Index
 * unresolved references and '-nodefaultlibs': Link Options.  (line   85)
 * unresolved references and '-nostdlib': Link Options.       (line   85)
 * 'unused' attribute.:                   Function Attributes.
-                                                             (line 1877)
+                                                             (line 1860)
+* 'unused' label attribute:              Label Attributes.   (line   29)
 * 'ur' fixed-suffix:                     Fixed-Point.        (line    6)
 * 'UR' fixed-suffix:                     Fixed-Point.        (line    6)
 * 'used' attribute.:                     Function Attributes.
-                                                             (line 1882)
+                                                             (line 1865)
 * User stack pointer in interrupts on the Blackfin: Function Attributes.
                                                              (line  844)
 * 'use_debug_exception_return' attribute: Function Attributes.
@@ -57182,7 +57228,7 @@ Keyword Index
 * variable addressability on the IA-64:  Function Attributes.
                                                              (line  974)
 * variable addressability on the M32R/D: Variable Attributes.
-                                                             (line  370)
+                                                             (line  371)
 * variable alignment:                    Alignment.          (line    6)
 * variable attributes:                   Variable Attributes.
                                                              (line    6)
@@ -57195,14 +57241,14 @@ Keyword Index
 * variadic macros:                       Variadic Macros.    (line    6)
 * VAX options:                           VAX Options.        (line    6)
 * 'version_id' attribute:                Function Attributes.
-                                                             (line 1892)
+                                                             (line 1875)
 * vfprintf:                              Other Builtins.     (line    6)
 * vfscanf:                               Other Builtins.     (line    6)
 * 'visibility' attribute:                Function Attributes.
-                                                             (line 1902)
+                                                             (line 1885)
 * VLAs:                                  Variable Length.    (line    6)
 * 'vliw' attribute:                      Function Attributes.
-                                                             (line 1998)
+                                                             (line 1981)
 * void pointers, arithmetic:             Pointer Arith.      (line    6)
 * void, size of pointer to:              Pointer Arith.      (line    6)
 * volatile access:                       Volatiles.          (line    6)
@@ -57226,7 +57272,7 @@ Keyword Index
 * 'wakeup' attribute:                    Function Attributes.
                                                              (line  729)
 * 'warm' attribute:                      Function Attributes.
-                                                             (line 1373)
+                                                             (line 1356)
 * warning for comparison of signed and unsigned values: Warning Options.
                                                              (line 1174)
 * warning for overloaded virtual function: C++ Dialect Options.
@@ -57244,11 +57290,11 @@ Keyword Index
                                                              (line    6)
 * 'warn_unused' attribute:               C++ Attributes.     (line   64)
 * 'warn_unused_result' attribute:        Function Attributes.
-                                                             (line 2004)
+                                                             (line 1987)
 * 'weak' attribute:                      Function Attributes.
-                                                             (line 2021)
+                                                             (line 2004)
 * 'weakref' attribute:                   Function Attributes.
-                                                             (line 2030)
+                                                             (line 2013)
 * whitespace:                            Incompatibilities.  (line  112)
 * 'X' in constraint:                     Simple Constraints. (line  122)
 * X3.159-1989:                           Standards.          (line   13)
@@ -57380,221 +57426,222 @@ Node: C++ Implementation922242
 Node: Conditionally-supported behavior923525
 Node: Exception handling924034
 Node: C Extensions924442
-Node: Statement Exprs929251
-Node: Local Labels933728
-Node: Labels as Values936701
-Ref: Labels as Values-Footnote-1939102
-Node: Nested Functions939287
-Node: Constructing Calls943245
-Node: Typeof947962
-Node: Conditionals952344
-Node: __int128953233
-Node: Long Long953758
-Node: Complex955234
-Node: Floating Types957822
-Node: Half-Precision958950
-Node: Decimal Float961135
-Node: Hex Floats962991
-Node: Fixed-Point964028
-Node: Named Address Spaces967288
-Ref: AVR Named Address Spaces967969
-Node: Zero Length973177
-Node: Empty Structures976464
-Node: Variable Length976870
-Node: Variadic Macros979726
-Node: Escaped Newlines982104
-Node: Subscripting982943
-Node: Pointer Arith983668
-Node: Initializers984236
-Node: Compound Literals984732
-Node: Designated Inits988093
-Node: Case Ranges991831
-Node: Cast to Union992512
-Node: Mixed Declarations993602
-Node: Function Attributes994112
-Node: Attribute Syntax1089101
-Node: Function Prototypes1099491
-Node: C++ Comments1101271
-Node: Dollar Signs1101790
-Node: Character Escapes1102255
-Node: Variable Attributes1102549
-Ref: AVR Variable Attributes1116224
-Ref: MeP Variable Attributes1118886
-Ref: i386 Variable Attributes1120822
-Node: Type Attributes1126483
-Ref: MeP Type Attributes1140371
-Ref: i386 Type Attributes1140645
-Ref: PowerPC Type Attributes1141337
-Ref: SPU Type Attributes1142199
-Node: Alignment1142490
-Node: Inline1143860
-Node: Volatiles1148836
-Node: Using Assembly Language with C1151735
-Node: Basic Asm1152439
-Node: Extended Asm1156363
-Ref: Volatile1159814
-Ref: AssemblerTemplate1163872
-Ref: OutputOperands1167936
-Ref: InputOperands1174445
-Ref: Clobbers1178481
-Ref: GotoLabels1181734
-Ref: i386Operandmodifiers1183716
-Ref: i386floatingpointasmoperands1185810
-Node: Constraints1189202
-Node: Simple Constraints1190308
-Node: Multi-Alternative1197622
-Node: Modifiers1199343
-Node: Machine Constraints1202360
-Node: Asm Labels1259318
-Node: Explicit Reg Vars1261016
-Node: Size of an asm1262583
-Node: Global Reg Vars1263876
-Node: Local Reg Vars1268373
-Node: Alternate Keywords1271428
-Node: Incomplete Enums1272927
-Node: Function Names1273683
-Node: Return Address1275844
-Node: Vector Extensions1279351
-Node: Offsetof1286280
-Node: __sync Builtins1287085
-Node: __atomic Builtins1292554
-Node: x86 specific memory model extensions for transactional memory1304188
-Node: Object Size Checking1305450
-Node: Cilk Plus Builtins1310943
-Node: Other Builtins1311812
-Node: Target Builtins1341119
-Node: Alpha Built-in Functions1342538
-Node: Altera Nios II Built-in Functions1345551
-Node: ARC Built-in Functions1349538
-Node: ARC SIMD Built-in Functions1354750
-Node: ARM iWMMXt Built-in Functions1363646
-Node: ARM NEON Intrinsics1370629
-Node: ARM ACLE Intrinsics1588123
-Node: AVR Built-in Functions1589504
-Node: Blackfin Built-in Functions1592582
-Node: FR-V Built-in Functions1593199
-Node: Argument Types1594062
-Node: Directly-mapped Integer Functions1595816
-Node: Directly-mapped Media Functions1596900
-Node: Raw read/write Functions1605106
-Node: Other Built-in Functions1606014
-Node: X86 Built-in Functions1607200
-Node: X86 transactional memory intrinsics1666411
-Node: MIPS DSP Built-in Functions1669087
-Node: MIPS Paired-Single Support1681596
-Node: MIPS Loongson Built-in Functions1683095
-Node: Paired-Single Arithmetic1689610
-Node: Paired-Single Built-in Functions1690558
-Node: MIPS-3D Built-in Functions1693225
-Node: Other MIPS Built-in Functions1698603
-Node: MSP430 Built-in Functions1699608
-Node: NDS32 Built-in Functions1701009
-Node: picoChip Built-in Functions1702302
-Node: PowerPC Built-in Functions1703645
-Node: PowerPC AltiVec/VSX Built-in Functions1707458
-Node: PowerPC Hardware Transactional Memory Built-in Functions1840356
-Node: RX Built-in Functions1846897
-Node: S/390 System z Built-in Functions1850930
-Node: SH Built-in Functions1856159
-Node: SPARC VIS Built-in Functions1857552
-Node: SPU Built-in Functions1863155
-Node: TI C6X Built-in Functions1864972
-Node: TILE-Gx Built-in Functions1865997
-Node: TILEPro Built-in Functions1867116
-Node: Target Format Checks1868185
-Node: Solaris Format Checks1868617
-Node: Darwin Format Checks1869043
-Node: Pragmas1869861
-Node: ARM Pragmas1870597
-Node: M32C Pragmas1871200
-Node: MeP Pragmas1872272
-Node: RS/6000 and PowerPC Pragmas1874340
-Node: Darwin Pragmas1875081
-Node: Solaris Pragmas1876148
-Node: Symbol-Renaming Pragmas1877312
-Node: Structure-Packing Pragmas1878796
-Node: Weak Pragmas1880441
-Node: Diagnostic Pragmas1881175
-Node: Visibility Pragmas1884284
-Node: Push/Pop Macro Pragmas1884969
-Node: Function Specific Option Pragmas1885942
-Node: Loop-Specific Pragmas1888133
-Node: Unnamed Fields1889232
-Node: Thread-Local1891459
-Node: C99 Thread-Local Edits1893564
-Node: C++98 Thread-Local Edits1895562
-Node: Binary constants1899007
-Node: C++ Extensions1899678
-Node: C++ Volatiles1901389
-Node: Restricted Pointers1903737
-Node: Vague Linkage1905328
-Node: C++ Interface1908951
-Ref: C++ Interface-Footnote-11913239
-Node: Template Instantiation1913377
-Node: Bound member functions1919963
-Node: C++ Attributes1921495
-Node: Function Multiversioning1925074
-Node: Namespace Association1926891
-Node: Type Traits1928271
-Node: Java Exceptions1934754
-Node: Deprecated Features1936144
-Node: Backwards Compatibility1939111
-Node: Objective-C1940458
-Node: GNU Objective-C runtime API1941065
-Node: Modern GNU Objective-C runtime API1942072
-Node: Traditional GNU Objective-C runtime API1944508
-Node: Executing code before main1945235
-Node: What you can and what you cannot do in +load1947975
-Node: Type encoding1950363
-Node: Legacy type encoding1955390
-Node: @encode1956480
-Node: Method signatures1957021
-Node: Garbage Collection1959013
-Node: Constant string objects1961703
-Node: compatibility_alias1964212
-Node: Exceptions1964933
-Node: Synchronization1967643
-Node: Fast enumeration1968827
-Node: Using fast enumeration1969139
-Node: c99-like fast enumeration syntax1970350
-Node: Fast enumeration details1971053
-Node: Fast enumeration protocol1973393
-Node: Messaging with the GNU Objective-C runtime1976545
-Node: Dynamically registering methods1977917
-Node: Forwarding hook1979608
-Node: Compatibility1982648
-Node: Gcov1989204
-Node: Gcov Intro1989737
-Node: Invoking Gcov1992455
-Node: Gcov and Optimization2006695
-Node: Gcov Data Files2009697
-Node: Cross-profiling2011092
-Node: Trouble2012946
-Node: Actual Bugs2014358
-Node: Interoperation2014805
-Node: Incompatibilities2021696
-Node: Fixed Headers2029848
-Node: Standard Libraries2031506
-Node: Disappointments2032878
-Node: C++ Misunderstandings2037237
-Node: Static Definitions2038048
-Node: Name lookup2039101
-Ref: Name lookup-Footnote-12043881
-Node: Temporaries2044070
-Node: Copy Assignment2046046
-Node: Non-bugs2047853
-Node: Warnings and Errors2058359
-Node: Bugs2060121
-Node: Bug Criteria2060588
-Node: Bug Reporting2062798
-Node: Service2063019
-Node: Contributing2063838
-Node: Funding2064578
-Node: GNU Project2067068
-Node: Copying2067714
-Node: GNU Free Documentation License2105223
-Node: Contributors2130341
-Node: Option Index2168210
-Node: Keyword Index2379709
+Node: Statement Exprs929308
+Node: Local Labels933785
+Node: Labels as Values936758
+Ref: Labels as Values-Footnote-1939159
+Node: Nested Functions939344
+Node: Constructing Calls943302
+Node: Typeof948019
+Node: Conditionals952401
+Node: __int128953290
+Node: Long Long953815
+Node: Complex955291
+Node: Floating Types957879
+Node: Half-Precision959007
+Node: Decimal Float961192
+Node: Hex Floats963048
+Node: Fixed-Point964085
+Node: Named Address Spaces967345
+Ref: AVR Named Address Spaces968026
+Node: Zero Length973234
+Node: Empty Structures976521
+Node: Variable Length976927
+Node: Variadic Macros979783
+Node: Escaped Newlines982161
+Node: Subscripting983000
+Node: Pointer Arith983725
+Node: Initializers984293
+Node: Compound Literals984789
+Node: Designated Inits988150
+Node: Case Ranges991888
+Node: Cast to Union992569
+Node: Mixed Declarations993659
+Node: Function Attributes994169
+Node: Label Attributes1088451
+Node: Attribute Syntax1090479
+Node: Function Prototypes1100689
+Node: C++ Comments1102469
+Node: Dollar Signs1102988
+Node: Character Escapes1103453
+Node: Variable Attributes1103747
+Ref: AVR Variable Attributes1117457
+Ref: MeP Variable Attributes1120119
+Ref: i386 Variable Attributes1122055
+Node: Type Attributes1127716
+Ref: MeP Type Attributes1141639
+Ref: i386 Type Attributes1141913
+Ref: PowerPC Type Attributes1142605
+Ref: SPU Type Attributes1143467
+Node: Alignment1143758
+Node: Inline1145128
+Node: Volatiles1150104
+Node: Using Assembly Language with C1153003
+Node: Basic Asm1153707
+Node: Extended Asm1157631
+Ref: Volatile1161082
+Ref: AssemblerTemplate1165140
+Ref: OutputOperands1169204
+Ref: InputOperands1175713
+Ref: Clobbers1179749
+Ref: GotoLabels1183002
+Ref: i386Operandmodifiers1185103
+Ref: i386floatingpointasmoperands1187197
+Node: Constraints1190589
+Node: Simple Constraints1191695
+Node: Multi-Alternative1199009
+Node: Modifiers1200730
+Node: Machine Constraints1203747
+Node: Asm Labels1260705
+Node: Explicit Reg Vars1262403
+Node: Global Reg Vars1264019
+Node: Local Reg Vars1268519
+Node: Size of an asm1271577
+Node: Alternate Keywords1272821
+Node: Incomplete Enums1274320
+Node: Function Names1275076
+Node: Return Address1277237
+Node: Vector Extensions1280744
+Node: Offsetof1287673
+Node: __sync Builtins1288478
+Node: __atomic Builtins1293947
+Node: x86 specific memory model extensions for transactional memory1305581
+Node: Object Size Checking1306843
+Node: Cilk Plus Builtins1312336
+Node: Other Builtins1313205
+Node: Target Builtins1342512
+Node: Alpha Built-in Functions1343931
+Node: Altera Nios II Built-in Functions1346944
+Node: ARC Built-in Functions1350931
+Node: ARC SIMD Built-in Functions1356143
+Node: ARM iWMMXt Built-in Functions1365039
+Node: ARM NEON Intrinsics1372022
+Node: ARM ACLE Intrinsics1589516
+Node: AVR Built-in Functions1590897
+Node: Blackfin Built-in Functions1593975
+Node: FR-V Built-in Functions1594592
+Node: Argument Types1595455
+Node: Directly-mapped Integer Functions1597209
+Node: Directly-mapped Media Functions1598293
+Node: Raw read/write Functions1606499
+Node: Other Built-in Functions1607407
+Node: X86 Built-in Functions1608593
+Node: X86 transactional memory intrinsics1667804
+Node: MIPS DSP Built-in Functions1670480
+Node: MIPS Paired-Single Support1682989
+Node: MIPS Loongson Built-in Functions1684488
+Node: Paired-Single Arithmetic1691003
+Node: Paired-Single Built-in Functions1691951
+Node: MIPS-3D Built-in Functions1694618
+Node: Other MIPS Built-in Functions1699996
+Node: MSP430 Built-in Functions1701001
+Node: NDS32 Built-in Functions1702402
+Node: picoChip Built-in Functions1703695
+Node: PowerPC Built-in Functions1705038
+Node: PowerPC AltiVec/VSX Built-in Functions1708851
+Node: PowerPC Hardware Transactional Memory Built-in Functions1841749
+Node: RX Built-in Functions1848290
+Node: S/390 System z Built-in Functions1852323
+Node: SH Built-in Functions1857552
+Node: SPARC VIS Built-in Functions1858945
+Node: SPU Built-in Functions1864548
+Node: TI C6X Built-in Functions1866365
+Node: TILE-Gx Built-in Functions1867390
+Node: TILEPro Built-in Functions1868509
+Node: Target Format Checks1869578
+Node: Solaris Format Checks1870010
+Node: Darwin Format Checks1870436
+Node: Pragmas1871254
+Node: ARM Pragmas1871990
+Node: M32C Pragmas1872593
+Node: MeP Pragmas1873665
+Node: RS/6000 and PowerPC Pragmas1875733
+Node: Darwin Pragmas1876474
+Node: Solaris Pragmas1877541
+Node: Symbol-Renaming Pragmas1878705
+Node: Structure-Packing Pragmas1880189
+Node: Weak Pragmas1881834
+Node: Diagnostic Pragmas1882568
+Node: Visibility Pragmas1885677
+Node: Push/Pop Macro Pragmas1886362
+Node: Function Specific Option Pragmas1887335
+Node: Loop-Specific Pragmas1889526
+Node: Unnamed Fields1890625
+Node: Thread-Local1892852
+Node: C99 Thread-Local Edits1894957
+Node: C++98 Thread-Local Edits1896955
+Node: Binary constants1900400
+Node: C++ Extensions1901071
+Node: C++ Volatiles1902782
+Node: Restricted Pointers1905130
+Node: Vague Linkage1906721
+Node: C++ Interface1910344
+Ref: C++ Interface-Footnote-11914632
+Node: Template Instantiation1914770
+Node: Bound member functions1921356
+Node: C++ Attributes1922888
+Node: Function Multiversioning1926467
+Node: Namespace Association1928284
+Node: Type Traits1929664
+Node: Java Exceptions1936147
+Node: Deprecated Features1937537
+Node: Backwards Compatibility1940504
+Node: Objective-C1941851
+Node: GNU Objective-C runtime API1942458
+Node: Modern GNU Objective-C runtime API1943465
+Node: Traditional GNU Objective-C runtime API1945901
+Node: Executing code before main1946628
+Node: What you can and what you cannot do in +load1949368
+Node: Type encoding1951756
+Node: Legacy type encoding1956783
+Node: @encode1957873
+Node: Method signatures1958414
+Node: Garbage Collection1960406
+Node: Constant string objects1963096
+Node: compatibility_alias1965605
+Node: Exceptions1966326
+Node: Synchronization1969036
+Node: Fast enumeration1970220
+Node: Using fast enumeration1970532
+Node: c99-like fast enumeration syntax1971743
+Node: Fast enumeration details1972446
+Node: Fast enumeration protocol1974786
+Node: Messaging with the GNU Objective-C runtime1977938
+Node: Dynamically registering methods1979310
+Node: Forwarding hook1981001
+Node: Compatibility1984041
+Node: Gcov1990597
+Node: Gcov Intro1991130
+Node: Invoking Gcov1993848
+Node: Gcov and Optimization2008088
+Node: Gcov Data Files2011090
+Node: Cross-profiling2012485
+Node: Trouble2014339
+Node: Actual Bugs2015751
+Node: Interoperation2016198
+Node: Incompatibilities2023089
+Node: Fixed Headers2031241
+Node: Standard Libraries2032899
+Node: Disappointments2034271
+Node: C++ Misunderstandings2038630
+Node: Static Definitions2039441
+Node: Name lookup2040494
+Ref: Name lookup-Footnote-12045274
+Node: Temporaries2045463
+Node: Copy Assignment2047439
+Node: Non-bugs2049246
+Node: Warnings and Errors2059752
+Node: Bugs2061514
+Node: Bug Criteria2061981
+Node: Bug Reporting2064191
+Node: Service2064412
+Node: Contributing2065231
+Node: Funding2065971
+Node: GNU Project2068461
+Node: Copying2069107
+Node: GNU Free Documentation License2106616
+Node: Contributors2131734
+Node: Option Index2169603
+Node: Keyword Index2381102
 
 End Tag Table

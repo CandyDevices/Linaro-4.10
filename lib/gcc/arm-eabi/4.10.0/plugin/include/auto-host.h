@@ -1730,12 +1730,6 @@
 #endif
 
 
-/* Define to 1 if HOST_WIDE_INT must be 64 bits wide (see hwint.h). */
-#ifndef USED_FOR_TARGET
-#define NEED_64BIT_HOST_WIDE_INT 1
-#endif
-
-
 /* Define to the address where bug reports for this package should be sent. */
 #ifndef USED_FOR_TARGET
 #define PACKAGE_BUGREPORT ""
